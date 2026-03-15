@@ -6,9 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
+    "@better-auth/passkey": "^1.5.5",
     "@neondatabase/serverless": "^1.0.2",
     "@t3-oss/env-nextjs": "^0.13.10",
     "better-auth": "^1.5.5",
