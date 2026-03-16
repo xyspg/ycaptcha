@@ -15,7 +15,7 @@ export default function Home() {
             height={96}
             priority
           />
-          <h1 className="text-4xl font-bold tracking-tight">
+          <h1 className="font-heading text-4xl font-bold tracking-tight">
             Customize your CAPTCHA
           </h1>
           <p className="max-w-md text-lg text-muted-foreground">
