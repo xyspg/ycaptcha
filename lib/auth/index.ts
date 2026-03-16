@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/lib/db";
 import { passkey } from "@better-auth/passkey";
+import { nextCookies } from "better-auth/next-js";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -15,5 +16,5 @@ export const auth = betterAuth({
   //TODO
   socialProviders: {},
 
-  plugins: [passkey()],
+  plugins: [passkey(), nextCookies()],
 });
