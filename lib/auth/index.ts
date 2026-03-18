@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 import { passkey } from "@better-auth/passkey";
 import { nextCookies } from "better-auth/next-js";
+import { env } from "@/lib/env";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -15,8 +16,12 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  //TODO
-  socialProviders: {},
+  socialProviders: {
+    github: {
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
+    },
+  },
 
   plugins: [passkey(), nextCookies()],
 });
