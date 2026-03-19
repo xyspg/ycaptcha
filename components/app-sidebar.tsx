@@ -34,7 +34,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <Link href="/dashboard" className="flex justify-center py-1">
-          <Image src="/ycaptcha.webp" alt="yCAPTCHA" width={160} height={48} priority />
+          <Image src="/ycaptcha.webp" alt="yCAPTCHA" width={160} height={48} style={{ height: 'auto' }} priority />
         </Link>
       </SidebarHeader>
       <SidebarContent>

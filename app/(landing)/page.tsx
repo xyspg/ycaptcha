@@ -17,6 +17,7 @@ export default async function Home() {
             alt="yCAPTCHA"
             width={320}
             height={96}
+            style={{ height: 'auto' }}
             priority
           />
           <h1 className="font-heading text-4xl font-bold tracking-tight">

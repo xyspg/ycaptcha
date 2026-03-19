@@ -1,0 +1,221 @@
+"use client"
+
+import { useActionState, useState } from "react"
+import { type InferSelectModel } from "drizzle-orm"
+import Link from "next/link"
+import { ArrowLeft, Eye, EyeOff, RefreshCw, Plus, Code } from "lucide-react"
+import { site, puzzle } from "@/lib/db/app-schema"
+import { updateSite, regenerateKeys, type ActionState } from "../actions"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Separator } from "@/components/ui/separator"
+import { CopyButton } from "@/components/copy-button"
+import { env } from "@/lib/env"
+
+function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
+  const [showSecret, setShowSecret] = useState(false)
+  const [regenState, regenAction, isRegenerating] = useActionState(regenerateKeys, null)
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>API Keys</CardTitle>
+        <CardDescription>
+          Use these keys to integrate yCAPTCHA with your site.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Site Key (public)</Label>
+          <div className="flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm">
+            <span className="flex-1 truncate">{s.siteKey}</span>
+            <CopyButton value={s.siteKey} />
+          </div>
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <Label className="text-xs text-muted-foreground">Secret Key (private)</Label>
+          <div className="flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm">
+            <span className="flex-1 truncate">
+              {showSecret ? s.secretKey : "sk_" + "\u2022".repeat(32)}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={() => setShowSecret(!showSecret)}
+            >
+              {showSecret ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+            </Button>
+            <CopyButton value={s.secretKey} />
+          </div>
+        </div>
+        <form action={regenAction}>
+          <input type="hidden" name="siteId" value={s.id} />
+          <Button variant="outline" size="sm" disabled={isRegenerating}>
+            <RefreshCw className="size-3" />
+            {isRegenerating ? "Regenerating..." : "Regenerate Keys"}
+          </Button>
+        </form>
+        {regenState?.success && (
+          <p className="text-xs text-muted-foreground">{regenState.message}</p>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
+  const [state, formAction, isPending] = useActionState(updateSite, null)
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Site Settings</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form action={formAction} className="flex flex-col gap-4">
+          <input type="hidden" name="siteId" value={s.id} />
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="name">Name</Label>
+            <Input id="name" name="name" defaultValue={s.name} required />
+            {state?.errors?.name && (
+              <p className="text-xs text-destructive">{state.errors.name[0]}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="domain">Domain</Label>
+            <Input id="domain" name="domain" defaultValue={s.domain ?? ""} placeholder="example.com" />
+            {state?.errors?.domain && (
+              <p className="text-xs text-destructive">{state.errors.domain[0]}</p>
+            )}
+          </div>
+          <Button type="submit" size="sm" disabled={isPending}>
+            {isPending ? "Saving..." : "Save Changes"}
+          </Button>
+          {state?.success && (
+            <p className="text-xs text-muted-foreground">{state.message}</p>
+          )}
+        </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+function PuzzlesSection({
+  s,
+  puzzles,
+}: {
+  s: InferSelectModel<typeof site>
+  puzzles: InferSelectModel<typeof puzzle>[]
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Puzzles</CardTitle>
+        <CardDescription>
+          {puzzles.length === 0
+            ? "No puzzles yet. Create one to start using yCAPTCHA on this site."
+            : `${puzzles.length} puzzle${puzzles.length === 1 ? "" : "s"}`}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        {puzzles.map((p) => (
+          <div
+            key={p.id}
+            className="flex items-center justify-between rounded-md border px-3 py-2"
+          >
+            <span className="text-sm">{p.prompt}</span>
+            <span className="text-xs text-muted-foreground">
+              difficulty: {p.difficulty}
+            </span>
+          </div>
+        ))}
+        <Button variant="outline" size="sm" asChild>
+          <Link href={`/dashboard/sites/${s.id}/puzzles/new`}>
+            <Plus className="size-3" /> Create Puzzle
+          </Link>
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
+  const widgetUrl = `${env.NEXT_PUBLIC_SITE_URL}/widget/${s.siteKey}`
+  const snippet = `<iframe
+  src="${widgetUrl}"
+  width="350"
+  height="450"
+  frameborder="0"
+></iframe>`
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Embed Widget</CardTitle>
+        <CardDescription>
+          Copy the code below and paste it into your website.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        <div className="relative">
+          <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs font-mono">
+            {snippet}
+          </pre>
+          <div className="absolute top-2 right-2">
+            <CopyButton value={snippet} />
+          </div>
+        </div>
+        <Separator />
+        <div>
+          <p className="mb-3 text-sm font-medium">Preview</p>
+          <iframe
+            src={widgetUrl}
+            width={350}
+            height={450}
+            className="rounded-md border"
+          />
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+export function SiteDetail({
+  site: s,
+  puzzles,
+}: {
+  site: InferSelectModel<typeof site>
+  puzzles: InferSelectModel<typeof puzzle>[]
+}) {
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon-sm" asChild>
+          <Link href="/dashboard/sites">
+            <ArrowLeft className="size-4" />
+          </Link>
+        </Button>
+        <h1 className="text-2xl font-semibold">{s.name}</h1>
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="flex flex-col gap-6">
+          <ApiKeysSection s={s} />
+          <SettingsSection s={s} />
+        </div>
+        <div className="flex flex-col gap-6">
+          <PuzzlesSection s={s} puzzles={puzzles} />
+          <EmbedSection s={s} />
+        </div>
+      </div>
+    </div>
+  )
+}
