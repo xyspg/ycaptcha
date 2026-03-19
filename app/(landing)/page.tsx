@@ -1,8 +1,12 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getSession } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getSession();
+  if (session) redirect("/dashboard");
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center px-8 md:px-16 lg:px-24">
       <div className="grid w-full grid-cols-1 items-center gap-12 md:grid-cols-2">
