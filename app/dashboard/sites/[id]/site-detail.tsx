@@ -213,7 +213,7 @@ export function SiteDetail({
         </div>
         <div className="flex flex-col gap-6">
           <PuzzlesSection s={s} puzzles={puzzles} />
-          <EmbedSection s={s} />
+          {puzzles.length > 0 && <EmbedSection s={s} />}
         </div>
       </div>
     </div>

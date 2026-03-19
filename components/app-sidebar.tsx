@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Images, LogOut, Settings } from "lucide-react";
+import { Globe, Images, KeyRound, LogOut, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -22,6 +22,7 @@ import { authClient } from "@/lib/auth/client";
 
 const navItems = [
   { title: "Sites", href: "/dashboard/sites", icon: Globe },
+  { title: "Puzzles", href: "/dashboard/puzzles", icon: KeyRound },
   { title: "Image Sets", href: "/dashboard/image-sets", icon: Images },
 ];
 

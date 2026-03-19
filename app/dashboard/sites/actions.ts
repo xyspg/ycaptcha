@@ -8,15 +8,25 @@ import { db } from "@/lib/db"
 import { site } from "@/lib/db/app-schema"
 import { and, eq } from "drizzle-orm"
 
+const domainSchema = z
+  .string()
+  .max(253, "Domain is too long")
+  .optional()
+  .transform((v) => v?.replace(/^https?:\/\//, "").replace(/\/+$/, "") || undefined)
+  .refine((v) => !v || /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(v), {
+    message: "Invalid domain (e.g. example.com)",
+  })
+
 const createSiteSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  domain: z.string().max(253, "Domain is too long").optional().transform(v => v || undefined),
+  domain: domainSchema,
 })
 
 export type ActionState = {
   errors?: Record<string, string[]>
   message?: string
   success?: boolean
+  values?: Record<string, string>
 } | null
 
 export async function createSite(
@@ -25,13 +35,15 @@ export async function createSite(
 ): Promise<ActionState> {
   const session = await requireSession()
 
-  const parsed = createSiteSchema.safeParse({
-    name: formData.get("name"),
-    domain: formData.get("domain"),
-  })
+  const values = {
+    name: formData.get("name") as string ?? "",
+    domain: formData.get("domain") as string ?? "",
+  }
+
+  const parsed = createSiteSchema.safeParse(values)
 
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors }
+    return { errors: z.flattenError(parsed.error).fieldErrors, values }
   }
 
   await db.insert(site).values({
@@ -71,7 +83,7 @@ export async function deleteSite(
 const updateSiteSchema = z.object({
   siteId: z.string().min(1),
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
-  domain: z.string().max(253, "Domain is too long").optional().transform(v => v || undefined),
+  domain: domainSchema,
 })
 
 export async function updateSite(
@@ -80,14 +92,16 @@ export async function updateSite(
 ): Promise<ActionState> {
   const session = await requireSession()
 
-  const parsed = updateSiteSchema.safeParse({
-    siteId: formData.get("siteId"),
-    name: formData.get("name"),
-    domain: formData.get("domain"),
-  })
+  const values = {
+    siteId: formData.get("siteId") as string ?? "",
+    name: formData.get("name") as string ?? "",
+    domain: formData.get("domain") as string ?? "",
+  }
+
+  const parsed = updateSiteSchema.safeParse(values)
 
   if (!parsed.success) {
-    return { errors: parsed.error.flatten().fieldErrors }
+    return { errors: z.flattenError(parsed.error).fieldErrors, values }
   }
 
   const result = await db

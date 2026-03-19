@@ -56,14 +56,14 @@ function CreateSiteSheet() {
         <form action={formAction} className="flex flex-col gap-4 px-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" placeholder="My Website" required />
+            <Input id="name" name="name" placeholder="My Website" defaultValue={state?.values?.name} required />
             {state?.errors?.name && (
               <p className="text-xs text-destructive">{state.errors.name[0]}</p>
             )}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="domain">Domain (optional)</Label>
-            <Input id="domain" name="domain" placeholder="example.com" />
+            <Input id="domain" name="domain" placeholder="example.com" defaultValue={state?.values?.domain} />
             {state?.errors?.domain && (
               <p className="text-xs text-destructive">{state.errors.domain[0]}</p>
             )}
