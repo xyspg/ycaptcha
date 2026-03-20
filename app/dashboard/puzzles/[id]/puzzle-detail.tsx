@@ -6,6 +6,7 @@ import { ArrowLeft, Check, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { updatePuzzle, deletePuzzle } from "./actions";
 import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
+import { CaptchaCheckbox } from "@/components/captcha/captcha-checkbox";
 import { CaptchaWidget } from "@/components/captcha/captcha-widget";
 import { Button } from "@/components/ui/button";
 import {
@@ -369,12 +370,13 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
           <div className="sticky top-6">
             {correctIds.size > 0 && incorrectSatisfied ? (
               <PuzzlePreview
-                key={previewKey}
+                key={`${previewKey}-${Array.from(correctIds).sort().join()}-${Array.from(incorrectIds).sort().join()}-${handPickIncorrect}-${difficulty}`}
                 prompt={prompt}
                 images={images}
                 correctIds={correctIds}
                 incorrectIds={incorrectIds}
                 handPickIncorrect={handPickIncorrect}
+                difficulty={difficulty}
                 onRefresh={() => setPreviewKey((k) => k + 1)}
               />
             ) : (
@@ -408,6 +410,7 @@ function PuzzlePreview({
   correctIds,
   incorrectIds,
   handPickIncorrect,
+  difficulty,
   onRefresh,
 }: {
   prompt: string;
@@ -415,36 +418,93 @@ function PuzzlePreview({
   correctIds: Set<string>;
   incorrectIds: Set<string>;
   handPickIncorrect: boolean;
+  difficulty: number;
   onRefresh: () => void;
 }) {
-  const previewImages = useMemo(() => {
+  const [phase, setPhase] = useState<"idle" | "loading" | "challenge" | "verified">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const buildGrid = () => {
     const correct = images.filter((img) => correctIds.has(img.id));
     let incorrect: typeof images;
-
     if (handPickIncorrect) {
       incorrect = images.filter((img) => incorrectIds.has(img.id));
     } else {
-      const pool = images.filter((img) => !correctIds.has(img.id));
-      incorrect = shuffle(pool);
+      incorrect = shuffle(images.filter((img) => !correctIds.has(img.id)));
     }
-
     const needed = CAPTCHA_GRID_SIZE - correct.length;
-    const combined = [...correct, ...incorrect.slice(0, needed)];
-    return shuffle(combined);
-  }, [images, correctIds, incorrectIds, handPickIncorrect]);
+    return shuffle([...correct, ...incorrect.slice(0, needed)]);
+  };
+
+  const [previewImages, setPreviewImages] = useState(buildGrid);
+
+  const reshuffleGrid = () => {
+    setPreviewImages(buildGrid());
+    setErrorMessage(null);
+  };
+
+  const handleRequestChallenge = () => {
+    setPhase("loading");
+    setTimeout(() => setPhase("challenge"), 500);
+  };
+
+  const handleVerify = (selectedIds: string[]) => {
+    const correctCount = selectedIds.filter((id) => correctIds.has(id)).length;
+    const requiredCount = Math.ceil(correctIds.size * difficulty);
+    const allSelected = selectedIds.length === CAPTCHA_GRID_SIZE;
+    const passed = !allSelected && correctCount >= requiredCount;
+
+    if (passed) {
+      setPhase("verified");
+    } else {
+      setErrorMessage("Please try again.");
+      reshuffleGrid();
+    }
+  };
 
   return (
     <div className="flex flex-col gap-2">
       <p className="text-sm font-medium">Preview</p>
       <p className="text-xs text-muted-foreground">
-        How this puzzle looks to users.
+        Test how this puzzle works for users.
       </p>
-      <CaptchaWidget
-        prompt={prompt || "Select all images with|..."}
-        images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
-        onVerify={() => {}}
-        onRefresh={onRefresh}
-      />
+
+      {phase === "idle" || phase === "loading" ? (
+        <CaptchaCheckbox
+          onRequestChallenge={handleRequestChallenge}
+          state={phase}
+        />
+      ) : phase === "challenge" ? (
+        <CaptchaWidget
+          key={previewImages.map((i) => i.id).join()}
+          prompt={prompt || "Select all images with|..."}
+          images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
+          onVerify={handleVerify}
+          onRefresh={() => {
+            reshuffleGrid();
+            onRefresh();
+          }}
+          errorMessage={errorMessage}
+        />
+      ) : (
+        <div className="flex flex-col gap-2">
+          <CaptchaCheckbox
+            onRequestChallenge={() => {}}
+            state="verified"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setPhase("idle");
+              reshuffleGrid();
+              onRefresh();
+            }}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            Refresh preview
+          </button>
+        </div>
+      )}
     </div>
   );
 }
