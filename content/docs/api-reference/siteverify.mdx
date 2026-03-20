@@ -1,0 +1,56 @@
+---
+title: POST /siteverify
+description: Verify a CAPTCHA token on your server.
+---
+
+```
+POST /api/v0/captcha/siteverify
+```
+
+Verifies a token after the user completed the CAPTCHA. **This is the only endpoint your backend calls.**
+
+> **Requires your Secret Key — never call this from the browser.**
+
+## Request body
+
+| Field       | Type     | Required | Description                                |
+| ----------- | -------- | -------- | ------------------------------------------ |
+| `token`     | `string` | Yes      | Token from the widget's `postMessage`.     |
+| `secretKey` | `string` | Yes      | Your site's secret key (`sk_...`).         |
+
+```json
+{
+  "token": "aB3dEfGh...64chars",
+  "secretKey": "sk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+}
+```
+
+## Response — Success (200 OK)
+
+```json
+{ "success": true }
+```
+
+## Response — Failure (200 OK)
+
+All failures return HTTP 200 with `success: false` and an `error` field:
+
+| Error                          | Meaning                                                       |
+| ------------------------------ | ------------------------------------------------------------- |
+| `"Missing token or secretKey"` | Request body missing required fields.                         |
+| `"Invalid token"`              | Token not found — never issued, already consumed, or deleted. |
+| `"Invalid secretKey"`          | Secret key doesn't match the site owning this puzzle.         |
+| `"Challenge not solved"`       | Session exists but user never passed verification.            |
+| `"Token expired"`              | The 5-minute window has elapsed.                              |
+
+## Error (400 Bad Request)
+
+```json
+{ "success": false, "error": "Missing token or secretKey" }
+```
+
+## Important
+
+- **Tokens are single-use.** On success, the session row is deleted. Calling siteverify again returns `"Invalid token"`.
+- The `secretKey` is verified by joining through the puzzle to its site — a token from one site cannot be validated with another site's key.
+- Always check `result.success === true` explicitly. A 200 status alone does not mean success.

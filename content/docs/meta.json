@@ -1,4 +1,4 @@
 {
   "title": "yCAPTCHA",
-  "pages": ["index", "widget", "api", "how-it-works"]
+  "pages": ["index", "concepts", "get-started", "api-reference"]
 }

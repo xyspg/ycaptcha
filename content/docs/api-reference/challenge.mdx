@@ -1,0 +1,55 @@
+---
+title: POST /challenge
+description: Fetch a new image challenge for the CAPTCHA widget.
+---
+
+```
+POST /api/v0/captcha/challenge
+```
+
+Fetches a new image challenge. Called automatically by the widget — you don't normally call this directly.
+
+## Request body
+
+| Field     | Type     | Required | Description                        |
+| --------- | -------- | -------- | ---------------------------------- |
+| `siteKey` | `string` | Yes      | Your site's public key (`pk_...`). |
+
+```json
+{ "siteKey": "pk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456" }
+```
+
+## Response (200 OK)
+
+| Field          | Type                              | Description                                  |
+| -------------- | --------------------------------- | -------------------------------------------- |
+| `sessionToken` | `string`                          | 64-character token identifying this session. |
+| `prompt`       | `string`                          | Puzzle instruction (may contain `\|` separator). |
+| `images`       | `Array<{ id: string, url: string }>` | 9 images in randomized order.             |
+
+```json
+{
+  "sessionToken": "aB3dEfGh...64chars",
+  "prompt": "Select all images with|fire hydrants",
+  "images": [
+    { "id": "abc123", "url": "https://s3.ycaptcha.xyspg.moe/images/abc123.jpg" },
+    { "id": "def456", "url": "https://s3.ycaptcha.xyspg.moe/images/def456.jpg" }
+  ]
+}
+```
+
+## Errors
+
+| Status | Error                                  | Cause                             |
+| ------ | -------------------------------------- | --------------------------------- |
+| 400    | `"Missing siteKey"`                    | Missing or invalid request body.  |
+| 404    | `"Invalid siteKey"`                    | No site matches the provided key. |
+| 404    | `"No puzzles configured for this site"` | Site exists but has no puzzles.  |
+
+## Behavior
+
+- A random puzzle is selected from the site's pool on each call.
+- Sessions expire **5 minutes** after creation.
+- Images are shuffled server-side with Fisher-Yates. The widget cannot distinguish correct from incorrect.
+- The grid is always exactly **9 images** (3x3).
+- If the puzzle has hand-picked incorrect images, those are used as distractors. Otherwise, distractors are drawn randomly from the image set.
