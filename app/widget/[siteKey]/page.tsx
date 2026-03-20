@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   CaptchaCheckbox,
   CaptchaWidget,
@@ -21,6 +21,8 @@ function postResize(width: number, height: number) {
 
 export default function WidgetPage() {
   const { siteKey } = useParams<{ siteKey: string }>();
+  const searchParams = useSearchParams();
+  const parentOrigin = searchParams.get("origin");
   const [phase, setPhase] = useState<Phase>("idle");
   const [images, setImages] = useState<CaptchaImage[]>([]);
   const [prompt, setPrompt] = useState("");
@@ -52,7 +54,7 @@ export default function WidgetPage() {
       const res = await fetch("/api/v0/captcha/challenge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ siteKey }),
+        body: JSON.stringify({ siteKey, ...(parentOrigin && { origin: parentOrigin }) }),
       });
 
       if (!res.ok) {

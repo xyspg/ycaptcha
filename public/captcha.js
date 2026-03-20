@@ -50,7 +50,7 @@
     // Create iframe
     var iframe = document.createElement("iframe");
     iframe.id = widgetId;
-    iframe.src = ORIGIN + "/widget/" + sitekey;
+    iframe.src = ORIGIN + "/widget/" + sitekey + "?origin=" + encodeURIComponent(window.location.origin);
     iframe.style.border = "none";
     iframe.style.overflow = "hidden";
     iframe.style.width = "304px";

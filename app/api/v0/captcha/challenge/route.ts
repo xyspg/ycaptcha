@@ -35,14 +35,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid siteKey" }, { status: 404 });
   }
 
-  // 1b. Verify origin matches the site's domain
-  const origin = request.headers.get("origin");
-  if (siteData.domain && origin) {
+  // 1b. Verify parent origin matches the site's domain.
+  // The widget iframe always runs on our domain, so Origin headers are useless.
+  // Instead, captcha.js passes the parent page's hostname via the request body.
+  // If origin is not provided (dashboard preview, server-side), skip the check.
+  if (siteData.domain && body.origin) {
     try {
-      const originHost = new URL(origin).hostname;
+      const parentHost = new URL(body.origin).hostname;
       if (
-        originHost !== siteData.domain &&
-        !originHost.endsWith(`.${siteData.domain}`)
+        parentHost !== siteData.domain &&
+        !parentHost.endsWith(`.${siteData.domain}`)
       ) {
         return NextResponse.json(
           { error: "Domain not allowed for this siteKey" },
@@ -50,7 +52,11 @@ export async function POST(request: Request) {
         );
       }
     } catch {
-      // Malformed origin header — allow (could be server-side call)
+      // Malformed origin — reject
+      return NextResponse.json(
+        { error: "Invalid origin" },
+        { status: 400 },
+      );
     }
   }
 
