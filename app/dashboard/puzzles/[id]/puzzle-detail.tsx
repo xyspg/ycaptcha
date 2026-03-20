@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { updatePuzzle, deletePuzzle } from "./actions";
 import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
+import { CaptchaWidget } from "@/components/captcha/captcha-widget";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -330,8 +331,20 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         </div>
       </form>
 
+      {/* Preview */}
+      {correctIds.size > 0 && incorrectSatisfied && (
+        <PuzzlePreview
+          prompt={prompt}
+          images={images}
+          correctIds={correctIds}
+          incorrectIds={incorrectIds}
+          handPickIncorrect={handPickIncorrect}
+        />
+      )}
+
       {/* Danger Zone */}
       <Card className="border-destructive/50">
+
         <CardHeader>
           <CardTitle className="text-destructive">Danger Zone</CardTitle>
           <CardDescription>
@@ -355,5 +368,65 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function PuzzlePreview({
+  prompt,
+  images,
+  correctIds,
+  incorrectIds,
+  handPickIncorrect,
+}: {
+  prompt: string;
+  images: { id: string; url: string; name: string | null }[];
+  correctIds: Set<string>;
+  incorrectIds: Set<string>;
+  handPickIncorrect: boolean;
+}) {
+  // Build a simulated 9-image grid from current selections
+  const previewImages = useMemo(() => {
+    const correct = images.filter((img) => correctIds.has(img.id));
+    let incorrect: typeof images;
+
+    if (handPickIncorrect) {
+      incorrect = images.filter((img) => incorrectIds.has(img.id));
+    } else {
+      // Random from remaining pool
+      const pool = images.filter((img) => !correctIds.has(img.id));
+      incorrect = shuffle(pool);
+    }
+
+    const needed = CAPTCHA_GRID_SIZE - correct.length;
+    const combined = [...correct, ...incorrect.slice(0, needed)];
+    return shuffle(combined);
+  }, [images, correctIds, incorrectIds, handPickIncorrect]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Preview</CardTitle>
+        <CardDescription>
+          How this puzzle looks to users. Images are shuffled each time.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex justify-center">
+        <CaptchaWidget
+          prompt={prompt || "Select all images with|..."}
+          images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
+          onVerify={() => {}}
+          onRefresh={() => {}}
+        />
+      </CardContent>
+    </Card>
   );
 }
