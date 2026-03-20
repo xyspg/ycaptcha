@@ -79,6 +79,8 @@ function CreateSiteSheet() {
 
 function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
   const [, formAction, isPending] = useActionState(deleteSite, null)
+  const [confirming, setConfirming] = useState(false)
+  const [confirmName, setConfirmName] = useState("")
 
   return (
     <Card>
@@ -93,20 +95,53 @@ function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
         </CardTitle>
         {s.domain && <CardDescription>{s.domain}</CardDescription>}
         <CardAction>
-          <form action={formAction}>
-            <input type="hidden" name="siteId" value={s.id} />
-            <Button variant="ghost" size="icon-xs" disabled={isPending}>
+          {!confirming ? (
+            <Button variant="ghost" size="icon-xs" onClick={() => setConfirming(true)}>
               <Trash2 className="size-3" />
             </Button>
-          </form>
+          ) : null}
         </CardAction>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-          <span className="truncate">{s.siteKey}</span>
-          <CopyButton value={s.siteKey} />
-        </div>
-      </CardContent>
+      {confirming ? (
+        <CardContent className="flex flex-col gap-3 border-t border-destructive/30 bg-destructive/5 pt-3">
+          <p className="text-xs text-destructive font-medium">
+            Type <span className="font-bold">{s.name}</span> to confirm deletion. This will delete all puzzles on this site.
+          </p>
+          <Input
+            value={confirmName}
+            onChange={(e) => setConfirmName(e.target.value)}
+            placeholder={s.name}
+            className="text-sm"
+          />
+          <div className="flex gap-2">
+            <form action={formAction}>
+              <input type="hidden" name="siteId" value={s.id} />
+              <Button
+                type="submit"
+                variant="destructive"
+                size="sm"
+                disabled={confirmName !== s.name || isPending}
+              >
+                {isPending ? "Deleting..." : "Delete Site"}
+              </Button>
+            </form>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setConfirming(false); setConfirmName("") }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </CardContent>
+      ) : (
+        <CardContent>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+            <span className="truncate">{s.siteKey}</span>
+            <CopyButton value={s.siteKey} />
+          </div>
+        </CardContent>
+      )}
     </Card>
   )
 }

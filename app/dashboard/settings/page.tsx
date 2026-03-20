@@ -98,12 +98,27 @@ function ProfileSection() {
   );
 }
 
+const DELETE_CONFIRMATION_PHRASE = "I want to delete my account";
+
 function DeleteAccountSection() {
+  const { data: session } = authClient.useSession();
   const router = useRouter();
-  const [confirming, setConfirming] = useState(false);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  const [emailInput, setEmailInput] = useState("");
+  const [phraseInput, setPhraseInput] = useState("");
   const [password, setPassword] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const userEmail = session?.user.email ?? "";
+
+  const resetAll = () => {
+    setStep(1);
+    setEmailInput("");
+    setPhraseInput("");
+    setPassword("");
+    setError(null);
+  };
 
   const handleDelete = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,30 +144,124 @@ function DeleteAccountSection() {
         <CardTitle className="text-destructive">Delete Account</CardTitle>
         <CardDescription>
           Permanently delete your account and all associated data including
-          sites, puzzles, image sets, and uploaded images. This action cannot be
-          undone.
+          sites, puzzles, image sets, and uploaded images.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {!confirming ? (
+        {/* Step 1: Initial button */}
+        {step === 1 && (
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => setConfirming(true)}
+            onClick={() => setStep(2)}
           >
             Delete Account
           </Button>
-        ) : (
-          <form onSubmit={handleDelete} className="flex flex-col gap-4">
-            <p className="text-sm text-destructive font-medium">
-              Are you sure? This will permanently delete everything.
-            </p>
+        )}
+
+        {/* Step 2: Warning */}
+        {step === 2 && (
+          <div className="flex flex-col gap-4">
+            <div className="rounded-md border border-destructive bg-destructive/10 p-4">
+              <p className="text-sm font-semibold text-destructive">
+                Are you sure you want to do this?
+              </p>
+              <p className="mt-2 text-xs text-destructive/80">
+                This action is <strong>permanent and irreversible</strong>. All
+                your sites, puzzles, image sets, and uploaded images will be
+                permanently destroyed. Active CAPTCHA widgets on your sites will
+                stop working immediately.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => setStep(3)}
+              >
+                I understand, continue
+              </Button>
+              <Button variant="ghost" size="sm" onClick={resetAll}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Type email + confirmation phrase */}
+        {step === 3 && (
+          <div className="flex flex-col gap-4">
+            <div className="rounded-md border border-destructive bg-destructive/10 p-4">
+              <p className="text-xs text-destructive/80">
+                To verify, type your email{" "}
+                <span className="font-mono font-bold text-destructive">
+                  {userEmail}
+                </span>{" "}
+                and the phrase{" "}
+                <span className="font-mono font-bold text-destructive">
+                  {DELETE_CONFIRMATION_PHRASE}
+                </span>{" "}
+                below.
+              </p>
+            </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">
-                Enter your password to confirm
+              <Label htmlFor="confirm-email" className="text-xs">
+                Your email
               </Label>
               <Input
-                id="password"
+                id="confirm-email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                placeholder={userEmail}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="confirm-phrase" className="text-xs">
+                Type &quot;{DELETE_CONFIRMATION_PHRASE}&quot;
+              </Label>
+              <Input
+                id="confirm-phrase"
+                value={phraseInput}
+                onChange={(e) => setPhraseInput(e.target.value)}
+                placeholder={DELETE_CONFIRMATION_PHRASE}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                size="sm"
+                disabled={
+                  emailInput !== userEmail ||
+                  phraseInput !== DELETE_CONFIRMATION_PHRASE
+                }
+                onClick={() => setStep(4)}
+              >
+                Continue
+              </Button>
+              <Button variant="ghost" size="sm" onClick={resetAll}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Final confirmation with password */}
+        {step === 4 && (
+          <form onSubmit={handleDelete} className="flex flex-col gap-4">
+            <div className="rounded-md border-2 border-destructive bg-destructive/15 p-4">
+              <p className="text-center text-lg font-bold text-destructive">
+                FINAL WARNING
+              </p>
+              <p className="mt-2 text-center text-sm text-destructive">
+                This is your last chance. After this, there is no going back.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="delete-password" className="text-xs">
+                Enter your password to permanently delete your account
+              </Label>
+              <Input
+                id="delete-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -165,19 +274,13 @@ function DeleteAccountSection() {
                 variant="destructive"
                 size="sm"
                 disabled={deleting}
+                className="bg-red-700 hover:bg-red-800"
               >
-                {deleting ? "Deleting..." : "Confirm Delete"}
+                {deleting
+                  ? "Deleting everything..."
+                  : "Permanently delete my account"}
               </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setConfirming(false);
-                  setPassword("");
-                  setError(null);
-                }}
-              >
+              <Button variant="ghost" size="sm" onClick={resetAll}>
                 Cancel
               </Button>
             </div>
