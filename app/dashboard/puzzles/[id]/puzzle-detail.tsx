@@ -94,6 +94,8 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
   const incorrectSatisfied =
     !handPickIncorrect || incorrectIds.size >= neededIncorrect;
 
+  const [previewKey, setPreviewKey] = useState(0);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
@@ -107,6 +109,10 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
           <p className="text-sm text-muted-foreground">{siteName}</p>
         </div>
       </div>
+
+      <div className="flex gap-6">
+        {/* Left: config panel */}
+        <div className="flex min-w-0 flex-1 flex-col gap-6">
 
       <form action={formAction} className="flex flex-col gap-6">
         <input type="hidden" name="puzzleId" value={p.id} />
@@ -331,20 +337,8 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         </div>
       </form>
 
-      {/* Preview */}
-      {correctIds.size > 0 && incorrectSatisfied && (
-        <PuzzlePreview
-          prompt={prompt}
-          images={images}
-          correctIds={correctIds}
-          incorrectIds={incorrectIds}
-          handPickIncorrect={handPickIncorrect}
-        />
-      )}
-
       {/* Danger Zone */}
       <Card className="border-destructive/50">
-
         <CardHeader>
           <CardTitle className="text-destructive">Danger Zone</CardTitle>
           <CardDescription>
@@ -367,6 +361,34 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
           )}
         </CardContent>
       </Card>
+
+        </div>
+
+        {/* Right: sticky preview */}
+        <div className="hidden w-[370px] shrink-0 lg:block">
+          <div className="sticky top-6">
+            {correctIds.size > 0 && incorrectSatisfied ? (
+              <PuzzlePreview
+                key={previewKey}
+                prompt={prompt}
+                images={images}
+                correctIds={correctIds}
+                incorrectIds={incorrectIds}
+                handPickIncorrect={handPickIncorrect}
+                onRefresh={() => setPreviewKey((k) => k + 1)}
+              />
+            ) : (
+              <Card>
+                <CardContent className="flex items-center justify-center py-20">
+                  <p className="text-sm text-muted-foreground">
+                    Select correct images to see preview
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -386,14 +408,15 @@ function PuzzlePreview({
   correctIds,
   incorrectIds,
   handPickIncorrect,
+  onRefresh,
 }: {
   prompt: string;
   images: { id: string; url: string; name: string | null }[];
   correctIds: Set<string>;
   incorrectIds: Set<string>;
   handPickIncorrect: boolean;
+  onRefresh: () => void;
 }) {
-  // Build a simulated 9-image grid from current selections
   const previewImages = useMemo(() => {
     const correct = images.filter((img) => correctIds.has(img.id));
     let incorrect: typeof images;
@@ -401,7 +424,6 @@ function PuzzlePreview({
     if (handPickIncorrect) {
       incorrect = images.filter((img) => incorrectIds.has(img.id));
     } else {
-      // Random from remaining pool
       const pool = images.filter((img) => !correctIds.has(img.id));
       incorrect = shuffle(pool);
     }
@@ -412,21 +434,17 @@ function PuzzlePreview({
   }, [images, correctIds, incorrectIds, handPickIncorrect]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Preview</CardTitle>
-        <CardDescription>
-          How this puzzle looks to users. Images are shuffled each time.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex justify-center">
-        <CaptchaWidget
-          prompt={prompt || "Select all images with|..."}
-          images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
-          onVerify={() => {}}
-          onRefresh={() => {}}
-        />
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-2">
+      <p className="text-sm font-medium">Preview</p>
+      <p className="text-xs text-muted-foreground">
+        How this puzzle looks to users.
+      </p>
+      <CaptchaWidget
+        prompt={prompt || "Select all images with|..."}
+        images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
+        onVerify={() => {}}
+        onRefresh={onRefresh}
+      />
+    </div>
   );
 }
