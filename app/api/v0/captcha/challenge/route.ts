@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { eq, and, inArray, notInArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { site, puzzle, image, captchaSession } from "@/lib/db/app-schema";
-import { CAPTCHA_GRID_SIZE } from "@/lib/types";
+import { CAPTCHA_GRID_SIZE, CAPTCHA_SESSION_TTL_MS } from "@/lib/types";
+import { shuffle } from "@/lib/utils";
 
 /**
  * POST /api/v0/captcha/challenge
@@ -119,14 +120,10 @@ export async function POST(request: Request) {
   }
 
   // 5. Combine and shuffle
-  const allImages = [...correctImages, ...incorrectImages];
-  for (let i = allImages.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [allImages[i], allImages[j]] = [allImages[j], allImages[i]];
-  }
+  const allImages = shuffle([...correctImages, ...incorrectImages]);
 
   // 6. Create captcha session
-  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+  const expiresAt = new Date(Date.now() + CAPTCHA_SESSION_TTL_MS);
   const [session] = await db
     .insert(captchaSession)
     .values({

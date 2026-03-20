@@ -7,8 +7,7 @@ import {
   CaptchaWidget,
   type CaptchaImage,
 } from "@/components/captcha/captcha";
-
-const SESSION_TTL_MS = 5 * 60 * 1000;
+import { CAPTCHA_SESSION_TTL_MS } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "challenge" | "verified" | "failed" | "error";
 
@@ -45,7 +44,7 @@ export default function WidgetPage() {
       setErrorText("Session expired");
       postResize(304, 78);
       postToParent({ event: "expired" });
-    }, SESSION_TTL_MS);
+    }, CAPTCHA_SESSION_TTL_MS);
   };
 
   const fetchChallenge = useCallback(async () => {

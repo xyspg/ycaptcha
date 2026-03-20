@@ -3,9 +3,9 @@
 import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, shuffle } from "@/lib/utils";
 import { updatePuzzle, deletePuzzle } from "./actions";
-import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE, DIFFICULTY_PRESETS } from "@/lib/types";
 import { CaptchaCheckbox } from "@/components/captcha/captcha-checkbox";
 import { CaptchaWidget } from "@/components/captcha/captcha-widget";
 import { Button } from "@/components/ui/button";
@@ -34,11 +34,6 @@ interface PuzzleDetailProps {
   images: { id: string; url: string; name: string | null }[];
 }
 
-const DIFFICULTY_PRESETS = [
-  { label: "Easy", value: 0.25 },
-  { label: "Medium", value: 0.5 },
-  { label: "Hard", value: 0.75 },
-] as const;
 
 export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps) {
   const [prompt, setPrompt] = useState(p.prompt);
@@ -393,15 +388,6 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
       </div>
     </div>
   );
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
 }
 
 function PuzzlePreview({

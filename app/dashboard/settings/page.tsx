@@ -16,14 +16,11 @@ import { Label } from "@/components/ui/label";
 
 function ProfileSection() {
   const { data: session, isPending } = authClient.useSession();
-  const [name, setName] = useState("");
+  const [nameOverride, setNameOverride] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  // Initialize name from session when it loads
-  if (session?.user.name && !name && !saving) {
-    setName(session.user.name);
-  }
+  const name = nameOverride ?? session?.user.name ?? "";
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,7 +75,7 @@ function ProfileSection() {
               id="name"
               value={name}
               onChange={(e) => {
-                setName(e.target.value);
+                setNameOverride(e.target.value);
                 setMessage(null);
               }}
               required
@@ -98,7 +95,7 @@ function ProfileSection() {
   );
 }
 
-const DELETE_CONFIRMATION_PHRASE = "I want to delete my account";
+const DELETE_CONFIRMATION_PHRASE = "delete my account";
 
 function DeleteAccountSection() {
   const { data: session } = authClient.useSession();
@@ -150,11 +147,7 @@ function DeleteAccountSection() {
       <CardContent>
         {/* Step 1: Initial button */}
         {step === 1 && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => setStep(2)}
-          >
+          <Button variant="destructive" size="sm" onClick={() => setStep(2)}>
             Delete Account
           </Button>
         )}
@@ -231,8 +224,8 @@ function DeleteAccountSection() {
                 variant="destructive"
                 size="sm"
                 disabled={
-                  emailInput !== userEmail ||
-                  phraseInput !== DELETE_CONFIRMATION_PHRASE
+                  emailInput.toLowerCase() !== userEmail ||
+                  phraseInput.toLowerCase() !== DELETE_CONFIRMATION_PHRASE
                 }
                 onClick={() => setStep(4)}
               >
@@ -284,9 +277,7 @@ function DeleteAccountSection() {
                 Cancel
               </Button>
             </div>
-            {error && (
-              <p className="text-xs text-destructive">{error}</p>
-            )}
+            {error && <p className="text-xs text-destructive">{error}</p>}
           </form>
         )}
       </CardContent>

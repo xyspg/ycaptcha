@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createPuzzle } from "./actions";
-import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE, DIFFICULTY_PRESETS } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,11 +30,7 @@ interface CreatePuzzleFormProps {
   imageSets: ImageSetData[];
 }
 
-const DIFFICULTY_PRESETS = [
-  { label: "Easy", value: 0.25 },
-  { label: "Medium", value: 0.5 },
-  { label: "Hard", value: 0.75 },
-] as const;
+
 
 export function CreatePuzzleForm({
   sites,

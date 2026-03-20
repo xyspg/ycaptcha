@@ -1,7 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
+import { image, imageSet } from "@/lib/db/app-schema";
+import { deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
 import { passkey } from "@better-auth/passkey";
 import { nextCookies } from "better-auth/next-js";
 import { env } from "@/lib/env";
@@ -28,17 +31,12 @@ export const auth = betterAuth({
       enabled: true,
       beforeDelete: async (user) => {
         // Clean up R2 images before cascade delete removes DB records
-        const { eq } = await import("drizzle-orm");
-        const { image, imageSet } = await import("@/lib/db/app-schema");
-        const { deleteFromR2, r2KeyFromUrl } = await import("@/lib/r2");
-
         const sets = await db
           .select({ id: imageSet.id })
           .from(imageSet)
           .where(eq(imageSet.userId, user.id));
 
         if (sets.length > 0) {
-          const { inArray } = await import("drizzle-orm");
           const images = await db
             .select({ url: image.url })
             .from(image)

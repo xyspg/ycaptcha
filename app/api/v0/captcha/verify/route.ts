@@ -30,10 +30,16 @@ export async function POST(request: Request) {
     selectedIds: string[];
   };
 
-  // 1. Find session (not expired, not already solved)
-  const [session] = await db
-    .select()
+  // 1. Find session + puzzle in one query
+  const [row] = await db
+    .select({
+      sessionId: captchaSession.id,
+      sessionToken: captchaSession.token,
+      correctImageIds: puzzle.correctImageIds,
+      difficulty: puzzle.difficulty,
+    })
     .from(captchaSession)
+    .innerJoin(puzzle, eq(puzzle.id, captchaSession.puzzleId))
     .where(
       and(
         eq(captchaSession.token, sessionToken),
@@ -42,50 +48,33 @@ export async function POST(request: Request) {
       ),
     );
 
-  if (!session) {
+  if (!row) {
     return NextResponse.json(
       { success: false, error: "Invalid or expired session" },
       { status: 400 },
     );
   }
 
-  // 2. Get the puzzle
-  const [puzzleData] = await db
-    .select()
-    .from(puzzle)
-    .where(eq(puzzle.id, session.puzzleId));
+  // 2. Verify
+  const correctIds = new Set(row.correctImageIds as string[]);
 
-  if (!puzzleData) {
-    return NextResponse.json(
-      { success: false, error: "Puzzle not found" },
-      { status: 404 },
-    );
-  }
-
-  // 3. Verify
-  const correctIds = new Set(puzzleData.correctImageIds as string[]);
-
-  // Anti-bot: if all 9 selected, auto fail
+  // Anti-bot: if all selected, auto fail
   if (selectedIds.length === CAPTCHA_GRID_SIZE) {
     return NextResponse.json({ success: false });
   }
 
-  // Count how many correct images the user selected
   const correctCount = selectedIds.filter((id) => correctIds.has(id)).length;
-  const requiredCount = Math.ceil(correctIds.size * puzzleData.difficulty);
-  const passed = correctCount >= requiredCount;
+  const requiredCount = Math.ceil(correctIds.size * row.difficulty);
 
-  if (!passed) {
+  if (correctCount < requiredCount) {
     return NextResponse.json({ success: false });
   }
 
-  // 4. Mark session as solved
+  // 3. Mark session as solved
   await db
     .update(captchaSession)
     .set({ solved: true })
-    .where(eq(captchaSession.id, session.id));
+    .where(eq(captchaSession.id, row.sessionId));
 
-  // 5. Return the session token as the verification token
-  // (site owner will use this to call siteverify)
-  return NextResponse.json({ success: true, token: session.token });
+  return NextResponse.json({ success: true, token: row.sessionToken });
 }
