@@ -15,13 +15,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
@@ -136,21 +129,18 @@ export function CreatePuzzleForm({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Select
+            <select
               value={selectedSiteId}
-              onValueChange={setSelectedSiteId}
+              onChange={(e) => setSelectedSiteId(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a site..." />
-              </SelectTrigger>
-              <SelectContent>
-                {sites.map((s) => (
-                  <SelectItem key={s.id} value={s.id}>
-                    {s.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <option value="">Select a site...</option>
+              {sites.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
             {sites.length === 0 && (
               <p className="mt-2 text-sm text-muted-foreground">
                 No sites yet.{" "}
@@ -180,22 +170,19 @@ export function CreatePuzzleForm({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Select
+            <select
               name="imageSetId"
               value={selectedSetId}
-              onValueChange={handleSetChange}
+              onChange={(e) => handleSetChange(e.target.value)}
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
-              <SelectTrigger>
-                <SelectValue placeholder="Select an image set..." />
-              </SelectTrigger>
-              <SelectContent>
-                {imageSets.map((is) => (
-                  <SelectItem key={is.id} value={is.id}>
-                    {is.name} ({is.images.length} images)
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <option value="">Select an image set...</option>
+              {imageSets.map((is) => (
+                <option key={is.id} value={is.id}>
+                  {is.name} ({is.images.length} images)
+                </option>
+              ))}
+            </select>
             {imageSets.length === 0 && (
               <p className="mt-2 text-sm text-muted-foreground">
                 No image sets yet.{" "}
