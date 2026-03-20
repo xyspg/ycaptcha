@@ -440,11 +440,11 @@ function PuzzlePreview({
 
   const reshuffleGrid = () => {
     setPreviewImages(buildGrid());
-    setErrorMessage(null);
   };
 
   const handleRequestChallenge = () => {
     setPhase("loading");
+    setErrorMessage(null);
     setTimeout(() => setPhase("challenge"), 500);
   };
 
@@ -457,8 +457,9 @@ function PuzzlePreview({
     if (passed) {
       setPhase("verified");
     } else {
+      // Show error, reshuffle images but keep error message visible
       setErrorMessage("Please try again.");
-      reshuffleGrid();
+      setPreviewImages(buildGrid());
     }
   };
 
