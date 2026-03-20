@@ -62,8 +62,8 @@ function CreateSiteSheet() {
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="domain">Domain (optional)</Label>
-            <Input id="domain" name="domain" placeholder="example.com" defaultValue={state?.values?.domain} />
+            <Label htmlFor="domain">Domain</Label>
+            <Input id="domain" name="domain" placeholder="example.com" defaultValue={state?.values?.domain} required />
             {state?.errors?.domain && (
               <p className="text-xs text-destructive">{state.errors.domain[0]}</p>
             )}

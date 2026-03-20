@@ -91,7 +91,7 @@ function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="domain">Domain</Label>
-            <Input id="domain" name="domain" defaultValue={s.domain ?? ""} placeholder="example.com" />
+            <Input id="domain" name="domain" defaultValue={s.domain ?? ""} placeholder="example.com" required />
             {state?.errors?.domain && (
               <p className="text-xs text-destructive">{state.errors.domain[0]}</p>
             )}

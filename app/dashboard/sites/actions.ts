@@ -10,10 +10,10 @@ import { and, eq } from "drizzle-orm"
 
 const domainSchema = z
   .string()
+  .min(1, "Domain is required")
   .max(253, "Domain is too long")
-  .optional()
-  .transform((v) => v?.replace(/^https?:\/\//, "").replace(/\/+$/, "") || undefined)
-  .refine((v) => !v || /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(v), {
+  .transform((v) => v.replace(/^https?:\/\//, "").replace(/\/+$/, ""))
+  .refine((v) => /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/.test(v), {
     message: "Invalid domain (e.g. example.com)",
   })
 

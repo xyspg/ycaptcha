@@ -34,6 +34,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid siteKey" }, { status: 404 });
   }
 
+  // 1b. Verify origin matches the site's domain
+  const origin = request.headers.get("origin");
+  if (siteData.domain && origin) {
+    try {
+      const originHost = new URL(origin).hostname;
+      if (
+        originHost !== siteData.domain &&
+        !originHost.endsWith(`.${siteData.domain}`)
+      ) {
+        return NextResponse.json(
+          { error: "Domain not allowed for this siteKey" },
+          { status: 403 },
+        );
+      }
+    } catch {
+      // Malformed origin header — allow (could be server-side call)
+    }
+  }
+
   // 2. Pick a random puzzle for this site
   const [puzzleData] = await db
     .select()
