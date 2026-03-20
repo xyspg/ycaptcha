@@ -138,7 +138,7 @@ function PuzzlesSection({
           </div>
         ))}
         <Button variant="outline" size="sm" asChild>
-          <Link href={`/dashboard/sites/${s.id}/puzzles/new`}>
+          <Link href={`/dashboard/puzzles/new?siteId=${s.id}`}>
             <Plus className="size-3" /> Create Puzzle
           </Link>
         </Button>

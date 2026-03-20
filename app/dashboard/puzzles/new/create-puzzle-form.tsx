@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createPuzzle } from "./actions";
-import type { ActionState } from "@/lib/types";
 import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +15,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -34,8 +32,8 @@ interface ImageSetData {
 }
 
 interface CreatePuzzleFormProps {
-  siteId: string;
-  siteName: string;
+  sites: { id: string; name: string }[];
+  defaultSiteId?: string;
   imageSets: ImageSetData[];
 }
 
@@ -46,11 +44,12 @@ const DIFFICULTY_PRESETS = [
 ] as const;
 
 export function CreatePuzzleForm({
-  siteId,
-  siteName,
+  sites,
+  defaultSiteId,
   imageSets,
 }: CreatePuzzleFormProps) {
-  const [selectedSetId, setSelectedSetId] = useState<string>("");
+  const [selectedSiteId, setSelectedSiteId] = useState(defaultSiteId ?? "");
+  const [selectedSetId, setSelectedSetId] = useState("");
   const [correctIds, setCorrectIds] = useState<Set<string>>(new Set());
   const [incorrectIds, setIncorrectIds] = useState<Set<string>>(new Set());
   const [handPickIncorrect, setHandPickIncorrect] = useState(false);
@@ -68,7 +67,6 @@ export function CreatePuzzleForm({
       } else {
         if (next.size >= CAPTCHA_MAX_CORRECT) return prev;
         next.add(id);
-        // Remove from incorrect if it was there
         setIncorrectIds((p) => {
           const n = new Set(p);
           n.delete(id);
@@ -104,18 +102,15 @@ export function CreatePuzzleForm({
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon-sm" asChild>
-          <Link href={`/dashboard/sites/${siteId}`}>
+          <Link href="/dashboard/puzzles">
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
-        <div>
-          <h1 className="text-2xl font-semibold">Create Puzzle</h1>
-          <p className="text-sm text-muted-foreground">{siteName}</p>
-        </div>
+        <h1 className="text-2xl font-semibold">Create Puzzle</h1>
       </div>
 
       <form action={formAction} className="flex flex-col gap-6">
-        <input type="hidden" name="siteId" value={siteId} />
+        <input type="hidden" name="siteId" value={selectedSiteId} />
         <input
           type="hidden"
           name="correctImageIds"
@@ -131,6 +126,50 @@ export function CreatePuzzleForm({
           }
         />
         <input type="hidden" name="difficulty" value={difficulty} />
+
+        {/* Site Selection */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Site</CardTitle>
+            <CardDescription>
+              Which site will this puzzle be used on?
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Select
+              value={selectedSiteId}
+              onValueChange={setSelectedSiteId}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a site..." />
+              </SelectTrigger>
+              <SelectContent>
+                {sites.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>
+                    {s.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {sites.length === 0 && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                No sites yet.{" "}
+                <Link
+                  href="/dashboard/sites"
+                  className="underline hover:text-foreground"
+                >
+                  Create one first
+                </Link>
+                .
+              </p>
+            )}
+            {state?.errors?.siteId && (
+              <p className="mt-1 text-xs text-destructive">
+                {state.errors.siteId[0]}
+              </p>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Image Set Selection */}
         <Card>
@@ -373,18 +412,19 @@ export function CreatePuzzleForm({
         <div className="flex items-center gap-3">
           <Button
             type="submit"
-            disabled={isPending || correctIds.size === 0 || !selectedSetId}
+            disabled={
+              isPending ||
+              correctIds.size === 0 ||
+              !selectedSetId ||
+              !selectedSiteId
+            }
           >
             {isPending ? "Creating..." : "Create Puzzle"}
           </Button>
           <Button variant="ghost" asChild>
-            <Link href={`/dashboard/sites/${siteId}`}>Cancel</Link>
+            <Link href="/dashboard/puzzles">Cancel</Link>
           </Button>
         </div>
-
-        {state?.errors?.siteId && (
-          <p className="text-sm text-destructive">{state.errors.siteId[0]}</p>
-        )}
       </form>
     </div>
   );

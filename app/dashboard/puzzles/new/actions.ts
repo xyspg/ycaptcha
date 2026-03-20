@@ -10,7 +10,7 @@ import type { ActionState } from "@/lib/types";
 import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
 
 const createPuzzleSchema = z.object({
-  siteId: z.string().min(1),
+  siteId: z.string().min(1, "Please select a site"),
   imageSetId: z.string().min(1, "Please select an image set"),
   prompt: z.string().min(1, "Prompt is required").max(200, "Prompt is too long"),
   correctImageIds: z
@@ -67,5 +67,5 @@ export async function createPuzzle(
     difficulty: parsed.data.difficulty,
   });
 
-  redirect(`/dashboard/sites/${parsed.data.siteId}`);
+  redirect("/dashboard/puzzles");
 }

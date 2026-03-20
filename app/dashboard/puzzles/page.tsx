@@ -32,10 +32,19 @@ export default async function Page() {
         })
       : [];
 
+  const hasPrereqs = userSites.length > 0;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Puzzles</h1>
+        {hasPrereqs && (
+          <Button asChild>
+            <Link href="/dashboard/puzzles/new">
+              <Plus className="size-4" /> Create Puzzle
+            </Link>
+          </Button>
+        )}
       </div>
 
       {puzzles.length === 0 ? (
@@ -43,21 +52,24 @@ export default async function Page() {
           <KeyRound className="size-10 text-muted-foreground" />
           <p className="mt-4 text-lg font-medium">No puzzles yet</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {userSites.length === 0 ? (
+            {!hasPrereqs ? (
               <>
-                <Link href="/dashboard/sites" className="underline hover:text-foreground">
+                <Link
+                  href="/dashboard/sites"
+                  className="underline hover:text-foreground"
+                >
                   Create a site
                 </Link>
                 {" first, then add puzzles to it."}
               </>
             ) : (
-              "Create a puzzle on one of your sites to get started."
+              "Create a puzzle to start using yCAPTCHA."
             )}
           </p>
-          {userSites.length > 0 && (
+          {hasPrereqs && (
             <div className="mt-6">
               <Button asChild>
-                <Link href={`/dashboard/sites/${userSites[0].id}`}>
+                <Link href="/dashboard/puzzles/new">
                   <Plus className="size-4" /> Create Puzzle
                 </Link>
               </Button>
