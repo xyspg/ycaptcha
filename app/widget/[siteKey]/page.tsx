@@ -1,68 +1,151 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useParams } from "next/navigation";
-import { CaptchaContainer, type CaptchaImage } from "@/components/captcha/captcha";
+import {
+  CaptchaCheckbox,
+  CaptchaWidget,
+  type CaptchaImage,
+} from "@/components/captcha/captcha";
+
+const SESSION_TTL_MS = 5 * 60 * 1000;
+
+type Phase = "idle" | "loading" | "challenge" | "verified" | "failed" | "error";
+
+function postToParent(data: Record<string, unknown>) {
+  window.parent.postMessage({ source: "ycaptcha", ...data }, "*");
+}
+
+function postResize(width: number, height: number) {
+  postToParent({ event: "resize", width, height });
+}
 
 export default function WidgetPage() {
   const { siteKey } = useParams<{ siteKey: string }>();
+  const [phase, setPhase] = useState<Phase>("idle");
   const [images, setImages] = useState<CaptchaImage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [sessionToken, setSessionToken] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [errorText, setErrorText] = useState<string | null>(null);
+  const [challengeError, setChallengeError] = useState<string | null>(null);
+  const expiryTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const clearExpiryTimer = () => {
+    if (expiryTimerRef.current) {
+      clearTimeout(expiryTimerRef.current);
+      expiryTimerRef.current = null;
+    }
+  };
+
+  const startExpiryTimer = () => {
+    clearExpiryTimer();
+    expiryTimerRef.current = setTimeout(() => {
+      setSessionToken(null);
+      setPhase("idle");
+      setErrorText("Session expired");
+      postResize(304, 78);
+      postToParent({ event: "expired" });
+    }, SESSION_TTL_MS);
+  };
 
   const fetchChallenge = useCallback(async () => {
-    const res = await fetch("/api/v0/captcha/challenge", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ siteKey }),
-    });
+    try {
+      const res = await fetch("/api/v0/captcha/challenge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siteKey }),
+      });
 
-    if (!res.ok) {
-      const data = await res.json().catch(() => null);
-      setError(data?.error ?? "Failed to load challenge");
-      return;
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        const msg = data?.error ?? "Failed to load challenge";
+        setPhase("error");
+        setErrorText(msg);
+        postToParent({ event: "error", code: res.status, message: msg });
+        return false;
+      }
+
+      const data = await res.json();
+      setImages(data.images);
+      setPrompt(data.prompt);
+      setSessionToken(data.sessionToken);
+      setErrorText(null);
+      startExpiryTimer();
+      return true;
+    } catch {
+      setPhase("error");
+      setErrorText("Network error");
+      postToParent({ event: "error", code: 0, message: "Network error" });
+      return false;
     }
-
-    const data = await res.json();
-    setImages(data.images);
-    setPrompt(data.prompt);
-    setSessionToken(data.sessionToken);
-    setError(null);
   }, [siteKey]);
 
-  const handleVerify = async (selectedIds: string[]): Promise<boolean> => {
-    if (!sessionToken) return false;
-
-    const res = await fetch("/api/v0/captcha/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionToken, selectedIds }),
-    });
-
-    const data = await res.json();
-
-    if (data.success && data.token) {
-      window.parent.postMessage(
-        { source: "ycaptcha", event: "success", token: data.token },
-        "*",
-      );
-      return true;
+  const handleRequestChallenge = async () => {
+    setPhase("loading");
+    const ok = await fetchChallenge();
+    if (ok) {
+      setTimeout(() => {
+        setPhase("challenge");
+        postResize(350, 520);
+      }, 600);
     }
+  };
 
+  const handleVerify = async (selectedIds: string[]) => {
+    if (!sessionToken) return;
+
+    try {
+      const res = await fetch("/api/v0/captcha/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionToken, selectedIds }),
+      });
+
+      const data = await res.json();
+
+      if (data.success && data.token) {
+        clearExpiryTimer();
+        setPhase("verified");
+        postResize(304, 78);
+        postToParent({ event: "success", token: data.token });
+        return;
+      }
+
+      // Failed — show error, refresh images
+      setChallengeError("Please try again.");
+      await fetchChallenge();
+    } catch {
+      setErrorText("Network error");
+      setPhase("error");
+      postResize(304, 78);
+      postToParent({ event: "error", code: 0, message: "Network error" });
+    }
+  };
+
+  const handleRefresh = async () => {
     await fetchChallenge();
-    return false;
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-2">
-      <CaptchaContainer
-        prompt={prompt || "Loading..."}
-        images={images}
-        onVerify={handleVerify}
-        onRefresh={fetchChallenge}
-        error={error}
-      />
+    <div>
+      {phase !== "challenge" && (
+        <CaptchaCheckbox
+          onRequestChallenge={handleRequestChallenge}
+          state={phase === "error" ? "error" : phase}
+          errorText={errorText}
+        />
+      )}
+
+      {phase === "challenge" && (
+        <CaptchaWidget
+          key={images[0]?.id}
+          prompt={prompt}
+          images={images}
+          onVerify={handleVerify}
+          onRefresh={handleRefresh}
+          errorMessage={challengeError}
+        />
+      )}
     </div>
   );
 }

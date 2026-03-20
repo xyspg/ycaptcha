@@ -1,3 +1,5 @@
 - Ratelimiting
 - i18n
 - Support Audio
+- light/dark mode
+- better size restriction

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { eq, and, ne, sql } from "drizzle-orm";
+import { eq, and, inArray, notInArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { site, puzzle, image, captchaSession } from "@/lib/db/app-schema";
 
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         .where(
           and(
             eq(image.imageSetId, puzzleData.imageSetId),
-            sql`${image.id} = ANY(${JSON.stringify(correctIds)}::text[])`,
+            inArray(image.id, correctIds),
           ),
         )
     : [];
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
       .where(
         and(
           eq(image.imageSetId, puzzleData.imageSetId),
-          sql`${image.id} = ANY(${JSON.stringify(incorrectIds)}::text[])`,
+          inArray(image.id, incorrectIds),
         ),
       )
       .orderBy(sql`RANDOM()`)
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
         and(
           eq(image.imageSetId, puzzleData.imageSetId),
           ...(correctIds.length > 0
-            ? [sql`NOT (${image.id} = ANY(${JSON.stringify(correctIds)}::text[]))`]
+            ? [notInArray(image.id, correctIds)]
             : []),
         ),
       )

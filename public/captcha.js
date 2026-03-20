@@ -22,6 +22,8 @@
    * @param {Object} [params] - Optional overrides
    * @param {string} [params.sitekey] - Site key (overrides data-sitekey)
    * @param {Function} [params.callback] - Called with token on success
+   * @param {Function} [params["expired-callback"]] - Called when token expires
+   * @param {Function} [params["error-callback"]] - Called on error
    * @returns {string} Widget ID
    */
   function render(container, params) {
@@ -39,7 +41,11 @@
     if (!sitekey) throw new Error("[yCAPTCHA] Missing sitekey");
 
     var widgetId = WIDGET_PREFIX + widgetIdx++;
-    var callback = params.callback || null;
+
+    // Callbacks
+    var cbSuccess = params.callback || resolveDataCallback(el, "data-callback");
+    var cbExpired = params["expired-callback"] || resolveDataCallback(el, "data-expired-callback");
+    var cbError = params["error-callback"] || resolveDataCallback(el, "data-error-callback");
 
     // Create iframe
     var iframe = document.createElement("iframe");
@@ -49,6 +55,7 @@
     iframe.style.overflow = "hidden";
     iframe.style.width = "304px";
     iframe.style.height = "78px";
+    iframe.style.transition = "width 0.2s ease, height 0.2s ease";
     iframe.setAttribute("scrolling", "no");
     iframe.title = "yCAPTCHA challenge";
 
@@ -66,11 +73,18 @@
       iframe: iframe,
       input: input,
       sitekey: sitekey,
-      callback: callback,
+      cbSuccess: cbSuccess,
+      cbExpired: cbExpired,
+      cbError: cbError,
       response: null,
     };
 
     return widgetId;
+  }
+
+  function resolveDataCallback(el, attr) {
+    var name = el.getAttribute(attr);
+    return name && typeof window[name] === "function" ? window[name] : null;
   }
 
   /**
@@ -92,6 +106,8 @@
     if (w) {
       w.response = null;
       w.input.value = "";
+      w.iframe.style.width = "304px";
+      w.iframe.style.height = "78px";
       w.iframe.src = w.iframe.src; // reload iframe
     }
   }
@@ -110,6 +126,16 @@
     }
   }
 
+  /**
+   * Check if the widget's token has expired.
+   * @param {string} [widgetId]
+   * @returns {boolean}
+   */
+  function isExpired(widgetId) {
+    var w = resolveWidget(widgetId);
+    return w ? w.response === null : true;
+  }
+
   function resolveWidgetId(widgetId) {
     if (widgetId) return widgetId;
     var keys = Object.keys(widgets);
@@ -121,27 +147,56 @@
     return id ? widgets[id] : null;
   }
 
-  // Listen for postMessage from widget iframe
+  /** Find which widget a postMessage came from */
+  function findWidgetBySource(source) {
+    var keys = Object.keys(widgets);
+    for (var i = 0; i < keys.length; i++) {
+      var w = widgets[keys[i]];
+      try {
+        if (w.iframe.contentWindow === source) return w;
+      } catch (e) {
+        // cross-origin access may throw
+      }
+    }
+    return null;
+  }
+
+  // Listen for postMessage from widget iframes
   window.addEventListener("message", function (event) {
+    // Origin validation: only accept messages from our server
+    if (ORIGIN && event.origin !== ORIGIN) return;
+
     var data = event.data;
     if (!data || data.source !== SOURCE) return;
 
-    if (data.event === "success" && data.token) {
-      // Find which widget this came from
-      var keys = Object.keys(widgets);
-      for (var i = 0; i < keys.length; i++) {
-        var w = widgets[keys[i]];
-        try {
-          if (w.iframe.contentWindow === event.source) {
-            w.response = data.token;
-            w.input.value = data.token;
-            if (w.callback) w.callback(data.token);
-            break;
-          }
-        } catch (e) {
-          // cross-origin contentWindow access may throw
+    var w = findWidgetBySource(event.source);
+    if (!w) return;
+
+    switch (data.event) {
+      case "success":
+        if (data.token) {
+          w.response = data.token;
+          w.input.value = data.token;
+          if (w.cbSuccess) w.cbSuccess(data.token);
         }
-      }
+        break;
+
+      case "expired":
+        w.response = null;
+        w.input.value = "";
+        if (w.cbExpired) w.cbExpired();
+        break;
+
+      case "error":
+        w.response = null;
+        w.input.value = "";
+        if (w.cbError) w.cbError(data.message || "Unknown error");
+        break;
+
+      case "resize":
+        if (data.width) w.iframe.style.width = data.width + "px";
+        if (data.height) w.iframe.style.height = data.height + "px";
+        break;
     }
   });
 
@@ -150,7 +205,6 @@
     var elements = document.querySelectorAll(".y-captcha");
     for (var i = 0; i < elements.length; i++) {
       var el = elements[i];
-      // Skip if already rendered
       if (el.querySelector("iframe")) continue;
       render(el);
     }
@@ -162,6 +216,7 @@
     reset: reset,
     remove: remove,
     getResponse: getResponse,
+    isExpired: isExpired,
     _implicitRender: implicitRender,
   };
 

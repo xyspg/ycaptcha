@@ -148,13 +148,10 @@ function PuzzlesSection({
 }
 
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
-  const widgetUrl = `${env.NEXT_PUBLIC_SITE_URL}/widget/${s.siteKey}`
-  const snippet = `<iframe
-  src="${widgetUrl}"
-  width="350"
-  height="450"
-  frameborder="0"
-></iframe>`
+  const siteUrl = env.NEXT_PUBLIC_SITE_URL
+  const widgetUrl = `${siteUrl}/widget/${s.siteKey}`
+  const snippet = `<div class="y-captcha" data-sitekey="${s.siteKey}"></div>
+<script src="${siteUrl}/captcha.js" async defer></script>`
 
   return (
     <Card>
@@ -178,9 +175,7 @@ function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
           <p className="mb-3 text-sm font-medium">Preview</p>
           <iframe
             src={widgetUrl}
-            width={350}
-            height={450}
-            className="rounded-md border"
+            className="h-[600px] w-full max-w-[400px] rounded-md border"
           />
         </div>
       </CardContent>
@@ -206,7 +201,7 @@ export function SiteDetail({
         <h1 className="text-2xl font-semibold">{s.name}</h1>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2">
         <div className="flex flex-col gap-6">
           <ApiKeysSection s={s} />
           <SettingsSection s={s} />

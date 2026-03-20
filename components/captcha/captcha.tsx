@@ -15,6 +15,8 @@ interface CaptchaContainerProps {
   onCompleted?: () => void;
   /** Fatal error (e.g. invalid siteKey). Disables the widget. */
   error?: string | null;
+  /** Called when the widget phase changes (for iframe resize etc.) */
+  onPhaseChange?: (phase: Phase) => void;
 }
 
 export function CaptchaContainer({
@@ -24,17 +26,27 @@ export function CaptchaContainer({
   onRefresh,
   onCompleted,
   error,
+  onPhaseChange,
 }: CaptchaContainerProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const updatePhase = (next: Phase) => {
+    setPhase(next);
+    onPhaseChange?.(next);
+  };
+
   const handleRequestChallenge = async () => {
-    setPhase("loading");
+    updatePhase("loading");
     await onRefresh();
-    // If error prop gets set by parent, phase will update via error prop
-    // Otherwise show challenge after a brief delay
     setTimeout(() => {
-      setPhase((prev) => (prev === "loading" ? "challenge" : prev));
+      setPhase((prev) => {
+        if (prev === "loading") {
+          onPhaseChange?.("challenge");
+          return "challenge";
+        }
+        return prev;
+      });
     }, 800);
   };
 
@@ -42,7 +54,7 @@ export function CaptchaContainer({
     const pass = await onVerify(selectedIds);
 
     if (pass) {
-      setPhase("verified");
+      updatePhase("verified");
       onCompleted?.();
     } else {
       setErrorMessage("Please try again.");
@@ -55,7 +67,7 @@ export function CaptchaContainer({
   };
 
   const handleDismiss = () => {
-    setPhase("idle");
+    updatePhase("idle");
     setErrorMessage(null);
   };
 
@@ -67,7 +79,7 @@ export function CaptchaContainer({
         errorText={error}
       />
 
-      {phase === "challenge" && (
+      {phase === "challenge" && !error && (
         <>
           {/* Mobile: fullscreen backdrop + centered widget */}
           <div
