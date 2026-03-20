@@ -1,0 +1,28 @@
+---
+title: API Reference
+description: Complete reference for the yCAPTCHA REST API.
+---
+
+All yCAPTCHA API endpoints use `POST` with JSON request and response bodies. Base URL:
+
+```
+https://ycaptcha.xyspg.moe
+```
+
+## Endpoints
+
+| Endpoint | Purpose | Called by |
+| --- | --- | --- |
+| [`POST /api/v0/captcha/challenge`](/docs/api-reference/challenge) | Fetch a new image challenge | Widget (automatic) |
+| [`POST /api/v0/captcha/verify`](/docs/api-reference/verify) | Submit image selections | Widget (automatic) |
+| [`POST /api/v0/captcha/siteverify`](/docs/api-reference/siteverify) | Verify a token server-side | **Your backend** |
+
+## Authentication
+
+The **challenge** and **verify** endpoints use the public Site Key (`pk_...`) and session tokens. No secret key is needed.
+
+The **siteverify** endpoint requires your Secret Key (`sk_...`) and must only be called from your server.
+
+## Rate limiting
+
+A blanket POST rate limit is applied across all API routes at the middleware level. Per-IP rate limits may apply to sensitive operations.

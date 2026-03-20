@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -35,11 +36,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} flex min-h-screen flex-col font-sans antialiased`}
       >
-        <Providers>{children}</Providers>
+        <RootProvider>
+          <Providers>{children}</Providers>
+        </RootProvider>
       </body>
     </html>
   );
