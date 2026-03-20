@@ -1,9 +1,9 @@
 ---
 title: Embed the Widget
-description: Add the yCAPTCHA widget to your webpage and listen for verification tokens.
+description: Add the yCAPTCHA widget to your webpage with a single script tag.
 ---
 
-The yCAPTCHA widget is delivered as an iframe that handles the entire challenge flow — from displaying the checkbox to showing the image grid and returning a verification token.
+Add yCAPTCHA to your site with two lines of HTML. The script handles everything — creating the widget, managing the challenge flow, resizing, and injecting a hidden form input with the verification token.
 
 ## Prerequisites
 
@@ -12,148 +12,134 @@ The yCAPTCHA widget is delivered as an iframe that handles the entire challenge 
 
 ---
 
-## 1. Add the iframe
-
-Embed the widget wherever you want the CAPTCHA to appear:
+## Quick start
 
 ```html
-<iframe
-  src="https://ycaptcha.xyspg.moe/widget/YOUR_SITE_KEY"
-  id="ycaptcha-widget"
-  style="border: none; width: 310px; height: 78px; overflow: hidden;"
-  scrolling="no"
-  title="yCAPTCHA"
-></iframe>
+<div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+<script src="https://ycaptcha.xyspg.moe/captcha.js" async defer></script>
 ```
 
-Replace `YOUR_SITE_KEY` with your site's public key (`pk_...`).
+That's it. The script automatically finds all `.y-captcha` elements on the page, creates the widget, and inserts a hidden `<input name="ycaptcha-response">` next to it. When the user passes the challenge, the input is filled with the verification token — ready to submit with your form.
 
 ---
 
-## 2. Listen for events
-
-The widget communicates with your page via `postMessage`. All messages have the shape:
-
-```ts
-{ source: "ycaptcha", event: string, ...payload }
-```
-
-### Receiving the token
-
-When the user passes the challenge, the widget sends a `success` event with a one-time verification token:
-
-```js
-window.addEventListener("message", (event) => {
-  if (event.data?.source !== "ycaptcha") return;
-
-  if (event.data.event === "success") {
-    const token = event.data.token;
-    // Store the token to submit with your form
-    document.getElementById("captcha-token").value = token;
-  }
-});
-```
-
-### All events
-
-| Event     | Payload                      | Description                                          |
-| --------- | ---------------------------- | ---------------------------------------------------- |
-| `success` | `{ token: string }`         | User passed the CAPTCHA. Token is ready for verification. |
-| `resize`  | `{ width, height: number }` | Widget wants its iframe resized.                     |
-| `expired` | —                            | 5-minute session elapsed. Widget resets automatically. |
-| `error`   | `{ code, message }`         | Fatal error (invalid siteKey, network failure, etc). |
-
----
-
-## 3. Handle resize
-
-The widget's dimensions change between states. It cannot resize its own iframe — you need to update it:
-
-```js
-const iframe = document.getElementById("ycaptcha-widget");
-
-window.addEventListener("message", (event) => {
-  if (event.data?.source !== "ycaptcha") return;
-  if (event.data.event === "resize") {
-    iframe.style.width  = event.data.width  + "px";
-    iframe.style.height = event.data.height + "px";
-  }
-});
-```
-
-### Widget dimensions by state
-
-| State                        | Approximate Size |
-| ---------------------------- | ---------------- |
-| Collapsed (idle, verified)   | 304 x 78 px      |
-| Expanded (puzzle grid)       | 350 x 520 px     |
-
----
-
-## Complete example
+## Form integration
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-  <title>yCAPTCHA Demo</title>
-</head>
-<body>
-  <form action="/submit" method="POST">
-    <input type="text" name="email" placeholder="Email" required />
+<form action="/submit" method="POST">
+  <input type="text" name="email" placeholder="Email" required />
 
-    <iframe
-      src="https://ycaptcha.xyspg.moe/widget/YOUR_SITE_KEY"
-      id="ycaptcha-widget"
-      style="border: none; width: 310px; height: 78px; overflow: hidden;"
-      scrolling="no"
-      title="yCAPTCHA"
-    ></iframe>
+  <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
 
-    <input type="hidden" name="captcha-token" id="captcha-token" />
-    <button type="submit">Submit</button>
-  </form>
+  <button type="submit">Submit</button>
+</form>
+<script src="https://ycaptcha.xyspg.moe/captcha.js" async defer></script>
+```
 
-  <script>
-    const iframe = document.getElementById("ycaptcha-widget");
+On form submission, the token is sent as `ycaptcha-response` in the form body. [Validate it on your server](/docs/get-started/server-validation).
 
-    window.addEventListener("message", (event) => {
-      if (event.data?.source !== "ycaptcha") return;
+---
 
-      switch (event.data.event) {
-        case "success":
-          document.getElementById("captcha-token").value = event.data.token;
-          break;
-        case "resize":
-          iframe.style.width  = event.data.width  + "px";
-          iframe.style.height = event.data.height + "px";
-          break;
-        case "expired":
-          document.getElementById("captcha-token").value = "";
-          break;
-      }
-    });
-  </script>
-</body>
-</html>
+## Explicit rendering
+
+If you need more control, use the JavaScript API instead of auto-rendering:
+
+```html
+<div id="captcha-container"></div>
+
+<script src="https://ycaptcha.xyspg.moe/captcha.js?onload=onCaptchaLoad&render=explicit" async defer></script>
+
+<script>
+function onCaptchaLoad() {
+  ycaptcha.render("#captcha-container", {
+    sitekey: "YOUR_SITE_KEY",
+    callback: function (token) {
+      console.log("Verified:", token);
+    },
+    "expired-callback": function () {
+      console.log("Token expired");
+    },
+    "error-callback": function (message) {
+      console.error("Error:", message);
+    },
+  });
+}
+</script>
 ```
 
 ---
 
-## Widget phases
+## JavaScript API
 
-The widget progresses through these internal states:
+The script exposes `window.ycaptcha` with these methods:
 
-| Phase       | Description                                          |
-| ----------- | ---------------------------------------------------- |
-| `idle`      | Collapsed checkbox, waiting for user click            |
-| `loading`   | Spinner shown while fetching challenge               |
-| `challenge` | 3x3 image grid displayed                             |
-| `verified`  | Green checkmark, CAPTCHA passed                      |
-| `error`     | Error message shown in collapsed bar                 |
-| `failed`    | Internal only — automatically fetches a new challenge |
+### `ycaptcha.render(container, params)`
 
-When verification fails, the widget does not show an error — it silently fetches a new challenge and lets the user try again.
+Renders a widget into a container element.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `container` | `string \| HTMLElement` | CSS selector or DOM element |
+| `params.sitekey` | `string` | Your site key (overrides `data-sitekey`) |
+| `params.callback` | `function` | Called with token on success |
+| `params["expired-callback"]` | `function` | Called when token expires |
+| `params["error-callback"]` | `function` | Called with error message on failure |
+| `params["response-field-name"]` | `string` | Custom hidden input name (default: `ycaptcha-response`) |
+
+Returns a widget ID string.
+
+### `ycaptcha.getResponse(widgetId?)`
+
+Returns the current verification token, or `null` if not yet verified.
+
+### `ycaptcha.reset(widgetId?)`
+
+Resets the widget to its initial state. Use this after form submission to allow the user to solve again.
+
+### `ycaptcha.remove(widgetId?)`
+
+Removes the widget from the DOM and cleans up.
+
+### `ycaptcha.isExpired(widgetId?)`
+
+Returns `true` if the token has expired.
+
+> If `widgetId` is omitted, all methods operate on the most recently created widget.
+
+---
+
+## Data attributes
+
+As an alternative to the JavaScript API, you can configure widgets with `data-*` attributes:
+
+```html
+<div
+  class="y-captcha"
+  data-sitekey="YOUR_SITE_KEY"
+  data-callback="onSuccess"
+  data-expired-callback="onExpired"
+  data-error-callback="onError"
+></div>
+```
+
+The attribute values are global function names that will be called when the corresponding event fires.
+
+---
+
+## Events
+
+The widget communicates via `postMessage` internally. If you need low-level access (e.g., for a framework integration), these are the events:
+
+| Event | Payload | Description |
+|---|---|---|
+| `success` | `{ token: string }` | User passed the CAPTCHA |
+| `expired` | — | 5-minute session elapsed |
+| `error` | `{ code, message }` | Fatal error (invalid siteKey, network failure) |
+| `resize` | `{ width, height }` | Widget dimensions changed |
+
+All messages include `source: "ycaptcha"` for filtering.
+
+---
 
 ## Next steps
 
