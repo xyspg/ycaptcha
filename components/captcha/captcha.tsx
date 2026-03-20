@@ -10,9 +10,11 @@ interface CaptchaContainerProps {
   prompt: string;
   images: CaptchaImage[];
   /** Called when user submits selections. Return `true` if correct, `false` if wrong. */
-  onVerify: (selectedIds: string[]) => boolean;
-  onRefresh: () => void;
+  onVerify: (selectedIds: string[]) => boolean | Promise<boolean>;
+  onRefresh: () => void | Promise<void>;
   onCompleted?: () => void;
+  /** Fatal error (e.g. invalid siteKey). Disables the widget. */
+  error?: string | null;
 }
 
 export function CaptchaContainer({
@@ -21,17 +23,23 @@ export function CaptchaContainer({
   onVerify,
   onRefresh,
   onCompleted,
+  error,
 }: CaptchaContainerProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleRequestChallenge = () => {
+  const handleRequestChallenge = async () => {
     setPhase("loading");
-    setTimeout(() => setPhase("challenge"), 800);
+    await onRefresh();
+    // If error prop gets set by parent, phase will update via error prop
+    // Otherwise show challenge after a brief delay
+    setTimeout(() => {
+      setPhase((prev) => (prev === "loading" ? "challenge" : prev));
+    }, 800);
   };
 
-  const handleVerify = (selectedIds: string[]) => {
-    const pass = onVerify(selectedIds);
+  const handleVerify = async (selectedIds: string[]) => {
+    const pass = await onVerify(selectedIds);
 
     if (pass) {
       setPhase("verified");
@@ -55,7 +63,8 @@ export function CaptchaContainer({
     <div className="relative inline-block">
       <CaptchaCheckbox
         onRequestChallenge={handleRequestChallenge}
-        state={phase === "challenge" ? "challenge" : phase}
+        state={error ? "error" : phase === "challenge" ? "challenge" : phase}
+        errorText={error}
       />
 
       {phase === "challenge" && (

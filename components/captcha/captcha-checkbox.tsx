@@ -2,12 +2,13 @@
 
 import { cn } from "@/lib/utils";
 
-type CheckboxState = "idle" | "loading" | "challenge" | "verified" | "failed";
+type CheckboxState = "idle" | "loading" | "challenge" | "verified" | "failed" | "error";
 
 interface CaptchaCheckboxProps {
   onRequestChallenge: () => void;
   state: CheckboxState;
   brandName?: string;
+  errorText?: string | null;
 }
 
 function Spinner() {
@@ -98,6 +99,7 @@ export function CaptchaCheckbox({
   onRequestChallenge,
   state,
   brandName = "yCAPTCHA",
+  errorText,
 }: CaptchaCheckboxProps) {
   const handleClick = () => {
     if (state !== "idle") return;
@@ -107,7 +109,7 @@ export function CaptchaCheckbox({
   const renderCheckbox = () => {
     if (state === "loading") return <Spinner />;
     if (state === "verified") return <AnimatedCheckmark />;
-    if (state === "failed") return <AnimatedX />;
+    if (state === "failed" || state === "error") return <AnimatedX />;
 
     return (
       <button
@@ -126,7 +128,13 @@ export function CaptchaCheckbox({
     >
       <div className="flex items-center gap-3">
         {renderCheckbox()}
-        <span className="text-[14px] text-[#555]">I&apos;m not a robot</span>
+        {state === "error" ? (
+          <span className="text-[12px] font-medium text-[#e53935]">
+            ERROR: {errorText ?? "Something went wrong"}
+          </span>
+        ) : (
+          <span className="text-[14px] text-[#555]">I&apos;m not a robot</span>
+        )}
       </div>
       <div className="flex flex-col items-center gap-0.5">
         <img src="/favicon.ico" alt={brandName} width={24} height={24} />
