@@ -8,12 +8,17 @@ import { db } from "@/lib/db";
 import { imageSet, image, puzzle } from "@/lib/db/app-schema";
 import { and, eq, sql } from "drizzle-orm";
 import { uploadToR2, deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
+import type { ActionState } from "@/lib/types";
 
-export type ActionState = {
-  errors?: Record<string, string[]>;
-  message?: string;
-  success?: boolean;
-} | null;
+export type { ActionState } from "@/lib/types";
+
+async function requireOwnedSet(setId: string, userId: string) {
+  const [set] = await db
+    .select({ id: imageSet.id })
+    .from(imageSet)
+    .where(and(eq(imageSet.id, setId), eq(imageSet.userId, userId)));
+  return set ?? null;
+}
 
 // --- Create Image Set ---
 
@@ -98,12 +103,7 @@ export async function uploadImages(
 
   if (!setId) return { errors: { setId: ["Missing set ID"] } };
 
-  // Verify ownership
-  const [set] = await db
-    .select({ id: imageSet.id })
-    .from(imageSet)
-    .where(and(eq(imageSet.id, setId), eq(imageSet.userId, session.user.id)));
-
+  const set = await requireOwnedSet(setId, session.user.id);
   if (!set) return { errors: { setId: ["Image set not found"] } };
 
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -118,21 +118,30 @@ export async function uploadImages(
     return { errors: { files: [`Maximum ${MAX_FILES} files at a time`] } };
   }
 
-  const uploaded: { url: string; name: string }[] = [];
+  const validFiles: File[] = [];
   const skipped: string[] = [];
 
   for (const file of files) {
     if (!file.type.startsWith("image/")) {
       skipped.push(`${file.name} (not an image)`);
-      continue;
-    }
-    if (file.size > MAX_FILE_SIZE) {
+    } else if (file.size > MAX_FILE_SIZE) {
       skipped.push(`${file.name} (exceeds 5MB)`);
-      continue;
+    } else {
+      validFiles.push(file);
     }
-    const { url } = await uploadToR2(file);
-    uploaded.push({ url, name: file.name });
   }
+
+  // Upload concurrently
+  const results = await Promise.allSettled(
+    validFiles.map(async (file) => {
+      const { url } = await uploadToR2(file);
+      return { url, name: file.name };
+    }),
+  );
+
+  const uploaded = results
+    .filter((r): r is PromiseFulfilledResult<{ url: string; name: string }> => r.status === "fulfilled")
+    .map((r) => r.value);
 
   if (uploaded.length > 0) {
     await db.insert(image).values(
@@ -168,28 +177,24 @@ export async function deleteImage(
     return { errors: { imageId: ["Missing image ID"] } };
   }
 
-  // Verify ownership via image set
-  const [set] = await db
-    .select({ id: imageSet.id })
-    .from(imageSet)
-    .where(and(eq(imageSet.id, setId), eq(imageSet.userId, session.user.id)));
-
+  const set = await requireOwnedSet(setId, session.user.id);
   if (!set) return { errors: { setId: ["Image set not found"] } };
 
   // Check if image is referenced by any puzzle
-  const referencingPuzzles = await db
-    .select({ id: puzzle.id, prompt: puzzle.prompt })
+  const [ref] = await db
+    .select({ id: puzzle.id })
     .from(puzzle)
     .where(
       sql`${puzzle.correctImageIds}::jsonb @> ${JSON.stringify([imageId])}::jsonb
         OR (${puzzle.incorrectImageIds} IS NOT NULL AND ${puzzle.incorrectImageIds}::jsonb @> ${JSON.stringify([imageId])}::jsonb)`,
-    );
+    )
+    .limit(1);
 
-  if (referencingPuzzles.length > 0) {
+  if (ref) {
     return {
       errors: {
         imageId: [
-          `This image is used by ${referencingPuzzles.length} puzzle${referencingPuzzles.length === 1 ? "" : "s"}. Remove it from those puzzles first.`,
+          "This image is used by a puzzle. Remove it from the puzzle first.",
         ],
       },
     };
@@ -203,11 +208,7 @@ export async function deleteImage(
 
   if (!img) return { errors: { imageId: ["Image not found"] } };
 
-  // Delete from R2
-  const key = r2KeyFromUrl(img.url);
-  await deleteFromR2(key);
-
-  // Delete from database
+  await deleteFromR2(r2KeyFromUrl(img.url));
   await db.delete(image).where(eq(image.id, imageId));
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
@@ -225,12 +226,7 @@ export async function deleteImageSet(
 
   if (!setId) return { errors: { setId: ["Missing set ID"] } };
 
-  // Verify ownership
-  const [set] = await db
-    .select({ id: imageSet.id })
-    .from(imageSet)
-    .where(and(eq(imageSet.id, setId), eq(imageSet.userId, session.user.id)));
-
+  const set = await requireOwnedSet(setId, session.user.id);
   if (!set) return { errors: { setId: ["Image set not found"] } };
 
   // Get all images for R2 cleanup
@@ -239,15 +235,13 @@ export async function deleteImageSet(
     .from(image)
     .where(eq(image.imageSetId, setId));
 
-  // Delete all from R2
-  for (const img of images) {
-    await deleteFromR2(r2KeyFromUrl(img.url));
-  }
+  // Delete all from R2 concurrently
+  await Promise.allSettled(
+    images.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
+  );
 
   // Cascade delete handles images in DB
-  await db
-    .delete(imageSet)
-    .where(eq(imageSet.id, setId));
+  await db.delete(imageSet).where(eq(imageSet.id, setId));
 
   redirect("/dashboard/image-sets");
 }

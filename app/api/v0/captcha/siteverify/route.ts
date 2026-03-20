@@ -23,9 +23,14 @@ export async function POST(request: Request) {
 
   const { token, secretKey } = body as { token: string; secretKey: string };
 
-  // 1. Find the session by token
+  // 1. Find session by token
   const [session] = await db
-    .select()
+    .select({
+      id: captchaSession.id,
+      puzzleId: captchaSession.puzzleId,
+      solved: captchaSession.solved,
+      expiresAt: captchaSession.expiresAt,
+    })
     .from(captchaSession)
     .where(eq(captchaSession.token, token));
 
@@ -33,22 +38,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "Invalid token" });
   }
 
-  // 2. Verify the secretKey matches the site that owns this puzzle
-  const [puzzleData] = await db
-    .select({ siteId: puzzle.siteId })
+  // 2. Verify secretKey via puzzle → site JOIN (single query)
+  const [owner] = await db
+    .select({ siteId: site.id })
     .from(puzzle)
+    .innerJoin(
+      site,
+      and(eq(site.id, puzzle.siteId), eq(site.secretKey, secretKey)),
+    )
     .where(eq(puzzle.id, session.puzzleId));
 
-  if (!puzzleData) {
-    return NextResponse.json({ success: false, error: "Invalid token" });
-  }
-
-  const [siteData] = await db
-    .select()
-    .from(site)
-    .where(and(eq(site.id, puzzleData.siteId), eq(site.secretKey, secretKey)));
-
-  if (!siteData) {
+  if (!owner) {
     return NextResponse.json({ success: false, error: "Invalid secretKey" });
   }
 
@@ -62,9 +62,7 @@ export async function POST(request: Request) {
   }
 
   // 4. Consume the token (delete session so it can't be reused)
-  await db
-    .delete(captchaSession)
-    .where(eq(captchaSession.id, session.id));
+  await db.delete(captchaSession).where(eq(captchaSession.id, session.id));
 
   return NextResponse.json({ success: true });
 }

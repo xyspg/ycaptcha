@@ -62,14 +62,21 @@ export function CaptchaContainer({
     }
   };
 
-  const handleRefresh = () => {
-    onRefresh();
-  };
-
   const handleDismiss = () => {
     updatePhase("idle");
     setErrorMessage(null);
   };
+
+  const widget = (
+    <CaptchaWidget
+      key={images[0]?.id}
+      prompt={prompt}
+      images={images}
+      onVerify={handleVerify}
+      onRefresh={onRefresh}
+      errorMessage={errorMessage}
+    />
+  );
 
   return (
     <div className="relative inline-block">
@@ -86,16 +93,7 @@ export function CaptchaContainer({
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 md:hidden"
             onClick={handleDismiss}
           >
-            <div onClick={(e) => e.stopPropagation()}>
-              <CaptchaWidget
-                key={images[0]?.id}
-                prompt={prompt}
-                images={images}
-                onVerify={handleVerify}
-                onRefresh={handleRefresh}
-                errorMessage={errorMessage}
-              />
-            </div>
+            <div onClick={(e) => e.stopPropagation()}>{widget}</div>
           </div>
 
           {/* Desktop: transparent backdrop + float widget to the right */}
@@ -104,14 +102,7 @@ export function CaptchaContainer({
             onClick={handleDismiss}
           />
           <div className="absolute top-0 left-full z-50 ml-2 hidden md:block">
-            <CaptchaWidget
-              key={images[0]?.id}
-              prompt={prompt}
-              images={images}
-              onVerify={handleVerify}
-              onRefresh={handleRefresh}
-              errorMessage={errorMessage}
-            />
+            {widget}
           </div>
         </>
       )}

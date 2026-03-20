@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { eq, and, gt } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { captchaSession, puzzle } from "@/lib/db/app-schema";
+import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
 /**
  * POST /api/v0/captcha/verify
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
   const correctIds = new Set(puzzleData.correctImageIds as string[]);
 
   // Anti-bot: if all 9 selected, auto fail
-  if (selectedIds.length === 9) {
+  if (selectedIds.length === CAPTCHA_GRID_SIZE) {
     return NextResponse.json({ success: false });
   }
 

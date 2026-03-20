@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { eq, and, inArray, notInArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { site, puzzle, image, captchaSession } from "@/lib/db/app-schema";
+import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
 /**
  * POST /api/v0/captcha/challenge
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
     : [];
 
   // 4. Get incorrect images (either specified or random from pool)
-  const neededIncorrect = 9 - correctImages.length;
+  const neededIncorrect = CAPTCHA_GRID_SIZE - correctImages.length;
   let incorrectImages: { id: string; url: string }[] = [];
 
   if (puzzleData.incorrectImageIds) {

@@ -18,7 +18,13 @@ export default async function Page() {
 
   const sets = await db.query.imageSet.findMany({
     where: (is, { eq: e }) => e(is.userId, session.user.id),
-    with: { images: true },
+    with: {
+      images: {
+        columns: { id: true, url: true, name: true },
+        limit: 5,
+        orderBy: (img, { asc }) => asc(img.createdAt),
+      },
+    },
     orderBy: (is, { desc }) => desc(is.createdAt),
   });
 
@@ -56,7 +62,7 @@ export default async function Page() {
                 <CardHeader>
                   <CardTitle className="text-base">{s.name}</CardTitle>
                   <CardDescription>
-                    {s.images.length} image{s.images.length === 1 ? "" : "s"}
+                    {s.images.length}{s.images.length === 5 ? "+" : ""} image{s.images.length === 1 ? "" : "s"}
                     {" · "}
                     {s.createdAt.toLocaleDateString()}
                   </CardDescription>
@@ -74,7 +80,7 @@ export default async function Page() {
                       ))}
                       {s.images.length > 4 && (
                         <div className="flex size-16 items-center justify-center bg-muted text-xs text-muted-foreground">
-                          +{s.images.length - 4}
+                          ...
                         </div>
                       )}
                     </div>

@@ -22,12 +22,8 @@ const createSiteSchema = z.object({
   domain: domainSchema,
 })
 
-export type ActionState = {
-  errors?: Record<string, string[]>
-  message?: string
-  success?: boolean
-  values?: Record<string, string>
-} | null
+export type { ActionState } from "@/lib/types"
+import type { ActionState } from "@/lib/types"
 
 export async function createSite(
   prevState: ActionState,

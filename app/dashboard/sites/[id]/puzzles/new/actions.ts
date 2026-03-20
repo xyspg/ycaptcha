@@ -6,6 +6,8 @@ import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { site, puzzle } from "@/lib/db/app-schema";
 import { and, eq } from "drizzle-orm";
+import type { ActionState } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
 
 const createPuzzleSchema = z.object({
   siteId: z.string().min(1),
@@ -14,21 +16,15 @@ const createPuzzleSchema = z.object({
   correctImageIds: z
     .array(z.string())
     .min(1, "Select at least 1 correct image")
-    .max(8, "Maximum 8 correct images (9 = all selected = auto fail)"),
+    .max(CAPTCHA_MAX_CORRECT, `Maximum ${CAPTCHA_MAX_CORRECT} correct images`),
   incorrectImageIds: z.array(z.string()).nullable(),
   difficulty: z.number().min(0.1).max(1),
 });
 
-export type CreatePuzzleState = {
-  errors?: Record<string, string[]>;
-  message?: string;
-  success?: boolean;
-} | null;
-
 export async function createPuzzle(
-  prevState: CreatePuzzleState,
+  prevState: ActionState,
   formData: FormData,
-): Promise<CreatePuzzleState> {
+): Promise<ActionState> {
   const session = await requireSession();
 
   const raw = {

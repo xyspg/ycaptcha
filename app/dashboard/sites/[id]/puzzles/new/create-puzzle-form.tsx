@@ -4,7 +4,9 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { createPuzzle, type CreatePuzzleState } from "./actions";
+import { createPuzzle } from "./actions";
+import type { ActionState } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -64,7 +66,7 @@ export function CreatePuzzleForm({
       if (next.has(id)) {
         next.delete(id);
       } else {
-        if (next.size >= 8) return prev;
+        if (next.size >= CAPTCHA_MAX_CORRECT) return prev;
         next.add(id);
         // Remove from incorrect if it was there
         setIncorrectIds((p) => {
@@ -206,11 +208,11 @@ export function CreatePuzzleForm({
               <CardTitle>
                 Select Correct Images{" "}
                 <span className="text-sm font-normal text-muted-foreground">
-                  ({correctIds.size}/8)
+                  ({correctIds.size}/{CAPTCHA_MAX_CORRECT})
                 </span>
               </CardTitle>
               <CardDescription>
-                Click images that are the correct answers. Max 8.
+                Click images that are the correct answers. Max {CAPTCHA_MAX_CORRECT}.
               </CardDescription>
             </CardHeader>
             <CardContent>
