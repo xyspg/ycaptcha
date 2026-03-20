@@ -79,7 +79,8 @@ export default async function Page() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {puzzles.map((p) => (
-            <Card key={p.id}>
+            <Link key={p.id} href={`/dashboard/puzzles/${p.id}`}>
+            <Card className="transition-colors hover:bg-muted/50">
               <CardHeader>
                 <CardTitle className="text-base">{p.prompt}</CardTitle>
                 <CardDescription>
@@ -97,6 +98,7 @@ export default async function Page() {
                 </div>
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
       )}
