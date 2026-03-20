@@ -3,7 +3,14 @@ import { createMDX } from "fumadocs-mdx/next";
 import "./lib/env";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/docs/:path*.mdx",
+        destination: "/llms.mdx/docs/:path*",
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX();

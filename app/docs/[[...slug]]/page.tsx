@@ -7,6 +7,10 @@ import {
   DocsDescription,
 } from "fumadocs-ui/layouts/docs/page";
 import { getMDXComponents } from "@/components/mdx";
+import {
+  MarkdownCopyButton,
+  ViewOptionsPopover,
+} from "@/components/ai/page-actions";
 
 export default async function Page({
   params,
@@ -24,6 +28,10 @@ export default async function Page({
     <DocsPage toc={page.data.toc}>
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
+      <div className="flex flex-row items-center gap-2 border-b pt-2 pb-6">
+        <MarkdownCopyButton markdownUrl={`${page.url}.mdx`} />
+        <ViewOptionsPopover markdownUrl={`${page.url}.mdx`} />
+      </div>
       <DocsBody>
         <Mdx components={getMDXComponents()} />
       </DocsBody>
