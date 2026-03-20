@@ -1,0 +1,53 @@
+---
+title: yCAPTCHA
+description: Custom image-based CAPTCHA platform. Create puzzles, embed a widget, verify tokens server-side.
+---
+
+yCAPTCHA is a custom image-based CAPTCHA service. Site owners create image puzzles in the dashboard, embed a lightweight widget via `<iframe>`, and verify completed tokens on their backend with a single API call.
+
+## Quick Start
+
+1. **Create a site** in the dashboard — you'll get a **Site Key** (`pk_...`) and **Secret Key** (`sk_...`).
+2. **Upload images** to an Image Set and create a Puzzle with correct/incorrect answers.
+3. **Embed the widget** on your page:
+
+```html
+<iframe
+  src="https://ycaptcha.xyspg.moe/widget/YOUR_SITE_KEY"
+  id="ycaptcha-widget"
+  style="border: none; width: 310px; height: 78px; overflow: hidden;"
+  scrolling="no"
+  title="yCAPTCHA"
+></iframe>
+```
+
+4. **Listen for the token** via `postMessage`:
+
+```js
+window.addEventListener("message", (event) => {
+  if (event.data?.source !== "ycaptcha") return;
+  if (event.data.event === "success") {
+    document.getElementById("captcha-token").value = event.data.token;
+  }
+});
+```
+
+5. **Verify on your server**:
+
+```js
+const res = await fetch("https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    token: captchaToken,
+    secretKey: process.env.YCAPTCHA_SECRET_KEY,
+  }),
+});
+const { success } = await res.json();
+```
+
+## Next Steps
+
+- [Widget Integration](/docs/widget) — embedding, resize handling, postMessage events
+- [API Reference](/docs/api) — full endpoint documentation
+- [How It Works](/docs/how-it-works) — verification flow and data model

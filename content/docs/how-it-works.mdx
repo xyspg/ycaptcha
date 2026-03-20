@@ -1,0 +1,112 @@
+---
+title: How It Works
+description: End-to-end verification flow, data model, and scoring logic.
+---
+
+## End-to-End Flow
+
+```
+Browser                         yCAPTCHA API              Your Backend
+   |                                  |                         |
+   | 1. Load /widget/{siteKey}        |                         |
+   |--------------------------------->|                         |
+   |                                  |                         |
+   | 2. POST /challenge {siteKey}     |                         |
+   |--------------------------------->|                         |
+   |  { sessionToken, prompt, images} |                         |
+   |<---------------------------------|                         |
+   |                                  |                         |
+   | 3. User selects images           |                         |
+   |                                  |                         |
+   | 4. POST /verify                  |                         |
+   |    {sessionToken, selectedIds}   |                         |
+   |--------------------------------->|                         |
+   |  { success: true, token }        |                         |
+   |<---------------------------------|                         |
+   |                                  |                         |
+   | 5. postMessage to parent page    |                         |
+   |                                  |                         |
+   | 6. Form submit with token        |                         |
+   |-------------------------------------------------->|        |
+   |                                  |                         |
+   |                                  | 7. POST /siteverify     |
+   |                                  |    {token, secretKey}   |
+   |                                  |<------------------------|
+   |                                  |  { success: true }      |
+   |                                  |------------------------>|
+   |                                  |                         |
+   |                                  |         8. Accept/reject
+```
+
+## Data Model
+
+### Site
+
+Represents a domain where the CAPTCHA is deployed. Holds a `siteKey` (public, `pk_...`) and `secretKey` (private, `sk_...`). One user can own many sites.
+
+### ImageSet
+
+A named pool of images (e.g., "NYC Parks"). Owned by a user, not a specific site, so it can be reused across multiple sites.
+
+### Image
+
+A single image within an image set. Has `id`, `url` (public Cloudflare R2 URL), and optional `name`. No tags or labels — the puzzle defines which images are correct.
+
+### Puzzle
+
+Belongs to a site and references an image set. Contains:
+
+- **prompt** — instruction shown to the user (supports `|` separator)
+- **correctImageIds** — JSONB array of image IDs that are correct answers
+- **incorrectImageIds** — optional JSONB array of hand-picked distractors. If `null`, distractors are drawn randomly from remaining images in the set
+- **difficulty** — float from 0 to 1 (default 0.5), controls pass threshold
+
+### CaptchaSession
+
+Created when `/challenge` is called. Tracks a single attempt:
+
+- `token` — 64-character nanoid
+- `puzzleId` — which puzzle was served
+- `solved` — boolean, starts `false`
+- `expiresAt` — 5 minutes after creation
+
+On successful `/siteverify`, the row is **deleted** (tokens are single-use).
+
+## Scoring
+
+### Grid Assembly
+
+Every challenge serves exactly 9 images (3x3 grid). The server takes the puzzle's correct images, fills remaining slots from distractors (hand-picked or random), and shuffles with Fisher-Yates. The widget only receives `{ id, url }` — it cannot tell which are correct.
+
+### Pass Threshold
+
+```
+requiredCorrect = Math.ceil(correctImageIds.length * difficulty)
+```
+
+Examples with 3 correct images:
+
+| Difficulty | Required | Meaning |
+|---|---|---|
+| 0.5 | 2 | Select at least 2 of 3 correct images |
+| 1.0 | 3 | Must select all correct images |
+| 0.3 | 1 | Select at least 1 correct image |
+
+### Anti-Bot Rule
+
+If all 9 grid positions are selected, the attempt **automatically fails** before any threshold check. This catches bots that select everything to guarantee hitting all correct images.
+
+### Wrong Selection Penalty
+
+Currently, selecting incorrect images does **not** reduce the score. Only the count of correct images in the selection is evaluated. A user who selects 2 correct + 4 incorrect still passes at difficulty 0.5 with 3 correct images in the puzzle.
+
+## Token Lifecycle
+
+1. Session created with `solved = false` at challenge time
+2. `/verify` sets `solved = true` on pass and returns `sessionToken` as the verification token
+3. `/siteverify` checks `solved = true` and `expiresAt`, then **deletes** the row
+4. Any subsequent `/siteverify` call with the same token returns `"Invalid token"`
+
+## Rate Limiting
+
+A blanket POST rate limit is applied across all API routes at the middleware level via Upstash Redis. Per-IP limits may apply to sensitive dashboard operations.

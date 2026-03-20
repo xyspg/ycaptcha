@@ -1,0 +1,103 @@
+---
+title: Widget Integration
+description: Embed the yCAPTCHA widget, handle resize events, and listen for verification tokens.
+---
+
+## Embedding the Widget
+
+The widget is served at:
+
+```
+https://ycaptcha.xyspg.moe/widget/{siteKey}
+```
+
+Add it as an iframe anywhere on your page:
+
+```html
+<iframe
+  src="https://ycaptcha.xyspg.moe/widget/YOUR_SITE_KEY"
+  id="ycaptcha-widget"
+  style="border: none; width: 310px; height: 78px; overflow: hidden;"
+  scrolling="no"
+  title="yCAPTCHA"
+></iframe>
+```
+
+The widget manages its own layout. Its dimensions change as the user progresses through the challenge:
+
+| State | Approximate Size |
+|---|---|
+| Collapsed checkbox (idle, verified, error) | 304 x 78 px |
+| Expanded puzzle grid | 350 x 520 px |
+
+## postMessage Events
+
+All messages from the widget have the shape:
+
+```ts
+{ source: "ycaptcha", event: string, ...payload }
+```
+
+Listen on the parent page:
+
+```js
+window.addEventListener("message", (event) => {
+  if (event.data?.source !== "ycaptcha") return;
+
+  switch (event.data.event) {
+    case "success":
+      // event.data.token — one-time verification token
+      break;
+
+    case "resize":
+      // event.data.width  — desired width in px
+      // event.data.height — desired height in px
+      break;
+
+    case "expired":
+      // 5-minute session window elapsed, widget resets
+      break;
+
+    case "error":
+      // event.data.code    — HTTP status or 0 for network errors
+      // event.data.message — human-readable error
+      break;
+  }
+});
+```
+
+## Handling Resize
+
+The widget cannot resize its own iframe — you need to update it:
+
+```js
+const iframe = document.getElementById("ycaptcha-widget");
+
+window.addEventListener("message", (event) => {
+  if (event.data?.source !== "ycaptcha") return;
+  if (event.data.event === "resize") {
+    iframe.style.width  = event.data.width  + "px";
+    iframe.style.height = event.data.height + "px";
+  }
+});
+```
+
+## Prompt Format
+
+Puzzle prompts support a `|` separator:
+
+- `Select all images with|parks` renders "Select all images with" as the instruction and "parks" as a large bold keyword.
+- Without `|`, the entire prompt becomes the keyword with a default "Select all images with" instruction.
+
+## Widget Phases
+
+| Phase | Description |
+|---|---|
+| `idle` | Collapsed checkbox, waiting for click |
+| `loading` | Spinner shown, fetching challenge |
+| `challenge` | 3x3 image grid displayed |
+| `verified` | Green checkmark, CAPTCHA passed |
+| `error` | Error message in collapsed bar |
+| `failed` | Internal — auto-fetches a new challenge |
+
+When verification fails, the widget automatically fetches a new challenge rather than showing an error.
