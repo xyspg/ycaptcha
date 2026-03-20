@@ -51,11 +51,8 @@ export function CaptchaWidget({
     onRefresh();
   };
 
-  const pipeIdx = prompt.indexOf("|");
-  const instruction =
-    pipeIdx !== -1 ? prompt.slice(0, pipeIdx).trim() : "Select all images with";
-  const keyword =
-    pipeIdx !== -1 ? prompt.slice(pipeIdx + 1).trim() : prompt.trim();
+  const instruction = "Select all images with";
+  const keyword = prompt;
 
   return (
     <div

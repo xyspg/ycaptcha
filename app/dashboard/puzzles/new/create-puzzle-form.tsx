@@ -202,20 +202,18 @@ export function CreatePuzzleForm({
           </CardContent>
         </Card>
 
-        {/* Prompt */}
+        {/* Keyword */}
         <Card>
           <CardHeader>
-            <CardTitle>Prompt</CardTitle>
+            <CardTitle>Keyword</CardTitle>
             <CardDescription>
-              The instruction shown to users. Use <code>|</code> to separate
-              instruction from keyword (e.g. &quot;Select all images
-              with|trains&quot;).
+              The word shown to users after &quot;Select all images with&quot;.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Input
               name="prompt"
-              placeholder="Select all images with|trains"
+              placeholder="e.g. trains, buses, crosswalks"
               required
             />
             {state?.errors?.prompt && (

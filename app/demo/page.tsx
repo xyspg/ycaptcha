@@ -31,7 +31,7 @@ export default function Page() {
       <div className="mx-auto max-w-md">
         <h1 className="mb-6 text-xl font-semibold">yCAPTCHA Demo</h1>
         <CaptchaContainer
-          prompt="Select all images with|parks"
+          prompt="parks"
           images={images}
           onVerify={handleVerify}
           onRefresh={handleRefresh}

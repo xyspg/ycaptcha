@@ -128,12 +128,12 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         />
         <input type="hidden" name="difficulty" value={difficulty} />
 
-        {/* Prompt */}
+        {/* Keyword */}
         <Card>
           <CardHeader>
-            <CardTitle>Prompt</CardTitle>
+            <CardTitle>Keyword</CardTitle>
             <CardDescription>
-              Use <code>|</code> to separate instruction from keyword.
+              The word shown after &quot;Select all images with&quot;.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -141,7 +141,7 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
               name="prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Select all images with|trains"
+              placeholder="e.g. trains, buses, crosswalks"
               required
             />
             {state?.errors?.prompt && (
@@ -464,7 +464,7 @@ function PuzzlePreview({
       ) : phase === "challenge" ? (
         <CaptchaWidget
           key={previewImages.map((i) => i.id).join()}
-          prompt={prompt || "Select all images with|..."}
+          prompt={prompt || "..."}
           images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
           onVerify={handleVerify}
           onRefresh={() => {
