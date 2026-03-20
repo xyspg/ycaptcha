@@ -8,7 +8,7 @@ import { db } from "@/lib/db";
 import { puzzle, site } from "@/lib/db/app-schema";
 import { and, eq } from "drizzle-orm";
 import type { ActionState } from "@/lib/types";
-import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
 
 /** Verify puzzle belongs to user via site ownership */
 async function requireOwnedPuzzle(puzzleId: string, userId: string) {
@@ -22,16 +22,28 @@ async function requireOwnedPuzzle(puzzleId: string, userId: string) {
 
 // --- Update Puzzle ---
 
-const updatePuzzleSchema = z.object({
-  puzzleId: z.string().min(1),
-  prompt: z.string().min(1, "Prompt is required").max(200, "Prompt is too long"),
-  correctImageIds: z
-    .array(z.string())
-    .min(1, "Select at least 1 correct image")
-    .max(CAPTCHA_MAX_CORRECT, `Maximum ${CAPTCHA_MAX_CORRECT} correct images`),
-  incorrectImageIds: z.array(z.string()).nullable(),
-  difficulty: z.number().min(0.1).max(1),
-});
+const updatePuzzleSchema = z
+  .object({
+    puzzleId: z.string().min(1),
+    prompt: z.string().min(1, "Prompt is required").max(200, "Prompt is too long"),
+    correctImageIds: z
+      .array(z.string())
+      .min(1, "Select at least 1 correct image")
+      .max(CAPTCHA_MAX_CORRECT, `Maximum ${CAPTCHA_MAX_CORRECT} correct images`),
+    incorrectImageIds: z.array(z.string()).nullable(),
+    difficulty: z.number().min(0.1).max(1),
+  })
+  .refine(
+    (data) => {
+      if (!data.incorrectImageIds) return true;
+      const needed = CAPTCHA_GRID_SIZE - data.correctImageIds.length;
+      return data.incorrectImageIds.length >= needed;
+    },
+    {
+      message: `Hand-picked incorrect images must fill the remaining grid slots`,
+      path: ["incorrectImageIds"],
+    },
+  );
 
 export async function updatePuzzle(
   prevState: ActionState,

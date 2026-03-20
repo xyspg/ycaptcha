@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createPuzzle } from "./actions";
-import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -90,6 +90,9 @@ export function CreatePuzzleForm({
   };
 
   const requiredCorrect = Math.ceil(correctIds.size * difficulty);
+  const neededIncorrect = CAPTCHA_GRID_SIZE - correctIds.size;
+  const incorrectSatisfied =
+    !handPickIncorrect || incorrectIds.size >= neededIncorrect;
 
   return (
     <div className="flex flex-col gap-6">
@@ -339,9 +342,14 @@ export function CreatePuzzleForm({
                       );
                     })}
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {incorrectIds.size} incorrect image
-                  {incorrectIds.size === 1 ? "" : "s"} selected
+                <p className={cn(
+                  "mt-2 text-xs",
+                  handPickIncorrect && incorrectIds.size < neededIncorrect
+                    ? "text-destructive"
+                    : "text-muted-foreground",
+                )}>
+                  {incorrectIds.size} of {neededIncorrect} required incorrect image
+                  {neededIncorrect === 1 ? "" : "s"} selected
                 </p>
               </CardContent>
             )}
@@ -403,7 +411,8 @@ export function CreatePuzzleForm({
               isPending ||
               correctIds.size === 0 ||
               !selectedSetId ||
-              !selectedSiteId
+              !selectedSiteId ||
+              !incorrectSatisfied
             }
           >
             {isPending ? "Creating..." : "Create Puzzle"}

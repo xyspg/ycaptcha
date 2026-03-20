@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Check, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { updatePuzzle, deletePuzzle } from "./actions";
-import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -89,6 +89,9 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
   };
 
   const requiredCorrect = Math.ceil(correctIds.size * difficulty);
+  const neededIncorrect = CAPTCHA_GRID_SIZE - correctIds.size;
+  const incorrectSatisfied =
+    !handPickIncorrect || incorrectIds.size >= neededIncorrect;
 
   return (
     <div className="flex flex-col gap-6">
@@ -252,9 +255,14 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
                       );
                     })}
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {incorrectIds.size} incorrect image
-                  {incorrectIds.size === 1 ? "" : "s"} selected
+                <p className={cn(
+                  "mt-2 text-xs",
+                  handPickIncorrect && incorrectIds.size < neededIncorrect
+                    ? "text-destructive"
+                    : "text-muted-foreground",
+                )}>
+                  {incorrectIds.size} of {neededIncorrect} required incorrect image
+                  {neededIncorrect === 1 ? "" : "s"} selected
                 </p>
               </CardContent>
             )}
@@ -312,7 +320,7 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         <div className="flex items-center gap-3">
           <Button
             type="submit"
-            disabled={isPending || correctIds.size === 0}
+            disabled={isPending || correctIds.size === 0 || !incorrectSatisfied}
           >
             {isPending ? "Saving..." : "Save Changes"}
           </Button>

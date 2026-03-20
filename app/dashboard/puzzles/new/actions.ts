@@ -7,19 +7,31 @@ import { db } from "@/lib/db";
 import { site, puzzle } from "@/lib/db/app-schema";
 import { and, eq } from "drizzle-orm";
 import type { ActionState } from "@/lib/types";
-import { CAPTCHA_MAX_CORRECT } from "@/lib/types";
+import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
 
-const createPuzzleSchema = z.object({
-  siteId: z.string().min(1, "Please select a site"),
-  imageSetId: z.string().min(1, "Please select an image set"),
-  prompt: z.string().min(1, "Prompt is required").max(200, "Prompt is too long"),
-  correctImageIds: z
-    .array(z.string())
-    .min(1, "Select at least 1 correct image")
-    .max(CAPTCHA_MAX_CORRECT, `Maximum ${CAPTCHA_MAX_CORRECT} correct images`),
-  incorrectImageIds: z.array(z.string()).nullable(),
-  difficulty: z.number().min(0.1).max(1),
-});
+const createPuzzleSchema = z
+  .object({
+    siteId: z.string().min(1, "Please select a site"),
+    imageSetId: z.string().min(1, "Please select an image set"),
+    prompt: z.string().min(1, "Prompt is required").max(200, "Prompt is too long"),
+    correctImageIds: z
+      .array(z.string())
+      .min(1, "Select at least 1 correct image")
+      .max(CAPTCHA_MAX_CORRECT, `Maximum ${CAPTCHA_MAX_CORRECT} correct images`),
+    incorrectImageIds: z.array(z.string()).nullable(),
+    difficulty: z.number().min(0.1).max(1),
+  })
+  .refine(
+    (data) => {
+      if (!data.incorrectImageIds) return true;
+      const needed = CAPTCHA_GRID_SIZE - data.correctImageIds.length;
+      return data.incorrectImageIds.length >= needed;
+    },
+    {
+      message: `Hand-picked incorrect images must fill the remaining ${CAPTCHA_GRID_SIZE - 1} grid slots`,
+      path: ["incorrectImageIds"],
+    },
+  );
 
 export async function createPuzzle(
   prevState: ActionState,
