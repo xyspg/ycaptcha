@@ -3,9 +3,9 @@
 import { useActionState, useState } from "react"
 import { type InferSelectModel } from "drizzle-orm"
 import Link from "next/link"
-import { ArrowLeft, Eye, EyeOff, RefreshCw, Plus, Code } from "lucide-react"
+import { ArrowLeft, Eye, EyeOff, RefreshCw, Plus, Trash2 } from "lucide-react"
 import { site, puzzle } from "@/lib/db/app-schema"
-import { updateSite, regenerateKeys, type ActionState } from "../actions"
+import { updateSite, regenerateKeys, deleteSite, type ActionState } from "../actions"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -205,6 +205,7 @@ export function SiteDetail({
         <div className="flex flex-col gap-6">
           <ApiKeysSection s={s} />
           <SettingsSection s={s} />
+          <DangerZone s={s} />
         </div>
         <div className="flex flex-col gap-6">
           <PuzzlesSection s={s} puzzles={puzzles} />
@@ -212,5 +213,66 @@ export function SiteDetail({
         </div>
       </div>
     </div>
+  )
+}
+
+function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
+  const [, formAction, isPending] = useActionState(deleteSite, null)
+  const [confirming, setConfirming] = useState(false)
+  const [confirmName, setConfirmName] = useState("")
+
+  return (
+    <Card className="border-destructive/50">
+      <CardHeader>
+        <CardTitle className="text-destructive">Danger Zone</CardTitle>
+        <CardDescription>
+          Deleting this site will permanently remove all its puzzles and
+          active CAPTCHA widgets will stop working.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {!confirming ? (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => setConfirming(true)}
+          >
+            <Trash2 className="size-3" /> Delete Site
+          </Button>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <p className="text-xs text-destructive font-medium">
+              Type <span className="font-bold">{s.name}</span> to confirm.
+            </p>
+            <Input
+              value={confirmName}
+              onChange={(e) => setConfirmName(e.target.value)}
+              placeholder={s.name}
+              className="text-sm"
+            />
+            <div className="flex gap-2">
+              <form action={formAction}>
+                <input type="hidden" name="siteId" value={s.id} />
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  size="sm"
+                  disabled={confirmName !== s.name || isPending}
+                >
+                  {isPending ? "Deleting..." : "Permanently Delete"}
+                </Button>
+              </form>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => { setConfirming(false); setConfirmName("") }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

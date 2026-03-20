@@ -3,9 +3,9 @@
 import { useActionState, useState } from "react"
 import { type InferSelectModel } from "drizzle-orm"
 import Link from "next/link"
-import { Globe, Plus, Trash2 } from "lucide-react"
+import { Globe, Plus } from "lucide-react"
 import { site } from "@/lib/db/app-schema"
-import { createSite, deleteSite, type ActionState } from "./actions"
+import { createSite, type ActionState } from "./actions"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -13,7 +13,6 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-  CardAction,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -78,71 +77,20 @@ function CreateSiteSheet() {
 }
 
 function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
-  const [, formAction, isPending] = useActionState(deleteSite, null)
-  const [confirming, setConfirming] = useState(false)
-  const [confirmName, setConfirmName] = useState("")
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <Link
-            href={`/dashboard/sites/${s.id}`}
-            className="hover:underline"
-          >
-            {s.name}
-          </Link>
-        </CardTitle>
-        {s.domain && <CardDescription>{s.domain}</CardDescription>}
-        <CardAction>
-          {!confirming ? (
-            <Button variant="ghost" size="icon-xs" onClick={() => setConfirming(true)}>
-              <Trash2 className="size-3" />
-            </Button>
-          ) : null}
-        </CardAction>
-      </CardHeader>
-      {confirming ? (
-        <CardContent className="flex flex-col gap-3 border-t border-destructive/30 bg-destructive/5 pt-3">
-          <p className="text-xs text-destructive font-medium">
-            Type <span className="font-bold">{s.name}</span> to confirm deletion. This will delete all puzzles on this site.
-          </p>
-          <Input
-            value={confirmName}
-            onChange={(e) => setConfirmName(e.target.value)}
-            placeholder={s.name}
-            className="text-sm"
-          />
-          <div className="flex gap-2">
-            <form action={formAction}>
-              <input type="hidden" name="siteId" value={s.id} />
-              <Button
-                type="submit"
-                variant="destructive"
-                size="sm"
-                disabled={confirmName !== s.name || isPending}
-              >
-                {isPending ? "Deleting..." : "Delete Site"}
-              </Button>
-            </form>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => { setConfirming(false); setConfirmName("") }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </CardContent>
-      ) : (
+    <Link href={`/dashboard/sites/${s.id}`}>
+      <Card className="transition-colors hover:bg-muted/50">
+        <CardHeader>
+          <CardTitle className="text-base">{s.name}</CardTitle>
+          {s.domain && <CardDescription>{s.domain}</CardDescription>}
+        </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
             <span className="truncate">{s.siteKey}</span>
-            <CopyButton value={s.siteKey} />
           </div>
         </CardContent>
-      )}
-    </Card>
+      </Card>
+    </Link>
   )
 }
 
