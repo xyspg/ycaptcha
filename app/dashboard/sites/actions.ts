@@ -7,15 +7,7 @@ import { requireSession } from "@/lib/auth/session"
 import { db } from "@/lib/db"
 import { site } from "@/lib/db/app-schema"
 import { and, eq } from "drizzle-orm"
-
-const domainSchema = z
-  .string()
-  .min(1, "Domain is required")
-  .max(253, "Domain is too long")
-  .transform((v) => v.replace(/^https?:\/\//, "").replace(/:\d+$/, "").replace(/\/+$/, ""))
-  .refine((v) => /^(localhost|([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,})$/.test(v), {
-    message: "Invalid domain (e.g. example.com or localhost)",
-  })
+import { domainSchema } from "@/lib/validators"
 
 const createSiteSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),

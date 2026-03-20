@@ -1,0 +1,118 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { chainResult, makePostRequest } from "../helpers";
+
+// We need to mock db before importing the route
+const mockDb = {
+  select: vi.fn(),
+  insert: vi.fn(),
+};
+vi.mocked(await import("@/lib/db")).db = mockDb as any;
+
+const { POST } = await import("@/app/api/v0/captcha/challenge/route");
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe("POST /api/v0/captcha/challenge", () => {
+  it("returns 400 when siteKey is missing", async () => {
+    const res = await POST(makePostRequest({}));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "Missing siteKey" });
+  });
+
+  it("returns 404 for invalid siteKey", async () => {
+    mockDb.select.mockReturnValue(chainResult([]));
+
+    const res = await POST(makePostRequest({ siteKey: "pk_invalid" }));
+    expect(res.status).toBe(404);
+    expect(await res.json()).toMatchObject({ error: "Invalid siteKey" });
+  });
+
+  it("returns 403 when origin domain does not match", async () => {
+    mockDb.select
+      .mockReturnValueOnce(
+        chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
+      );
+
+    const res = await POST(
+      makePostRequest({ siteKey: "pk_test", origin: "https://evil.com" }),
+    );
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 400 for malformed origin", async () => {
+    mockDb.select
+      .mockReturnValueOnce(
+        chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
+      );
+
+    const res = await POST(
+      makePostRequest({ siteKey: "pk_test", origin: "not-a-url" }),
+    );
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "Invalid origin" });
+  });
+
+  it("returns 404 when no puzzles configured", async () => {
+    mockDb.select
+      .mockReturnValueOnce(
+        chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
+      )
+      .mockReturnValueOnce(chainResult([])); // no puzzles
+
+    const res = await POST(makePostRequest({ siteKey: "pk_test" }));
+    expect(res.status).toBe(404);
+    expect(await res.json()).toMatchObject({
+      error: "No puzzles configured for this site",
+    });
+  });
+
+  it("returns session token, prompt, and 9 images on success", async () => {
+    const correctIds = ["img1", "img2", "img3"];
+    const correctImages = correctIds.map((id) => ({
+      id,
+      url: `https://s3.ycaptcha.xyspg.moe/images/${id}.webp`,
+    }));
+    const incorrectImages = Array.from({ length: 6 }, (_, i) => ({
+      id: `inc${i}`,
+      url: `https://s3.ycaptcha.xyspg.moe/images/inc${i}.webp`,
+    }));
+
+    mockDb.select
+      // site lookup
+      .mockReturnValueOnce(
+        chainResult([{ id: "s1", siteKey: "pk_test", domain: null }]),
+      )
+      // puzzle lookup
+      .mockReturnValueOnce(
+        chainResult([
+          {
+            id: "p1",
+            siteId: "s1",
+            imageSetId: "is1",
+            correctImageIds: correctIds,
+            incorrectImageIds: null,
+            prompt: "Select cats",
+            difficulty: 0.5,
+          },
+        ]),
+      )
+      // correct images
+      .mockReturnValueOnce(chainResult(correctImages))
+      // incorrect images
+      .mockReturnValueOnce(chainResult(incorrectImages));
+
+    mockDb.insert.mockReturnValue(
+      chainResult([{ token: "session-token-123" }]),
+    );
+
+    const res = await POST(makePostRequest({ siteKey: "pk_test" }));
+    expect(res.status).toBe(200);
+
+    const data = await res.json();
+    expect(data.sessionToken).toBe("session-token-123");
+    expect(data.prompt).toBe("Select cats");
+    expect(data.images).toHaveLength(9);
+  });
+});
