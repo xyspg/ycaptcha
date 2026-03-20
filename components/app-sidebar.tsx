@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Images, KeyRound, LogOut, Settings } from "lucide-react";
+import { BookOpen, Globe, Images, KeyRound, LogOut, Settings } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -59,6 +59,14 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link href="/docs" target="_blank">
+                <BookOpen />
+                <span>Docs</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/settings")}>
               <Link href="/dashboard/settings">
