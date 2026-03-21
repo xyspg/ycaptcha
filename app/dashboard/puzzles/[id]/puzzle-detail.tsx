@@ -1,13 +1,12 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Check, Trash2 } from "lucide-react";
-import { cn, shuffle } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { updatePuzzle, deletePuzzle } from "./actions";
 import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE, DIFFICULTY_PRESETS } from "@/lib/types";
-import { CaptchaCheckbox } from "@/components/captcha/captcha-checkbox";
-import { CaptchaWidget } from "@/components/captcha/captcha-widget";
+import { PuzzlePreviewPanel } from "@/components/puzzle-preview";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -89,8 +88,6 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
   const neededIncorrect = CAPTCHA_GRID_SIZE - correctIds.size;
   const incorrectSatisfied =
     !handPickIncorrect || incorrectIds.size >= neededIncorrect;
-
-  const [previewKey, setPreviewKey] = useState(0);
 
   return (
     <div className="flex flex-col gap-6">
@@ -361,137 +358,16 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         </div>
 
         {/* Right: sticky preview */}
-        <div className="hidden w-[370px] shrink-0 lg:block">
-          <div className="sticky top-6">
-            {correctIds.size > 0 && incorrectSatisfied ? (
-              <PuzzlePreview
-                key={`${previewKey}-${Array.from(correctIds).sort().join()}-${Array.from(incorrectIds).sort().join()}-${handPickIncorrect}-${difficulty}`}
-                prompt={prompt}
-                images={images}
-                correctIds={correctIds}
-                incorrectIds={incorrectIds}
-                handPickIncorrect={handPickIncorrect}
-                difficulty={difficulty}
-                onRefresh={() => setPreviewKey((k) => k + 1)}
-              />
-            ) : (
-              <Card>
-                <CardContent className="flex items-center justify-center py-20">
-                  <p className="text-sm text-muted-foreground">
-                    Select correct images to see preview
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </div>
+        <PuzzlePreviewPanel
+          prompt={prompt}
+          images={images}
+          correctIds={correctIds}
+          incorrectIds={incorrectIds}
+          handPickIncorrect={handPickIncorrect}
+          difficulty={difficulty}
+          incorrectSatisfied={incorrectSatisfied}
+        />
       </div>
-    </div>
-  );
-}
-
-function PuzzlePreview({
-  prompt,
-  images,
-  correctIds,
-  incorrectIds,
-  handPickIncorrect,
-  difficulty,
-  onRefresh,
-}: {
-  prompt: string;
-  images: { id: string; url: string; name: string | null }[];
-  correctIds: Set<string>;
-  incorrectIds: Set<string>;
-  handPickIncorrect: boolean;
-  difficulty: number;
-  onRefresh: () => void;
-}) {
-  const [phase, setPhase] = useState<"idle" | "loading" | "challenge" | "verified">("idle");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const buildGrid = () => {
-    const correct = images.filter((img) => correctIds.has(img.id));
-    let incorrect: typeof images;
-    if (handPickIncorrect) {
-      incorrect = images.filter((img) => incorrectIds.has(img.id));
-    } else {
-      incorrect = shuffle(images.filter((img) => !correctIds.has(img.id)));
-    }
-    const needed = CAPTCHA_GRID_SIZE - correct.length;
-    return shuffle([...correct, ...incorrect.slice(0, needed)]);
-  };
-
-  const [previewImages, setPreviewImages] = useState(buildGrid);
-
-  const reshuffleGrid = () => {
-    setPreviewImages(buildGrid());
-  };
-
-  const handleRequestChallenge = () => {
-    setPhase("loading");
-    setErrorMessage(null);
-    setTimeout(() => setPhase("challenge"), 500);
-  };
-
-  const handleVerify = (selectedIds: string[]) => {
-    const correctCount = selectedIds.filter((id) => correctIds.has(id)).length;
-    const requiredCount = Math.ceil(correctIds.size * difficulty);
-    const allSelected = selectedIds.length === CAPTCHA_GRID_SIZE;
-    const passed = !allSelected && correctCount >= requiredCount;
-
-    if (passed) {
-      setPhase("verified");
-    } else {
-      // Show error, reshuffle images but keep error message visible
-      setErrorMessage("Please try again.");
-      setPreviewImages(buildGrid());
-    }
-  };
-
-  return (
-    <div className="flex flex-col gap-2">
-      <p className="text-sm font-medium">Preview</p>
-      <p className="text-xs text-muted-foreground">
-        Test how this puzzle works for users.
-      </p>
-
-      {phase === "idle" || phase === "loading" ? (
-        <CaptchaCheckbox
-          onRequestChallenge={handleRequestChallenge}
-          state={phase}
-        />
-      ) : phase === "challenge" ? (
-        <CaptchaWidget
-          key={previewImages.map((i) => i.id).join()}
-          prompt={prompt || "..."}
-          images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
-          onVerify={handleVerify}
-          onRefresh={() => {
-            reshuffleGrid();
-            onRefresh();
-          }}
-          errorMessage={errorMessage}
-        />
-      ) : (
-        <div className="flex flex-col gap-2">
-          <CaptchaCheckbox
-            onRequestChallenge={() => {}}
-            state="verified"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setPhase("idle");
-              reshuffleGrid();
-              onRefresh();
-            }}
-            className="text-xs text-muted-foreground hover:text-foreground"
-          >
-            Refresh preview
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -12,6 +12,8 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { ImageSetThumbnail } from "@/components/image-set-thumbnail";
+import { SampleSets } from "./sample-sets";
 
 export default async function Page() {
   const session = await requireSession();
@@ -69,21 +71,7 @@ export default async function Page() {
                 </CardHeader>
                 {s.images.length > 0 && (
                   <CardContent>
-                    <div className="flex gap-1 overflow-hidden rounded-md">
-                      {s.images.slice(0, 4).map((img) => (
-                        <img
-                          key={img.id}
-                          src={img.url}
-                          alt={img.name ?? ""}
-                          className="size-16 object-cover"
-                        />
-                      ))}
-                      {s.images.length > 4 && (
-                        <div className="flex size-16 items-center justify-center bg-muted text-xs text-muted-foreground">
-                          ...
-                        </div>
-                      )}
-                    </div>
+                    <ImageSetThumbnail images={s.images} />
                   </CardContent>
                 )}
               </Card>
@@ -91,6 +79,8 @@ export default async function Page() {
           ))}
         </div>
       )}
+
+      <SampleSets />
     </div>
   );
 }

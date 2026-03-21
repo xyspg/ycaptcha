@@ -6,8 +6,9 @@ import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { imageSet, image, puzzle } from "@/lib/db/app-schema";
-import { and, eq, sql } from "drizzle-orm";
-import { uploadToR2, deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
+import { and, eq, inArray, sql } from "drizzle-orm";
+import { uploadBufferToR2, deleteFromR2, r2KeyFromUrl, processImage } from "@/lib/r2";
+import { SAMPLE_SETS } from "@/lib/samples";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
@@ -131,16 +132,39 @@ export async function uploadImages(
     }
   }
 
-  // Upload concurrently
-  const results = await Promise.allSettled(
+  // Phase 1: process all images to get hashes (no DB)
+  const processed = await Promise.all(
     validFiles.map(async (file) => {
-      const { url } = await uploadToR2(file);
-      return { url, name: file.name };
+      const rawBuffer = Buffer.from(await file.arrayBuffer());
+      const result = await processImage(rawBuffer);
+      return { file, ...result };
+    }),
+  );
+
+  // Phase 2: batch lookup existing hashes in one query
+  const hashes = processed.map((p) => p.contentHash);
+  const existingRows = hashes.length > 0
+    ? await db
+        .select({ contentHash: image.contentHash, url: image.url })
+        .from(image)
+        .where(inArray(image.contentHash, hashes))
+    : [];
+  const existingMap = new Map(existingRows.map((e) => [e.contentHash, e.url]));
+
+  // Phase 3: upload only new images, reuse existing URLs
+  const results = await Promise.allSettled(
+    processed.map(async ({ file, buffer, contentHash }) => {
+      const existingUrl = existingMap.get(contentHash);
+      if (existingUrl) {
+        return { url: existingUrl, name: file.name, contentHash };
+      }
+      const { url } = await uploadBufferToR2(buffer);
+      return { url, name: file.name, contentHash };
     }),
   );
 
   const uploaded = results
-    .filter((r): r is PromiseFulfilledResult<{ url: string; name: string }> => r.status === "fulfilled")
+    .filter((r): r is PromiseFulfilledResult<{ url: string; name: string; contentHash: string }> => r.status === "fulfilled")
     .map((r) => r.value);
 
   if (uploaded.length > 0) {
@@ -149,6 +173,7 @@ export async function uploadImages(
         imageSetId: setId,
         url: u.url,
         name: u.name,
+        contentHash: u.contentHash,
       })),
     );
   }
@@ -200,16 +225,30 @@ export async function deleteImage(
     };
   }
 
-  // Get image URL for R2 deletion
+  // Get image for R2 deletion
   const [img] = await db
-    .select({ id: image.id, url: image.url })
+    .select({ id: image.id, url: image.url, contentHash: image.contentHash })
     .from(image)
     .where(and(eq(image.id, imageId), eq(image.imageSetId, setId)));
 
   if (!img) return { errors: { imageId: ["Image not found"] } };
 
-  await deleteFromR2(r2KeyFromUrl(img.url));
+  // Delete DB row first
   await db.delete(image).where(eq(image.id, imageId));
+
+  // Only delete from R2 if no other rows reference the same content
+  if (img.contentHash) {
+    const [ref] = await db
+      .select({ id: image.id })
+      .from(image)
+      .where(eq(image.contentHash, img.contentHash))
+      .limit(1);
+    if (!ref) {
+      await deleteFromR2(r2KeyFromUrl(img.url));
+    }
+  } else {
+    await deleteFromR2(r2KeyFromUrl(img.url));
+  }
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
   return { success: true, message: "Image deleted" };
@@ -230,18 +269,62 @@ export async function deleteImageSet(
   if (!set) return { errors: { setId: ["Image set not found"] } };
 
   // Get all images for R2 cleanup
-  const images = await db
-    .select({ url: image.url })
+  const imgs = await db
+    .select({ url: image.url, contentHash: image.contentHash })
     .from(image)
     .where(eq(image.imageSetId, setId));
-
-  // Delete all from R2 concurrently
-  await Promise.allSettled(
-    images.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
-  );
 
   // Cascade delete handles images in DB
   await db.delete(imageSet).where(eq(imageSet.id, setId));
 
+  // Batch check which hashes still have surviving references
+  const hashesToCheck = imgs
+    .map((i) => i.contentHash)
+    .filter((h): h is string => h !== null);
+
+  const stillReferenced = hashesToCheck.length > 0
+    ? new Set(
+        (await db
+          .select({ contentHash: image.contentHash })
+          .from(image)
+          .where(inArray(image.contentHash, hashesToCheck))
+        ).map((r) => r.contentHash),
+      )
+    : new Set<string>();
+
+  await Promise.allSettled(
+    imgs
+      .filter((img) => !stillReferenced.has(img.contentHash))
+      .map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
+  );
+
   redirect("/dashboard/image-sets");
+}
+
+// --- Import Sample Set ---
+
+export async function importSampleSet(slug: string): Promise<void> {
+  const session = await requireSession();
+
+  const sample = SAMPLE_SETS.find((s) => s.slug === slug);
+  if (!sample) throw new Error("Unknown sample set");
+
+  const [created] = await db
+    .insert(imageSet)
+    .values({
+      userId: session.user.id,
+      name: sample.name,
+    })
+    .returning({ id: imageSet.id });
+
+  await db.insert(image).values(
+    sample.images.map((img) => ({
+      imageSetId: created.id,
+      url: img.url,
+      name: img.name,
+      contentHash: img.contentHash,
+    })),
+  );
+
+  redirect(`/dashboard/image-sets/${created.id}`);
 }

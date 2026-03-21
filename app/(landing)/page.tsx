@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getSession } from "@/lib/auth/session";
 import { redirect } from "next/navigation";
+import { DemoShowcase } from "./demo-showcase";
 
 export default async function Home() {
   const session = await getSession();
@@ -43,33 +44,8 @@ export function HomePage() {
           </Button>
         </div>
 
-        {/* Right Column: Stacked Cards */}
-        <div className="relative hidden h-[600px] w-full lg:block">
-          {/* Back Card */}
-          <div
-            className="absolute left-[5%] top-[5%] h-[450px] w-[320px] rounded-xl bg-white"
-            style={{
-              boxShadow:
-                "-15px 15px 40px rgba(0,0,0,0.06), 0px 5px 15px rgba(0,0,0,0.04)",
-            }}
-          />
-          {/* Middle Card */}
-          <div
-            className="absolute left-[22%] top-[18%] z-10 h-[450px] w-[320px] rounded-xl bg-white"
-            style={{
-              boxShadow:
-                "-15px 15px 40px rgba(0,0,0,0.06), 0px 5px 15px rgba(0,0,0,0.04)",
-            }}
-          />
-          {/* Front Card */}
-          <div
-            className="absolute left-[39%] top-[31%] z-20 h-[450px] w-[320px] rounded-xl bg-white"
-            style={{
-              boxShadow:
-                "-15px 15px 40px rgba(0,0,0,0.06), 0px 5px 15px rgba(0,0,0,0.04)",
-            }}
-          />
-        </div>
+        {/* Right Column: Interactive Demo */}
+        <DemoShowcase />
       </div>
     </main>
   );

@@ -3,6 +3,7 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
+import { createHash } from "crypto";
 import sharp from "sharp";
 import { nanoid } from "nanoid";
 import { env } from "@/lib/env";
@@ -21,16 +22,12 @@ const MAX_DIMENSION = 300;
 const WEBP_QUALITY = 80;
 
 /**
- * Upload an image to R2 after resizing to 300x300 max and converting to WebP.
- * Returns the public URL. Key format: images/<nanoid>.webp
+ * Process a raw image buffer: resize to 300x300 max and convert to WebP.
+ * Returns the processed buffer and its SHA-256 content hash.
  */
-export async function uploadToR2(
-  file: File,
-): Promise<{ key: string; url: string }> {
-  const key = `images/${nanoid()}.webp`;
-
-  const rawBuffer = Buffer.from(await file.arrayBuffer());
-
+export async function processImage(
+  rawBuffer: Buffer,
+): Promise<{ buffer: Buffer; contentHash: string }> {
   const processed = await sharp(rawBuffer)
     .resize(MAX_DIMENSION, MAX_DIMENSION, {
       fit: "cover",
@@ -38,6 +35,19 @@ export async function uploadToR2(
     })
     .webp({ quality: WEBP_QUALITY })
     .toBuffer();
+
+  const contentHash = createHash("sha256").update(processed).digest("hex");
+  return { buffer: processed, contentHash };
+}
+
+/**
+ * Upload an already-processed buffer to R2.
+ * Key format: images/<nanoid>.webp
+ */
+export async function uploadBufferToR2(
+  processed: Buffer,
+): Promise<{ key: string; url: string }> {
+  const key = `images/${nanoid()}.webp`;
 
   await s3.send(
     new PutObjectCommand({

@@ -73,9 +73,13 @@ export const image = pgTable(
       .references(() => imageSet.id, { onDelete: "cascade" }),
     url: text("url").notNull(), // public URL from Cloudflare R2
     name: text("name"), // optional display name
+    contentHash: text("content_hash"), // SHA-256 of processed image for dedup
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
-  (table) => [index("image_imageSetId_idx").on(table.imageSetId)],
+  (table) => [
+    index("image_imageSetId_idx").on(table.imageSetId),
+    index("image_contentHash_idx").on(table.contentHash),
+  ],
 );
 
 /**

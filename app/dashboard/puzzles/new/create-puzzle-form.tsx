@@ -6,6 +6,7 @@ import { ArrowLeft, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createPuzzle } from "./actions";
 import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE, DIFFICULTY_PRESETS } from "@/lib/types";
+import { PuzzlePreviewPanel } from "@/components/puzzle-preview";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -43,6 +44,7 @@ export function CreatePuzzleForm({
   const [incorrectIds, setIncorrectIds] = useState<Set<string>>(new Set());
   const [handPickIncorrect, setHandPickIncorrect] = useState(false);
   const [difficulty, setDifficulty] = useState(0.5);
+  const [prompt, setPrompt] = useState("");
 
   const selectedSet = imageSets.find((s) => s.id === selectedSetId);
 
@@ -100,6 +102,10 @@ export function CreatePuzzleForm({
         </Button>
         <h1 className="text-2xl font-semibold">Create Puzzle</h1>
       </div>
+
+      <div className="flex gap-6">
+        {/* Left: config panel */}
+        <div className="flex min-w-0 flex-1 flex-col gap-6">
 
       <form action={formAction} className="flex flex-col gap-6">
         <input type="hidden" name="siteId" value={selectedSiteId} />
@@ -213,6 +219,8 @@ export function CreatePuzzleForm({
           <CardContent>
             <Input
               name="prompt"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
               placeholder="e.g. trains, buses, crosswalks"
               required
             />
@@ -416,6 +424,20 @@ export function CreatePuzzleForm({
           </Button>
         </div>
       </form>
+
+        </div>
+
+        {/* Right: sticky preview */}
+        <PuzzlePreviewPanel
+          prompt={prompt}
+          images={selectedSet?.images ?? []}
+          correctIds={correctIds}
+          incorrectIds={incorrectIds}
+          handPickIncorrect={handPickIncorrect}
+          difficulty={difficulty}
+          incorrectSatisfied={incorrectSatisfied}
+        />
+      </div>
     </div>
   );
 }
