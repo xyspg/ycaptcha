@@ -128,10 +128,10 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         />
         <input type="hidden" name="difficulty" value={difficulty} />
 
-        {/* Keyword */}
+        {/* Prompt */}
         <Card>
           <CardHeader>
-            <CardTitle>Keyword</CardTitle>
+            <CardTitle>Prompt</CardTitle>
             <CardDescription>
               The word shown after &quot;Select all images with&quot;.
             </CardDescription>

@@ -202,10 +202,10 @@ export function CreatePuzzleForm({
           </CardContent>
         </Card>
 
-        {/* Keyword */}
+        {/* Prompt */}
         <Card>
           <CardHeader>
-            <CardTitle>Keyword</CardTitle>
+            <CardTitle>Prompt</CardTitle>
             <CardDescription>
               The word shown to users after &quot;Select all images with&quot;.
             </CardDescription>

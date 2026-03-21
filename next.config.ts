@@ -3,6 +3,11 @@ import { createMDX } from "fumadocs-mdx/next";
 import "./lib/env";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
   async rewrites() {
     return [
       {
