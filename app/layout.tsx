@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { Providers } from "@/components/providers";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -42,6 +43,7 @@ export default function RootLayout({
       >
         <RootProvider>
           <Providers>{children}</Providers>
+          <Toaster />
         </RootProvider>
       </body>
     </html>

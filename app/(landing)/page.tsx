@@ -14,10 +14,11 @@ export default async function Home() {
 
 export function HomePage() {
   return (
-    <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl items-center justify-center px-8 py-12">
-      <div className="grid w-full grid-cols-1 items-center gap-16 lg:grid-cols-2">
-        {/* Left Column: Content */}
-        <div className="flex max-w-xl flex-col items-start">
+    <>
+      {/* Hero — full screen on mobile, side-by-side with demo on desktop */}
+      <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-8 py-12 lg:flex-row lg:gap-16">
+        {/* Left: Content */}
+        <div className="flex max-w-xl flex-col items-center text-center lg:items-start lg:text-left">
           <div className="mb-4">
             <Image
               src="/ycaptcha.webp"
@@ -44,9 +45,16 @@ export function HomePage() {
           </Button>
         </div>
 
-        {/* Right Column: Interactive Demo */}
+        {/* Right: Demo — desktop inline, mobile hidden (shown below) */}
+        <div className="hidden lg:block">
+          <DemoShowcase />
+        </div>
+      </section>
+
+      {/* Demo section — mobile only, below hero */}
+      <section className="relative z-10 flex flex-col items-center px-4 pb-16 lg:hidden">
         <DemoShowcase />
-      </div>
-    </main>
+      </section>
+    </>
   );
 }
