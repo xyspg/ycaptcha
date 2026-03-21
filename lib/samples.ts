@@ -6,6 +6,9 @@ export interface SampleImage {
 
 export interface SampleSet {
   slug: string;
+  /** Display name for the image set (shown in dashboard) */
+  displayName: string;
+  /** Prompt text shown in the CaptchaWidget header */
   name: string;
   images: SampleImage[];
   /** Content hashes of the correct images for demo grading */
@@ -14,7 +17,8 @@ export interface SampleSet {
 
 export const SAMPLE_SETS: SampleSet[] = [
   {
-    slug: "logos",
+    slug: "tech-stacks",
+    displayName: "Tech Stacks",
     name: "Frontend Toolchains",
     correctHashes: [
       "051985f8c734ed09f545745f09bd867984e5932bd9f15b6f14a49bad76a3e71f", // bun
@@ -108,6 +112,7 @@ export const SAMPLE_SETS: SampleSet[] = [
   },
   {
     slug: "maimai",
+    displayName: "maimai",
     name: "14.9",
     correctHashes: [
       "41d408a6afa54f3392b64b09cf3aa92787c1152a15a27cd5ab73b06199097b16", // 16
@@ -241,6 +246,7 @@ export const SAMPLE_SETS: SampleSet[] = [
   },
   {
     slug: "subway",
+    displayName: "Subway Trains",
     name: "Stops at Times Square",
     correctHashes: [
       "2326c8c9bd6a91c7ba78c5c9aefeb7784c2627604607423cca91d5071209a63f", // 1

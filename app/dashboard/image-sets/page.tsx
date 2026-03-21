@@ -1,9 +1,9 @@
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import Link from "next/link";
 import { Images, Plus } from "lucide-react";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { imageSet } from "@/lib/db/app-schema";
+import { imageSet, image } from "@/lib/db/app-schema";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,17 +18,27 @@ import { SampleSets } from "./sample-sets";
 export default async function Page() {
   const session = await requireSession();
 
-  const sets = await db.query.imageSet.findMany({
-    where: (is, { eq: e }) => e(is.userId, session.user.id),
-    with: {
-      images: {
-        columns: { id: true, url: true, name: true },
-        limit: 5,
-        orderBy: (img, { asc }) => asc(img.createdAt),
+  const [sets, imageCounts] = await Promise.all([
+    db.query.imageSet.findMany({
+      where: (is, { eq: e }) => e(is.userId, session.user.id),
+      with: {
+        images: {
+          columns: { id: true, url: true, name: true },
+          limit: 5,
+          orderBy: (img, { asc }) => asc(img.createdAt),
+        },
       },
-    },
-    orderBy: (is, { desc }) => desc(is.createdAt),
-  });
+      orderBy: (is, { desc }) => desc(is.createdAt),
+    }),
+    db
+      .select({ imageSetId: image.imageSetId, count: count() })
+      .from(image)
+      .innerJoin(imageSet, eq(image.imageSetId, imageSet.id))
+      .where(eq(imageSet.userId, session.user.id))
+      .groupBy(image.imageSetId),
+  ]);
+
+  const countMap = new Map(imageCounts.map((r) => [r.imageSetId, r.count]));
 
   return (
     <div className="flex flex-col gap-6">
@@ -64,7 +74,7 @@ export default async function Page() {
                 <CardHeader>
                   <CardTitle className="text-base">{s.name}</CardTitle>
                   <CardDescription>
-                    {s.images.length}{s.images.length === 5 ? "+" : ""} image{s.images.length === 1 ? "" : "s"}
+                    {countMap.get(s.id) ?? 0} image{(countMap.get(s.id) ?? 0) === 1 ? "" : "s"}
                     {" · "}
                     {s.createdAt.toLocaleDateString()}
                   </CardDescription>

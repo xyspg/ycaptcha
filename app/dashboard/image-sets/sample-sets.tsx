@@ -24,7 +24,7 @@ function SampleSetCard({ sample }: { sample: SampleSet }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">{sample.name}</CardTitle>
+        <CardTitle className="text-base">{sample.displayName}</CardTitle>
         <CardDescription>{sample.images.length} images</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">

@@ -1,4 +1,6 @@
 - Ratelimiting
 - i18n
 - Support Audio
-- light/dark mode
+- light/dark mode for widget
+- Passkey
+- Sentry

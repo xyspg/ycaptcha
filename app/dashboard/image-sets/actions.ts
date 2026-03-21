@@ -313,7 +313,7 @@ export async function importSampleSet(slug: string): Promise<void> {
     .insert(imageSet)
     .values({
       userId: session.user.id,
-      name: sample.name,
+      name: sample.displayName,
     })
     .returning({ id: imageSet.id });
 
