@@ -79,5 +79,5 @@ export async function createPuzzle(
     difficulty: parsed.data.difficulty,
   });
 
-  redirect("/dashboard/puzzles");
+  redirect(`/dashboard/sites/${parsed.data.siteId}`);
 }

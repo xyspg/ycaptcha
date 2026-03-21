@@ -40,7 +40,9 @@ export function DemoShowcase() {
   const [order, setOrder] = useState([0, 1, 2]);
   const [hovered, setHovered] = useState(false);
   const [errorMessages, setErrorMessages] = useState<(string | null)[]>([
-    null, null, null,
+    null,
+    null,
+    null,
   ]);
   const [slideDir, setSlideDir] = useState(1);
   const justSwitchedRef = useRef(false);
@@ -99,6 +101,7 @@ export function DemoShowcase() {
         return next;
       });
       toast.success("Verification passed!");
+      cycleForward();
     } else {
       setErrorMessages((prev) => {
         const next = [...prev];
@@ -248,9 +251,7 @@ export function DemoShowcase() {
       </div>
 
       {/* Desktop dot indicators */}
-      <div className="hidden lg:block">
-        {dotIndicators}
-      </div>
+      <div className="hidden lg:block">{dotIndicators}</div>
     </div>
   );
 }

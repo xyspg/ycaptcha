@@ -1,6 +1,14 @@
 "use client";
 
-import { BookOpen, Globe, Home, Images, KeyRound, LogOut, Settings } from "lucide-react";
+import {
+  BookOpen,
+  Globe,
+  Home,
+  Images,
+  KeyRound,
+  LogOut,
+  Settings,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -35,17 +43,27 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <Link href="/dashboard" className="flex justify-center py-1">
-          <Image src="/ycaptcha.webp" alt="yCAPTCHA" width={160} height={48} style={{ height: 'auto' }} priority />
+          <Image
+            src="/ycaptcha.webp"
+            alt="yCAPTCHA"
+            width={160}
+            height={48}
+            style={{ height: "auto" }}
+            priority
+          />
         </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Manage</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1">
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton asChild isActive={pathname.startsWith(item.href)}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith(item.href)}
+                  >
                     <Link href={item.href}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -76,7 +94,10 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={pathname.startsWith("/dashboard/settings")}>
+            <SidebarMenuButton
+              asChild
+              isActive={pathname.startsWith("/dashboard/settings")}
+            >
               <Link href="/dashboard/settings">
                 <Settings />
                 <span>Settings</span>
@@ -102,11 +123,21 @@ export function AppSidebar() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-1 flex-col overflow-hidden">
-                    <span className="truncate text-sm font-medium">{session?.user.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">{session?.user.email}</span>
+                    <span className="truncate text-sm font-medium">
+                      {session?.user.name}
+                    </span>
+                    <span className="truncate text-xs text-muted-foreground">
+                      {session?.user.email}
+                    </span>
                   </div>
                   <button
-                    onClick={() => authClient.signOut({ fetchOptions: { onSuccess: () => router.push("/login") } })}
+                    onClick={() =>
+                      authClient.signOut({
+                        fetchOptions: {
+                          onSuccess: () => router.push("/login"),
+                        },
+                      })
+                    }
                     className="text-muted-foreground hover:text-foreground"
                   >
                     <LogOut className="h-4 w-4" />

@@ -3,9 +3,9 @@
 import { useActionState, useState } from "react"
 import { type InferSelectModel } from "drizzle-orm"
 import Link from "next/link"
-import { Globe, Plus } from "lucide-react"
+import { Globe, Plus, Trash2 } from "lucide-react"
 import { site } from "@/lib/db/app-schema"
-import { createSite, type ActionState } from "./actions"
+import { createSite, deleteSite, type ActionState } from "./actions"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -24,6 +24,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { CopyButton } from "@/components/copy-button"
 
 function CreateSiteSheet() {
@@ -77,20 +84,52 @@ function CreateSiteSheet() {
 }
 
 function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
+  const [deleteOpen, setDeleteOpen] = useState(false)
+
+  const handleDelete = async () => {
+    const fd = new FormData()
+    fd.set("siteId", s.id)
+    await deleteSite(null, fd)
+  }
+
   return (
-    <Link href={`/dashboard/sites/${s.id}`}>
-      <Card className="transition-colors hover:bg-muted/50">
-        <CardHeader>
-          <CardTitle className="text-base">{s.name}</CardTitle>
-          {s.domain && <CardDescription>{s.domain}</CardDescription>}
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-            <span className="truncate">{s.siteKey}</span>
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <Link href={`/dashboard/sites/${s.id}`}>
+            <Card className="transition-colors hover:bg-muted/50">
+              <CardHeader>
+                <CardTitle className="text-base">{s.name}</CardTitle>
+                {s.domain && <CardDescription>{s.domain}</CardDescription>}
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+                  <span className="truncate">{s.siteKey}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            className="text-destructive focus:text-destructive"
+            onSelect={() => setDeleteOpen(true)}
+          >
+            <Trash2 className="size-3.5" />
+            Delete Site
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete Site"
+        description="This will permanently delete this site and all its puzzles. This action cannot be undone."
+        confirmText={s.name}
+        onConfirm={handleDelete}
+      />
+    </>
   )
 }
 

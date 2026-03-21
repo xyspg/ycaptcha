@@ -5,8 +5,8 @@ import { nanoid } from "nanoid"
 import { revalidatePath } from "next/cache"
 import { requireSession } from "@/lib/auth/session"
 import { db } from "@/lib/db"
-import { site } from "@/lib/db/app-schema"
-import { and, eq } from "drizzle-orm"
+import { site, puzzle } from "@/lib/db/app-schema"
+import { and, eq, inArray } from "drizzle-orm"
 import { domainSchema } from "@/lib/validators"
 
 const createSiteSchema = z.object({
@@ -132,4 +132,26 @@ export async function regenerateKeys(
 
   revalidatePath(`/dashboard/sites/${siteId}`)
   return { success: true, message: "Keys regenerated" }
+}
+
+export async function deletePuzzleFromSite(puzzleId: string, siteId: string): Promise<void> {
+  const session = await requireSession()
+
+  // Delete with ownership check in a single query
+  const result = await db
+    .delete(puzzle)
+    .where(
+      and(
+        eq(puzzle.id, puzzleId),
+        inArray(
+          puzzle.siteId,
+          db.select({ id: site.id }).from(site).where(eq(site.userId, session.user.id)),
+        ),
+      ),
+    )
+    .returning({ id: puzzle.id })
+
+  if (result.length === 0) throw new Error("Puzzle not found")
+
+  revalidatePath(`/dashboard/sites/${siteId}`)
 }

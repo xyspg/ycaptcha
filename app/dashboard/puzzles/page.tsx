@@ -12,6 +12,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { PuzzleCard } from "./puzzle-card";
 
 export default async function Page() {
   const session = await requireSession();
@@ -79,26 +80,15 @@ export default async function Page() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {puzzles.map((p) => (
-            <Link key={p.id} href={`/dashboard/puzzles/${p.id}`}>
-            <Card className="transition-colors hover:bg-muted/50">
-              <CardHeader>
-                <CardTitle className="text-base">{p.prompt}</CardTitle>
-                <CardDescription>
-                  {p.site.name} &middot; difficulty {p.difficulty}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Image set: {p.imageSet.name}</span>
-                  <span>&middot;</span>
-                  <span>
-                    {(p.correctImageIds as string[]).length} correct image
-                    {(p.correctImageIds as string[]).length === 1 ? "" : "s"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-            </Link>
+            <PuzzleCard
+              key={p.id}
+              id={p.id}
+              prompt={p.prompt}
+              siteName={p.site.name}
+              difficulty={p.difficulty}
+              imageSetName={p.imageSet.name}
+              correctCount={(p.correctImageIds as string[]).length}
+            />
           ))}
         </div>
       )}

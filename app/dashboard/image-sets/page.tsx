@@ -12,7 +12,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { ImageSetThumbnail } from "@/components/image-set-thumbnail";
+import { ImageSetCard } from "./image-set-card";
 import { SampleSets } from "./sample-sets";
 
 export default async function Page() {
@@ -69,23 +69,14 @@ export default async function Page() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sets.map((s) => (
-            <Link key={s.id} href={`/dashboard/image-sets/${s.id}`}>
-              <Card className="transition-colors hover:bg-muted/50">
-                <CardHeader>
-                  <CardTitle className="text-base">{s.name}</CardTitle>
-                  <CardDescription>
-                    {countMap.get(s.id) ?? 0} image{(countMap.get(s.id) ?? 0) === 1 ? "" : "s"}
-                    {" · "}
-                    {s.createdAt.toLocaleDateString()}
-                  </CardDescription>
-                </CardHeader>
-                {s.images.length > 0 && (
-                  <CardContent>
-                    <ImageSetThumbnail images={s.images} />
-                  </CardContent>
-                )}
-              </Card>
-            </Link>
+            <ImageSetCard
+              key={s.id}
+              id={s.id}
+              name={s.name}
+              imageCount={countMap.get(s.id) ?? 0}
+              createdAt={s.createdAt.toLocaleDateString()}
+              images={s.images}
+            />
           ))}
         </div>
       )}

@@ -5,7 +5,8 @@ import { type InferSelectModel } from "drizzle-orm"
 import Link from "next/link"
 import { ArrowLeft, Eye, EyeOff, RefreshCw, Plus, Trash2 } from "lucide-react"
 import { site, puzzle } from "@/lib/db/app-schema"
-import { updateSite, regenerateKeys, deleteSite, type ActionState } from "../actions"
+import { updateSite, regenerateKeys, deleteSite, deletePuzzleFromSite, type ActionState } from "../actions"
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -17,6 +18,12 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
 import { CopyButton } from "@/components/copy-button"
 import { env } from "@/lib/env"
 
@@ -108,6 +115,51 @@ function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
   )
 }
 
+function PuzzleRow({
+  p,
+  siteId,
+}: {
+  p: InferSelectModel<typeof puzzle>
+  siteId: string
+}) {
+  const [deleteOpen, setDeleteOpen] = useState(false)
+
+  return (
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <Link
+            href={`/dashboard/puzzles/${p.id}`}
+            className="flex items-center justify-between rounded-md border px-3 py-2 transition-colors hover:bg-muted/50"
+          >
+            <span className="text-sm">{p.prompt}</span>
+            <span className="text-xs text-muted-foreground">
+              difficulty: {p.difficulty}
+            </span>
+          </Link>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            className="text-destructive focus:text-destructive"
+            onSelect={() => setDeleteOpen(true)}
+          >
+            <Trash2 className="size-3.5" />
+            Delete Puzzle
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
+
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete Puzzle"
+        description="This will permanently delete this puzzle. Existing captcha sessions using it will stop working."
+        onConfirm={() => deletePuzzleFromSite(p.id, siteId)}
+      />
+    </>
+  )
+}
+
 function PuzzlesSection({
   s,
   puzzles,
@@ -127,15 +179,7 @@ function PuzzlesSection({
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {puzzles.map((p) => (
-          <div
-            key={p.id}
-            className="flex items-center justify-between rounded-md border px-3 py-2"
-          >
-            <span className="text-sm">{p.prompt}</span>
-            <span className="text-xs text-muted-foreground">
-              difficulty: {p.difficulty}
-            </span>
-          </div>
+          <PuzzleRow key={p.id} p={p} siteId={s.id} />
         ))}
         <Button variant="outline" size="sm" asChild>
           <Link href={`/dashboard/puzzles/new?siteId=${s.id}`}>
@@ -147,11 +191,15 @@ function PuzzlesSection({
   )
 }
 
+// SRI hash for public/captcha.js — regenerate with:
+//   cat public/captcha.js | openssl dgst -sha384 -binary | openssl base64 -A
+const CAPTCHA_JS_INTEGRITY = "sha384-RN6M9Cu126BzkffRwsssZA2846dB7Be6ih1yDrjqn/OWkxnzcJc/Z49scIC3nyhp"
+
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
   const siteUrl = env.NEXT_PUBLIC_SITE_URL
   const widgetUrl = `${siteUrl}/widget/${s.siteKey}`
   const snippet = `<div class="y-captcha" data-sitekey="${s.siteKey}"></div>
-<script src="${siteUrl}/captcha.js" async defer></script>`
+<script src="${siteUrl}/captcha.js" integrity="${CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`
 
   return (
     <Card>
@@ -217,62 +265,43 @@ export function SiteDetail({
 }
 
 function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
-  const [, formAction, isPending] = useActionState(deleteSite, null)
-  const [confirming, setConfirming] = useState(false)
-  const [confirmName, setConfirmName] = useState("")
+  const [deleteOpen, setDeleteOpen] = useState(false)
+
+  const handleDelete = async () => {
+    const fd = new FormData()
+    fd.set("siteId", s.id)
+    await deleteSite(null, fd)
+  }
 
   return (
-    <Card className="border-destructive/50">
-      <CardHeader>
-        <CardTitle className="text-destructive">Danger Zone</CardTitle>
-        <CardDescription>
-          Deleting this site will permanently remove all its puzzles and
-          active CAPTCHA widgets will stop working.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {!confirming ? (
+    <>
+      <Card className="border-destructive/50">
+        <CardHeader>
+          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardDescription>
+            Deleting this site will permanently remove all its puzzles and
+            active CAPTCHA widgets will stop working.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => setConfirming(true)}
+            onClick={() => setDeleteOpen(true)}
           >
             <Trash2 className="size-3" /> Delete Site
           </Button>
-        ) : (
-          <div className="flex flex-col gap-3">
-            <p className="text-xs text-destructive font-medium">
-              Type <span className="font-bold">{s.name}</span> to confirm.
-            </p>
-            <Input
-              value={confirmName}
-              onChange={(e) => setConfirmName(e.target.value)}
-              placeholder={s.name}
-              className="text-sm"
-            />
-            <div className="flex gap-2">
-              <form action={formAction}>
-                <input type="hidden" name="siteId" value={s.id} />
-                <Button
-                  type="submit"
-                  variant="destructive"
-                  size="sm"
-                  disabled={confirmName !== s.name || isPending}
-                >
-                  {isPending ? "Deleting..." : "Permanently Delete"}
-                </Button>
-              </form>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => { setConfirming(false); setConfirmName("") }}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Delete Site"
+        description="This will permanently delete this site and all its puzzles. Active CAPTCHA widgets will stop working."
+        confirmText={s.name}
+        onConfirm={handleDelete}
+      />
+    </>
   )
 }
