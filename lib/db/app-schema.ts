@@ -2,6 +2,7 @@ import {
   pgTable,
   text,
   timestamp,
+  boolean,
   integer,
   jsonb,
   index,
@@ -110,6 +111,7 @@ export const puzzle = pgTable(
     correctCount: integer("correct_count").notNull().default(3), // min (or exact) correct images per challenge
     correctCountMax: integer("correct_count_max"), // null = exact mode, non-null = random range [correctCount, correctCountMax]
     difficulty: real("difficulty").notNull().default(0.5),
+    enabled: boolean("enabled").notNull().default(true),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [index("puzzle_siteId_idx").on(table.siteId)],

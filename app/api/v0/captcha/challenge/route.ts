@@ -62,11 +62,11 @@ export async function POST(request: Request) {
     }
   }
 
-  // 2. Pick a random puzzle for this site
+  // 2. Pick a random enabled puzzle for this site
   const [puzzleData] = await db
     .select()
     .from(puzzle)
-    .where(eq(puzzle.siteId, siteData.id))
+    .where(and(eq(puzzle.siteId, siteData.id), eq(puzzle.enabled, true)))
     .orderBy(sql`RANDOM()`)
     .limit(1);
 

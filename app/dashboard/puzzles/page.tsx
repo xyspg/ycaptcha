@@ -88,6 +88,7 @@ export default async function Page() {
               difficulty={p.difficulty}
               imageSetName={p.imageSet.name}
               correctCount={p.correctCount}
+              enabled={p.enabled}
             />
           ))}
         </div>

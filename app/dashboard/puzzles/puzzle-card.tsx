@@ -26,6 +26,7 @@ interface PuzzleCardProps {
   difficulty: number;
   imageSetName: string;
   correctCount: number;
+  enabled: boolean;
 }
 
 export function PuzzleCard({
@@ -35,6 +36,7 @@ export function PuzzleCard({
   difficulty,
   imageSetName,
   correctCount,
+  enabled,
 }: PuzzleCardProps) {
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -49,9 +51,16 @@ export function PuzzleCard({
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <Link href={`/dashboard/puzzles/${id}`}>
-            <Card className="transition-colors hover:bg-muted/50">
+            <Card className={`transition-colors hover:bg-muted/50 ${!enabled ? "opacity-50" : ""}`}>
               <CardHeader>
-                <CardTitle className="text-base">{prompt}</CardTitle>
+                <CardTitle className="text-base">
+                  {prompt}
+                  {!enabled && (
+                    <span className="ml-2 text-xs font-normal text-muted-foreground">
+                      (disabled)
+                    </span>
+                  )}
+                </CardTitle>
                 <CardDescription>
                   {siteName} &middot; difficulty {difficulty}
                 </CardDescription>

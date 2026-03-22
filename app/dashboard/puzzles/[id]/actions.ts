@@ -105,6 +105,22 @@ export async function updatePuzzle(
   return { success: true, message: "Puzzle updated" };
 }
 
+// --- Toggle Enabled ---
+
+export async function togglePuzzleEnabled(puzzleId: string, enabled: boolean) {
+  const session = await requireSession();
+
+  const owned = await requireOwnedPuzzle(puzzleId, session.user.id);
+  if (!owned) return;
+
+  await db
+    .update(puzzle)
+    .set({ enabled })
+    .where(eq(puzzle.id, puzzleId));
+
+  revalidatePath("/dashboard", "layout");
+}
+
 // --- Delete Puzzle ---
 
 export async function deletePuzzle(

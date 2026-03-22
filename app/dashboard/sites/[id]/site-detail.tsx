@@ -1,35 +1,46 @@
-"use client"
+"use client";
 
-import { useActionState, useState } from "react"
-import { type InferSelectModel } from "drizzle-orm"
-import Link from "next/link"
-import { ArrowLeft, Eye, EyeOff, RefreshCw, Plus, Trash2 } from "lucide-react"
-import { site, puzzle } from "@/lib/db/app-schema"
-import { updateSite, regenerateKeys, deleteSite, deletePuzzleFromSite, type ActionState } from "../actions"
-import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
-import { Button } from "@/components/ui/button"
+import { useActionState, useState } from "react";
+import { type InferSelectModel } from "drizzle-orm";
+import Link from "next/link";
+import { ArrowLeft, Eye, EyeOff, RefreshCw, Plus, Trash2 } from "lucide-react";
+import { site, puzzle } from "@/lib/db/app-schema";
+import {
+  updateSite,
+  regenerateKeys,
+  deleteSite,
+  deletePuzzleFromSite,
+  type ActionState,
+} from "../actions";
+import { togglePuzzleEnabled } from "../../puzzles/[id]/actions";
+import { Switch } from "@/components/ui/switch";
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu"
-import { CopyButton } from "@/components/copy-button"
-import { env } from "@/lib/env"
+} from "@/components/ui/context-menu";
+import { CopyButton } from "@/components/copy-button";
+import { env } from "@/lib/env";
 
 function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
-  const [showSecret, setShowSecret] = useState(false)
-  const [regenState, regenAction, isRegenerating] = useActionState(regenerateKeys, null)
+  const [showSecret, setShowSecret] = useState(false);
+  const [regenState, regenAction, isRegenerating] = useActionState(
+    regenerateKeys,
+    null,
+  );
 
   return (
     <Card>
@@ -41,14 +52,18 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-muted-foreground">Site Key (public)</Label>
+          <Label className="text-xs text-muted-foreground">
+            Site Key (public)
+          </Label>
           <div className="flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm">
             <span className="flex-1 truncate">{s.siteKey}</span>
             <CopyButton value={s.siteKey} />
           </div>
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label className="text-xs text-muted-foreground">Secret Key (private)</Label>
+          <Label className="text-xs text-muted-foreground">
+            Secret Key (private)
+          </Label>
           <div className="flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm">
             <span className="flex-1 truncate">
               {showSecret ? s.secretKey : "sk_" + "\u2022".repeat(32)}
@@ -58,7 +73,11 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
               size="icon-xs"
               onClick={() => setShowSecret(!showSecret)}
             >
-              {showSecret ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
+              {showSecret ? (
+                <EyeOff className="size-3" />
+              ) : (
+                <Eye className="size-3" />
+              )}
             </Button>
             <CopyButton value={s.secretKey} />
           </div>
@@ -75,11 +94,11 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
-  const [state, formAction, isPending] = useActionState(updateSite, null)
+  const [state, formAction, isPending] = useActionState(updateSite, null);
 
   return (
     <Card>
@@ -98,9 +117,17 @@ function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="domain">Domain</Label>
-            <Input id="domain" name="domain" defaultValue={s.domain ?? ""} placeholder="example.com" required />
+            <Input
+              id="domain"
+              name="domain"
+              defaultValue={s.domain ?? ""}
+              placeholder="example.com"
+              required
+            />
             {state?.errors?.domain && (
-              <p className="text-xs text-destructive">{state.errors.domain[0]}</p>
+              <p className="text-xs text-destructive">
+                {state.errors.domain[0]}
+              </p>
             )}
           </div>
           <Button type="submit" size="sm" disabled={isPending}>
@@ -112,31 +139,44 @@ function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function PuzzleRow({
   p,
   siteId,
 }: {
-  p: InferSelectModel<typeof puzzle>
-  siteId: string
+  p: InferSelectModel<typeof puzzle>;
+  siteId: string;
 }) {
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [enabled, setEnabled] = useState(p.enabled);
 
   return (
     <>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <Link
-            href={`/dashboard/puzzles/${p.id}`}
-            className="flex items-center justify-between rounded-md border px-3 py-2 transition-colors hover:bg-muted/50"
+          <div
+            className={`flex items-center justify-between rounded-md border px-3 py-2 transition-colors hover:bg-muted/50 ${!enabled ? "opacity-50" : ""}`}
           >
-            <span className="text-sm">{p.prompt}</span>
-            <span className="text-xs text-muted-foreground">
-              difficulty: {p.difficulty}
-            </span>
-          </Link>
+            <Link
+              href={`/dashboard/puzzles/${p.id}`}
+              className="flex min-w-0 flex-1 items-center justify-between gap-2"
+            >
+              <span className="text-sm">{p.prompt}</span>
+              <span className="text-xs text-muted-foreground">
+                difficulty: {p.difficulty}
+              </span>
+            </Link>
+            <Switch
+              checked={enabled}
+              onCheckedChange={(checked) => {
+                setEnabled(checked);
+                togglePuzzleEnabled(p.id, checked);
+              }}
+              className="ml-3 shrink-0"
+            />
+          </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem
@@ -157,15 +197,15 @@ function PuzzleRow({
         onConfirm={() => deletePuzzleFromSite(p.id, siteId)}
       />
     </>
-  )
+  );
 }
 
 function PuzzlesSection({
   s,
   puzzles,
 }: {
-  s: InferSelectModel<typeof site>
-  puzzles: InferSelectModel<typeof puzzle>[]
+  s: InferSelectModel<typeof site>;
+  puzzles: InferSelectModel<typeof puzzle>[];
 }) {
   return (
     <Card>
@@ -188,18 +228,19 @@ function PuzzlesSection({
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 // SRI hash for public/captcha.js — regenerate with:
 //   cat public/captcha.js | openssl dgst -sha384 -binary | openssl base64 -A
-const CAPTCHA_JS_INTEGRITY = "sha384-a73YP8tlzlqGToYP+QiCYMQOrfR13zM7EUpUI60nEywSo7A183MuJ5nGs7SnoPHx"
+const CAPTCHA_JS_INTEGRITY =
+  "sha384-a73YP8tlzlqGToYP+QiCYMQOrfR13zM7EUpUI60nEywSo7A183MuJ5nGs7SnoPHx";
 
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
-  const siteUrl = env.NEXT_PUBLIC_SITE_URL
-  const widgetUrl = `${siteUrl}/widget/${s.siteKey}`
+  const siteUrl = env.NEXT_PUBLIC_SITE_URL;
+  const widgetUrl = `${siteUrl}/widget/${s.siteKey}`;
   const snippet = `<div class="y-captcha" data-sitekey="${s.siteKey}"></div>
-<script src="${siteUrl}/captcha.js" integrity="${CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`
+<script src="${siteUrl}/captcha.js" integrity="${CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`;
 
   return (
     <Card>
@@ -228,15 +269,15 @@ function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export function SiteDetail({
   site: s,
   puzzles,
 }: {
-  site: InferSelectModel<typeof site>
-  puzzles: InferSelectModel<typeof puzzle>[]
+  site: InferSelectModel<typeof site>;
+  puzzles: InferSelectModel<typeof puzzle>[];
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -261,17 +302,17 @@ export function SiteDetail({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleDelete = async () => {
-    const fd = new FormData()
-    fd.set("siteId", s.id)
-    await deleteSite(null, fd)
-  }
+    const fd = new FormData();
+    fd.set("siteId", s.id);
+    await deleteSite(null, fd);
+  };
 
   return (
     <>
@@ -303,5 +344,5 @@ function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
         onConfirm={handleDelete}
       />
     </>
-  )
+  );
 }
