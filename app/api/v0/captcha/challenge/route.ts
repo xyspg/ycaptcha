@@ -42,6 +42,12 @@ export async function POST(request: Request) {
   }
 
   // 1b. Verify parent origin matches the site's domain.
+  if (siteData.domain && !body.origin) {
+    return NextResponse.json(
+      { error: "Missing origin" },
+      { status: 400 },
+    );
+  }
   if (siteData.domain && body.origin) {
     try {
       const parentHost = new URL(body.origin).hostname;
@@ -141,7 +147,7 @@ export async function POST(request: Request) {
     siteId: siteData.id,
     imageUrls: allImages.map((img) => img.url),
     imageIds: allImages.map((img) => img.id),
-    correctImageIds: allCorrectIds,
+    correctImageIds: correctImages.map((img) => img.id),
     correctCount,
     difficulty: puzzleData.difficulty,
   });

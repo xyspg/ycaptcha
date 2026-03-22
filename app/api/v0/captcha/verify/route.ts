@@ -46,15 +46,17 @@ export async function POST(request: Request) {
     );
   }
 
-  // 2. Verify
+  // 2. Verify — only count IDs that were actually displayed in this challenge
+  const displayedIds = new Set(session.imageIds);
   const correctIds = new Set(session.correctImageIds);
+  const validSelectedIds = selectedIds.filter((id) => displayedIds.has(id));
 
   // Anti-bot: if all selected, auto fail
-  if (selectedIds.length === CAPTCHA_GRID_SIZE) {
+  if (validSelectedIds.length === CAPTCHA_GRID_SIZE) {
     return NextResponse.json({ success: false });
   }
 
-  const selectedCorrectCount = selectedIds.filter((id) => correctIds.has(id)).length;
+  const selectedCorrectCount = validSelectedIds.filter((id) => correctIds.has(id)).length;
   const requiredCount = Math.ceil(session.correctCount * session.difficulty);
 
   if (selectedCorrectCount < requiredCount) {
