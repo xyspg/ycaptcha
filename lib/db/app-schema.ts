@@ -107,7 +107,8 @@ export const puzzle = pgTable(
       .notNull()
       .default([]),
     incorrectImageIds: jsonb("incorrect_image_ids").$type<string[]>(), // null = random from pool
-    correctCount: integer("correct_count").notNull().default(3), // how many correct images shown per challenge (1-8)
+    correctCount: integer("correct_count").notNull().default(3), // min (or exact) correct images per challenge
+    correctCountMax: integer("correct_count_max"), // null = exact mode, non-null = random range [correctCount, correctCountMax]
     difficulty: real("difficulty").notNull().default(0.5),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },

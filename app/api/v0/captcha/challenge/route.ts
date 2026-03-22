@@ -78,7 +78,9 @@ export async function POST(request: Request) {
   }
 
   const allCorrectIds = puzzleData.correctImageIds as string[];
-  const correctCount = puzzleData.correctCount;
+  const min = puzzleData.correctCount;
+  const max = puzzleData.correctCountMax ?? min;
+  const correctCount = min + Math.floor(Math.random() * (max - min + 1));
 
   // 3. Randomly pick `correctCount` correct images from the full pool
   const selectedCorrectIds = shuffle(allCorrectIds).slice(0, correctCount);
