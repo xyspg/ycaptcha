@@ -35,6 +35,7 @@ export default async function Page({
         difficulty: puzzleData.puzzle.difficulty,
         correctImageIds: puzzleData.puzzle.correctImageIds as string[],
         incorrectImageIds: puzzleData.puzzle.incorrectImageIds as string[] | null,
+        correctCount: puzzleData.puzzle.correctCount,
         imageSetId: puzzleData.puzzle.imageSetId,
       }}
       siteName={puzzleData.site.name}

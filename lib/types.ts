@@ -8,8 +8,8 @@ export type ActionState = {
 /** Number of images in the CAPTCHA grid (3x3) */
 export const CAPTCHA_GRID_SIZE = 9;
 
-/** Max correct images allowed (grid size - 1, since all-selected = auto fail) */
-export const CAPTCHA_MAX_CORRECT = CAPTCHA_GRID_SIZE - 1;
+/** Default number of correct images shown per challenge */
+export const DEFAULT_CORRECT_COUNT = 3;
 
 /** Session TTL in milliseconds (5 minutes) */
 export const CAPTCHA_SESSION_TTL_MS = 5 * 60 * 1000;

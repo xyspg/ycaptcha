@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   CAPTCHA_GRID_SIZE,
-  CAPTCHA_MAX_CORRECT,
+  DEFAULT_CORRECT_COUNT,
   CAPTCHA_SESSION_TTL_MS,
   DIFFICULTY_PRESETS,
 } from "@/lib/types";
@@ -11,8 +11,8 @@ describe("CAPTCHA constants", () => {
     expect(CAPTCHA_GRID_SIZE).toBe(9);
   });
 
-  it("CAPTCHA_MAX_CORRECT is 8", () => {
-    expect(CAPTCHA_MAX_CORRECT).toBe(8);
+  it("DEFAULT_CORRECT_COUNT is 3", () => {
+    expect(DEFAULT_CORRECT_COUNT).toBe(3);
   });
 
   it("CAPTCHA_SESSION_TTL_MS is 5 minutes", () => {

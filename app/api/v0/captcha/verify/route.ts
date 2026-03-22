@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       sessionId: captchaSession.id,
       sessionToken: captchaSession.token,
       correctImageIds: puzzle.correctImageIds,
+      correctCount: puzzle.correctCount,
       difficulty: puzzle.difficulty,
     })
     .from(captchaSession)
@@ -63,10 +64,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false });
   }
 
-  const correctCount = selectedIds.filter((id) => correctIds.has(id)).length;
-  const requiredCount = Math.ceil(correctIds.size * row.difficulty);
+  const selectedCorrectCount = selectedIds.filter((id) => correctIds.has(id)).length;
+  const requiredCount = Math.ceil(row.correctCount * row.difficulty);
 
-  if (correctCount < requiredCount) {
+  if (selectedCorrectCount < requiredCount) {
     return NextResponse.json({ success: false });
   }
 

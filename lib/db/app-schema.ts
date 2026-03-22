@@ -3,6 +3,7 @@ import {
   text,
   timestamp,
   boolean,
+  integer,
   jsonb,
   index,
   real,
@@ -107,6 +108,7 @@ export const puzzle = pgTable(
       .notNull()
       .default([]),
     incorrectImageIds: jsonb("incorrect_image_ids").$type<string[]>(), // null = random from pool
+    correctCount: integer("correct_count").notNull().default(3), // how many correct images shown per challenge (1-8)
     difficulty: real("difficulty").notNull().default(0.5),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },

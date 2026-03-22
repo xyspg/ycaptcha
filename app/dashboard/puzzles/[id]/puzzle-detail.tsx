@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, Check, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { updatePuzzle, deletePuzzle } from "./actions";
-import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE, DIFFICULTY_PRESETS } from "@/lib/types";
+import { CAPTCHA_GRID_SIZE, DIFFICULTY_PRESETS } from "@/lib/types";
 import { PuzzlePreviewPanel } from "@/components/puzzle-preview";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
@@ -27,12 +26,12 @@ interface PuzzleDetailProps {
     difficulty: number;
     correctImageIds: string[];
     incorrectImageIds: string[] | null;
+    correctCount: number;
     imageSetId: string;
   };
   siteName: string;
   images: { id: string; url: string; name: string | null }[];
 }
-
 
 export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps) {
   const [prompt, setPrompt] = useState(p.prompt);
@@ -45,6 +44,7 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
   const [handPickIncorrect, setHandPickIncorrect] = useState(
     p.incorrectImageIds !== null,
   );
+  const [correctCount, setCorrectCount] = useState(p.correctCount);
   const [difficulty, setDifficulty] = useState(p.difficulty);
 
   const [state, formAction, isPending] = useActionState(updatePuzzle, null);
@@ -59,7 +59,6 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
       if (next.has(id)) {
         next.delete(id);
       } else {
-        if (next.size >= CAPTCHA_MAX_CORRECT) return prev;
         next.add(id);
         setIncorrectIds((pr) => {
           const n = new Set(pr);
@@ -71,9 +70,6 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
     });
   };
 
-  const requiredCorrect = Math.ceil(correctIds.size * difficulty);
-  const neededIncorrect = CAPTCHA_GRID_SIZE - correctIds.size;
-
   const toggleIncorrect = (id: string) => {
     if (correctIds.has(id)) return;
     setIncorrectIds((prev) => {
@@ -81,14 +77,15 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
       if (next.has(id)) {
         next.delete(id);
       } else {
-        if (next.size >= neededIncorrect) return prev;
         next.add(id);
       }
       return next;
     });
   };
-  const incorrectSatisfied =
-    !handPickIncorrect || incorrectIds.size >= neededIncorrect;
+
+  const maxCorrectCount = Math.min(correctIds.size, CAPTCHA_GRID_SIZE - 1);
+  const effectiveCorrectCount = Math.min(correctCount, maxCorrectCount) || correctCount;
+  const requiredCorrect = Math.ceil(effectiveCorrectCount * difficulty);
 
   return (
     <div className="flex flex-col gap-6">
@@ -124,6 +121,7 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
               : ""
           }
         />
+        <input type="hidden" name="correctCount" value={effectiveCorrectCount} />
         <input type="hidden" name="difficulty" value={difficulty} />
 
         {/* Prompt */}
@@ -156,11 +154,12 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
             <CardTitle>
               Correct Images{" "}
               <span className="text-sm font-normal text-muted-foreground">
-                ({correctIds.size}/{CAPTCHA_MAX_CORRECT})
+                ({correctIds.size} tagged)
               </span>
             </CardTitle>
             <CardDescription>
-              Click images to toggle correct/incorrect. Max {CAPTCHA_MAX_CORRECT}.
+              Tag all images that are correct answers. Each challenge will
+              randomly show {effectiveCorrectCount} of them.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -201,6 +200,39 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
             )}
           </CardContent>
         </Card>
+
+        {/* Correct Count per Challenge */}
+        {correctIds.size > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Correct Images per Challenge</CardTitle>
+              <CardDescription>
+                How many correct images to show in each 3x3 grid.
+                The rest will be filled with random incorrect images.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <Slider
+                  value={[effectiveCorrectCount]}
+                  onValueChange={([v]) => setCorrectCount(v)}
+                  min={1}
+                  max={maxCorrectCount}
+                  step={1}
+                  className="flex-1"
+                />
+                <span className="w-8 text-right text-sm font-mono">
+                  {effectiveCorrectCount}
+                </span>
+              </div>
+              {state?.errors?.correctCount && (
+                <p className="mt-2 text-xs text-destructive">
+                  {state.errors.correctCount[0]}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Hand-pick incorrect */}
         {correctIds.size > 0 && (
@@ -256,14 +288,8 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
                       );
                     })}
                 </div>
-                <p className={cn(
-                  "mt-2 text-xs",
-                  handPickIncorrect && incorrectIds.size < neededIncorrect
-                    ? "text-destructive"
-                    : "text-muted-foreground",
-                )}>
-                  {incorrectIds.size} of {neededIncorrect} required incorrect image
-                  {neededIncorrect === 1 ? "" : "s"} selected
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {incorrectIds.size} incorrect image{incorrectIds.size === 1 ? "" : "s"} selected
                 </p>
               </CardContent>
             )}
@@ -280,8 +306,8 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
                 <span className="font-medium text-foreground">
                   {requiredCorrect}
                 </span>{" "}
-                of {correctIds.size} correct image
-                {correctIds.size === 1 ? "" : "s"} to pass.
+                of {effectiveCorrectCount} correct image
+                {effectiveCorrectCount === 1 ? "" : "s"} to pass.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
@@ -321,7 +347,7 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
         <div className="flex items-center gap-3">
           <Button
             type="submit"
-            disabled={isPending || correctIds.size === 0 || !incorrectSatisfied}
+            disabled={isPending || correctIds.size === 0}
           >
             {isPending ? "Saving..." : "Save Changes"}
           </Button>
@@ -365,8 +391,8 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
           correctIds={correctIds}
           incorrectIds={incorrectIds}
           handPickIncorrect={handPickIncorrect}
+          correctCount={effectiveCorrectCount}
           difficulty={difficulty}
-          incorrectSatisfied={incorrectSatisfied}
         />
       </div>
     </div>

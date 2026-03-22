@@ -6,8 +6,8 @@ import { ArrowLeft, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createPuzzle } from "./actions";
 import {
-  CAPTCHA_MAX_CORRECT,
   CAPTCHA_GRID_SIZE,
+  DEFAULT_CORRECT_COUNT,
   DIFFICULTY_PRESETS,
 } from "@/lib/types";
 import { PuzzlePreviewPanel } from "@/components/puzzle-preview";
@@ -45,6 +45,7 @@ export function CreatePuzzleForm({
   const [correctIds, setCorrectIds] = useState<Set<string>>(new Set());
   const [incorrectIds, setIncorrectIds] = useState<Set<string>>(new Set());
   const [handPickIncorrect, setHandPickIncorrect] = useState(false);
+  const [correctCount, setCorrectCount] = useState(DEFAULT_CORRECT_COUNT);
   const [difficulty, setDifficulty] = useState(0.5);
   const [prompt, setPrompt] = useState("");
 
@@ -58,7 +59,6 @@ export function CreatePuzzleForm({
       if (next.has(id)) {
         next.delete(id);
       } else {
-        if (next.size >= CAPTCHA_MAX_CORRECT) return prev;
         next.add(id);
         setIncorrectIds((p) => {
           const n = new Set(p);
@@ -77,7 +77,6 @@ export function CreatePuzzleForm({
       if (next.has(id)) {
         next.delete(id);
       } else {
-        if (next.size >= neededIncorrect) return prev;
         next.add(id);
       }
       return next;
@@ -90,10 +89,10 @@ export function CreatePuzzleForm({
     setIncorrectIds(new Set());
   };
 
-  const requiredCorrect = Math.ceil(correctIds.size * difficulty);
-  const neededIncorrect = CAPTCHA_GRID_SIZE - correctIds.size;
-  const incorrectSatisfied =
-    !handPickIncorrect || incorrectIds.size >= neededIncorrect;
+  // Clamp correctCount to valid range when correct images change
+  const maxCorrectCount = Math.min(correctIds.size, CAPTCHA_GRID_SIZE - 1);
+  const effectiveCorrectCount = Math.min(correctCount, maxCorrectCount) || correctCount;
+  const requiredCorrect = Math.ceil(effectiveCorrectCount * difficulty);
 
   return (
     <div className="flex flex-col gap-6">
@@ -125,6 +124,7 @@ export function CreatePuzzleForm({
                   : ""
               }
             />
+            <input type="hidden" name="correctCount" value={effectiveCorrectCount} />
             <input type="hidden" name="difficulty" value={difficulty} />
 
             {/* Site Selection */}
@@ -248,12 +248,12 @@ export function CreatePuzzleForm({
                   <CardTitle>
                     Select Correct Images{" "}
                     <span className="text-sm font-normal text-muted-foreground">
-                      ({correctIds.size}/{CAPTCHA_MAX_CORRECT})
+                      ({correctIds.size} tagged)
                     </span>
                   </CardTitle>
                   <CardDescription>
-                    Click images that are the correct answers. Max{" "}
-                    {CAPTCHA_MAX_CORRECT}.
+                    Tag all images that are correct answers. Each challenge will
+                    randomly show {effectiveCorrectCount} of them.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -293,6 +293,39 @@ export function CreatePuzzleForm({
                   {state?.errors?.correctImageIds && (
                     <p className="mt-2 text-xs text-destructive">
                       {state.errors.correctImageIds[0]}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Correct Count per Challenge */}
+            {correctIds.size > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Correct Images per Challenge</CardTitle>
+                  <CardDescription>
+                    How many correct images to show in each 3x3 grid.
+                    The rest will be filled with random incorrect images.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4">
+                    <Slider
+                      value={[effectiveCorrectCount]}
+                      onValueChange={([v]) => setCorrectCount(v)}
+                      min={1}
+                      max={maxCorrectCount}
+                      step={1}
+                      className="flex-1"
+                    />
+                    <span className="w-8 text-right text-sm font-mono">
+                      {effectiveCorrectCount}
+                    </span>
+                  </div>
+                  {state?.errors?.correctCount && (
+                    <p className="mt-2 text-xs text-destructive">
+                      {state.errors.correctCount[0]}
                     </p>
                   )}
                 </CardContent>
@@ -357,17 +390,8 @@ export function CreatePuzzleForm({
                           );
                         })}
                     </div>
-                    <p
-                      className={cn(
-                        "mt-2 text-xs",
-                        handPickIncorrect && incorrectIds.size < neededIncorrect
-                          ? "text-destructive"
-                          : "text-muted-foreground",
-                      )}
-                    >
-                      {incorrectIds.size} of {neededIncorrect} required
-                      incorrect image
-                      {neededIncorrect === 1 ? "" : "s"} selected
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      {incorrectIds.size} incorrect image{incorrectIds.size === 1 ? "" : "s"} selected
                     </p>
                   </CardContent>
                 )}
@@ -384,8 +408,8 @@ export function CreatePuzzleForm({
                     <span className="font-medium text-foreground">
                       {requiredCorrect}
                     </span>{" "}
-                    of {correctIds.size} correct image
-                    {correctIds.size === 1 ? "" : "s"} to pass.
+                    of {effectiveCorrectCount} correct image
+                    {effectiveCorrectCount === 1 ? "" : "s"} to pass.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
@@ -429,8 +453,7 @@ export function CreatePuzzleForm({
                   isPending ||
                   correctIds.size === 0 ||
                   !selectedSetId ||
-                  !selectedSiteId ||
-                  !incorrectSatisfied
+                  !selectedSiteId
                 }
               >
                 {isPending ? "Creating..." : "Create Puzzle"}
@@ -449,8 +472,8 @@ export function CreatePuzzleForm({
           correctIds={correctIds}
           incorrectIds={incorrectIds}
           handPickIncorrect={handPickIncorrect}
+          correctCount={effectiveCorrectCount}
           difficulty={difficulty}
-          incorrectSatisfied={incorrectSatisfied}
         />
       </div>
     </div>

@@ -87,7 +87,7 @@ export default async function Page() {
               siteName={p.site.name}
               difficulty={p.difficulty}
               imageSetName={p.imageSet.name}
-              correctCount={(p.correctImageIds as string[]).length}
+              correctCount={p.correctCount}
             />
           ))}
         </div>

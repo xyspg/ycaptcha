@@ -13,6 +13,7 @@ interface PuzzlePreviewProps {
   correctIds: Set<string>;
   incorrectIds: Set<string>;
   handPickIncorrect: boolean;
+  correctCount: number;
   difficulty: number;
 }
 
@@ -22,27 +23,36 @@ export function PuzzlePreview({
   correctIds,
   incorrectIds,
   handPickIncorrect,
+  correctCount,
   difficulty,
 }: PuzzlePreviewProps) {
   const [phase, setPhase] = useState<"idle" | "loading" | "challenge" | "verified">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const buildGrid = () => {
-    const correct = images.filter((img) => correctIds.has(img.id));
+    // Pick `correctCount` random correct images
+    const allCorrect = images.filter((img) => correctIds.has(img.id));
+    const selectedCorrect = shuffle(allCorrect).slice(0, correctCount);
+    const selectedCorrectIds = new Set(selectedCorrect.map((img) => img.id));
+
+    // Fill remaining with incorrect images
     let incorrect: typeof images;
     if (handPickIncorrect) {
-      incorrect = images.filter((img) => incorrectIds.has(img.id));
+      incorrect = shuffle(images.filter((img) => incorrectIds.has(img.id)));
     } else {
       incorrect = shuffle(images.filter((img) => !correctIds.has(img.id)));
     }
-    const needed = CAPTCHA_GRID_SIZE - correct.length;
-    return shuffle([...correct, ...incorrect.slice(0, needed)]);
+    const needed = CAPTCHA_GRID_SIZE - selectedCorrect.length;
+    return {
+      grid: shuffle([...selectedCorrect, ...incorrect.slice(0, needed)]),
+      shownCorrectIds: selectedCorrectIds,
+    };
   };
 
-  const [previewImages, setPreviewImages] = useState(buildGrid);
+  const [preview, setPreview] = useState(buildGrid);
 
   const reshuffleGrid = () => {
-    setPreviewImages(buildGrid());
+    setPreview(buildGrid());
   };
 
   const handleRequestChallenge = () => {
@@ -52,16 +62,16 @@ export function PuzzlePreview({
   };
 
   const handleVerify = (selectedIds: string[]) => {
-    const correctCount = selectedIds.filter((id) => correctIds.has(id)).length;
-    const requiredCount = Math.ceil(correctIds.size * difficulty);
+    const selectedCorrectCount = selectedIds.filter((id) => preview.shownCorrectIds.has(id)).length;
+    const requiredCount = Math.ceil(correctCount * difficulty);
     const allSelected = selectedIds.length === CAPTCHA_GRID_SIZE;
-    const passed = !allSelected && correctCount >= requiredCount;
+    const passed = !allSelected && selectedCorrectCount >= requiredCount;
 
     if (passed) {
       setPhase("verified");
     } else {
       setErrorMessage("Please try again.");
-      setPreviewImages(buildGrid());
+      setPreview(buildGrid());
     }
   };
 
@@ -79,9 +89,9 @@ export function PuzzlePreview({
         />
       ) : phase === "challenge" ? (
         <CaptchaWidget
-          key={previewImages.map((i) => i.id).join()}
+          key={preview.grid.map((i) => i.id).join()}
           prompt={prompt || "..."}
-          images={previewImages.map((img) => ({ id: img.id, url: img.url }))}
+          images={preview.grid.map((img) => ({ id: img.id, url: img.url }))}
           onVerify={handleVerify}
           onRefresh={reshuffleGrid}
           errorMessage={errorMessage}
@@ -114,27 +124,27 @@ export function PuzzlePreviewPanel({
   correctIds,
   incorrectIds,
   handPickIncorrect,
+  correctCount,
   difficulty,
-  incorrectSatisfied,
 }: {
   prompt: string;
   images: { id: string; url: string; name: string | null }[];
   correctIds: Set<string>;
   incorrectIds: Set<string>;
   handPickIncorrect: boolean;
+  correctCount: number;
   difficulty: number;
-  incorrectSatisfied: boolean;
 }) {
   const previewKey = useMemo(
     () =>
-      `${[...correctIds].sort().join()}-${[...incorrectIds].sort().join()}-${handPickIncorrect}-${difficulty}`,
-    [correctIds, incorrectIds, handPickIncorrect, difficulty],
+      `${[...correctIds].sort().join()}-${[...incorrectIds].sort().join()}-${handPickIncorrect}-${correctCount}-${difficulty}`,
+    [correctIds, incorrectIds, handPickIncorrect, correctCount, difficulty],
   );
 
   return (
     <div className="hidden w-[370px] shrink-0 lg:block">
       <div className="sticky top-6">
-        {correctIds.size > 0 && incorrectSatisfied ? (
+        {correctIds.size > 0 ? (
           <PuzzlePreview
             key={previewKey}
             prompt={prompt}
@@ -142,6 +152,7 @@ export function PuzzlePreviewPanel({
             correctIds={correctIds}
             incorrectIds={incorrectIds}
             handPickIncorrect={handPickIncorrect}
+            correctCount={correctCount}
             difficulty={difficulty}
           />
         ) : (

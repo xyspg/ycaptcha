@@ -61,8 +61,7 @@ export function PuzzleCard({
                   <span>Image set: {imageSetName}</span>
                   <span>&middot;</span>
                   <span>
-                    {correctCount} correct image
-                    {correctCount === 1 ? "" : "s"}
+                    {correctCount} correct per challenge
                   </span>
                 </div>
               </CardContent>

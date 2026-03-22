@@ -15,7 +15,8 @@ import { shuffle } from "@/lib/utils";
  * Flow:
  * 1. Look up site by siteKey
  * 2. Pick a random puzzle for that site
- * 3. Assemble 9 images: correctImageIds + fill from pool (or incorrectImageIds)
+ * 3. Randomly pick `correctCount` from the puzzle's correct pool,
+ *    then fill remaining slots from incorrect/random images
  * 4. Create a captchaSession with 5-min expiry
  * 5. Return shuffled images + session token
  */
@@ -36,9 +37,6 @@ export async function POST(request: Request) {
   }
 
   // 1b. Verify parent origin matches the site's domain.
-  // The widget iframe always runs on our domain, so Origin headers are useless.
-  // Instead, captcha.js passes the parent page's hostname via the request body.
-  // If origin is not provided (dashboard preview, server-side), skip the check.
   if (siteData.domain && body.origin) {
     try {
       const parentHost = new URL(body.origin).hostname;
@@ -52,7 +50,6 @@ export async function POST(request: Request) {
         );
       }
     } catch {
-      // Malformed origin — reject
       return NextResponse.json(
         { error: "Invalid origin" },
         { status: 400 },
@@ -75,27 +72,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const correctIds = puzzleData.correctImageIds as string[];
+  const allCorrectIds = puzzleData.correctImageIds as string[];
+  const correctCount = puzzleData.correctCount;
 
-  // 3. Get correct images
-  const correctImages = correctIds.length > 0
+  // 3. Randomly pick `correctCount` correct images from the full pool
+  const selectedCorrectIds = shuffle(allCorrectIds).slice(0, correctCount);
+
+  const correctImages = selectedCorrectIds.length > 0
     ? await db
         .select({ id: image.id, url: image.url })
         .from(image)
         .where(
           and(
             eq(image.imageSetId, puzzleData.imageSetId),
-            inArray(image.id, correctIds),
+            inArray(image.id, selectedCorrectIds),
           ),
         )
     : [];
 
-  // 4. Get incorrect images (either specified or random from pool)
+  // 4. Get incorrect images to fill remaining slots
   const neededIncorrect = CAPTCHA_GRID_SIZE - correctImages.length;
   let incorrectImages: { id: string; url: string }[] = [];
 
   if (puzzleData.incorrectImageIds) {
-    // Use hand-picked incorrect images
+    // Use hand-picked incorrect images (random subset)
     const incorrectIds = puzzleData.incorrectImageIds as string[];
     incorrectImages = await db
       .select({ id: image.id, url: image.url })
@@ -109,15 +109,15 @@ export async function POST(request: Request) {
       .orderBy(sql`RANDOM()`)
       .limit(neededIncorrect);
   } else {
-    // Random from pool, excluding correct images
+    // Random from pool, excluding ALL correct images (not just selected ones)
     incorrectImages = await db
       .select({ id: image.id, url: image.url })
       .from(image)
       .where(
         and(
           eq(image.imageSetId, puzzleData.imageSetId),
-          ...(correctIds.length > 0
-            ? [notInArray(image.id, correctIds)]
+          ...(allCorrectIds.length > 0
+            ? [notInArray(image.id, allCorrectIds)]
             : []),
         ),
       )

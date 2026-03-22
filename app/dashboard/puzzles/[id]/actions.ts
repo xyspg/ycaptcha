@@ -8,7 +8,7 @@ import { db } from "@/lib/db";
 import { puzzle, site } from "@/lib/db/app-schema";
 import { and, eq } from "drizzle-orm";
 import type { ActionState } from "@/lib/types";
-import { CAPTCHA_MAX_CORRECT, CAPTCHA_GRID_SIZE } from "@/lib/types";
+import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
 /** Verify puzzle belongs to user via site ownership */
 async function requireOwnedPuzzle(puzzleId: string, userId: string) {
@@ -28,20 +28,18 @@ const updatePuzzleSchema = z
     prompt: z.string().min(1, "Prompt is required").max(200, "Prompt is too long"),
     correctImageIds: z
       .array(z.string())
-      .min(1, "Select at least 1 correct image")
-      .max(CAPTCHA_MAX_CORRECT, `Maximum ${CAPTCHA_MAX_CORRECT} correct images`),
+      .min(1, "Select at least 1 correct image"),
     incorrectImageIds: z.array(z.string()).nullable(),
+    correctCount: z.number().int().min(1).max(CAPTCHA_GRID_SIZE - 1),
     difficulty: z.number().min(0.1).max(1),
   })
   .refine(
     (data) => {
-      if (!data.incorrectImageIds) return true;
-      const needed = CAPTCHA_GRID_SIZE - data.correctImageIds.length;
-      return data.incorrectImageIds.length >= needed;
+      return data.correctCount <= data.correctImageIds.length;
     },
     {
-      message: `Hand-picked incorrect images must fill the remaining grid slots`,
-      path: ["incorrectImageIds"],
+      message: "Correct count per challenge cannot exceed total correct images",
+      path: ["correctCount"],
     },
   );
 
@@ -60,6 +58,7 @@ export async function updatePuzzle(
     incorrectImageIds: formData.get("incorrectImageIds")
       ? JSON.parse(formData.get("incorrectImageIds") as string)
       : null,
+    correctCount: Number(formData.get("correctCount")),
     difficulty: Number(formData.get("difficulty")),
   };
 
@@ -80,6 +79,7 @@ export async function updatePuzzle(
       prompt: parsed.data.prompt,
       correctImageIds: parsed.data.correctImageIds,
       incorrectImageIds: parsed.data.incorrectImageIds,
+      correctCount: parsed.data.correctCount,
       difficulty: parsed.data.difficulty,
     })
     .where(eq(puzzle.id, parsed.data.puzzleId));

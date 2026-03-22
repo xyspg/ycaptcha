@@ -5,7 +5,9 @@ description: Verify yCAPTCHA tokens on your server using the Siteverify API.
 
 After the user completes the CAPTCHA, you receive a one-time token via `postMessage`. You **must** verify this token on your server before accepting the form submission.
 
-> **This call must always happen on your server — never in the browser.** It requires your Secret Key (`sk_...`).
+<Callout title="Security Warning" type="warn">
+  This call must always happen on your server — never in the browser.
+</Callout>
 
 ## Endpoint
 
@@ -15,10 +17,10 @@ POST https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify
 
 ## Request
 
-| Field       | Type     | Required | Description                                    |
-| ----------- | -------- | -------- | ---------------------------------------------- |
-| `token`     | `string` | Yes      | The token from the widget's `postMessage`.     |
-| `secretKey` | `string` | Yes      | Your site's secret key (`sk_...`).             |
+| Field       | Type     | Required | Description                                |
+| ----------- | -------- | -------- | ------------------------------------------ |
+| `token`     | `string` | Yes      | The token from the widget's `postMessage`. |
+| `secretKey` | `string` | Yes      | Your site's secret key (`sk_...`).         |
 
 ```json
 {
@@ -39,27 +41,30 @@ POST https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify
 
 All failures return HTTP 200 with `success: false` and an `error` field:
 
-| Error                          | Meaning                                                        |
-| ------------------------------ | -------------------------------------------------------------- |
-| `"Missing token or secretKey"` | Request body missing required fields.                          |
-| `"Invalid token"`              | Token not found — never issued, already consumed, or deleted.  |
-| `"Invalid secretKey"`          | Secret key doesn't match the site owning this puzzle.          |
-| `"Challenge not solved"`       | Session exists but the user never passed verification.         |
-| `"Token expired"`              | The 5-minute window has elapsed.                               |
+| Error                          | Meaning                                                       |
+| ------------------------------ | ------------------------------------------------------------- |
+| `"Missing token or secretKey"` | Request body missing required fields.                         |
+| `"Invalid token"`              | Token not found — never issued, already consumed, or deleted. |
+| `"Invalid secretKey"`          | Secret key doesn't match the site owning this puzzle.         |
+| `"Challenge not solved"`       | Session exists but the user never passed verification.        |
+| `"Token expired"`              | The 5-minute window has elapsed.                              |
 
 ## Examples
 
 ### Node.js (fetch)
 
 ```js
-const response = await fetch("https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    token: req.body.captchaToken,
-    secretKey: process.env.YCAPTCHA_SECRET_KEY,
-  }),
-});
+const response = await fetch(
+  "https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      token: req.body.captchaToken,
+      secretKey: process.env.YCAPTCHA_SECRET_KEY,
+    }),
+  },
+);
 
 const result = await response.json();
 
