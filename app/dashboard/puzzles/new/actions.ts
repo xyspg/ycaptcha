@@ -4,7 +4,7 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { site, puzzle } from "@/lib/db/app-schema";
+import { site, puzzle, imageSet } from "@/lib/db/app-schema";
 import { and, eq } from "drizzle-orm";
 import type { ActionState } from "@/lib/types";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
@@ -68,6 +68,18 @@ export async function createPuzzle(
 
   if (!siteData) {
     return { errors: { siteId: ["Site not found"] } };
+  }
+
+  // Verify imageSet belongs to user
+  const [setData] = await db
+    .select({ id: imageSet.id })
+    .from(imageSet)
+    .where(
+      and(eq(imageSet.id, parsed.data.imageSetId), eq(imageSet.userId, session.user.id)),
+    );
+
+  if (!setData) {
+    return { errors: { imageSetId: ["Image set not found"] } };
   }
 
   await db.insert(puzzle).values({
