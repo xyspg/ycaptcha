@@ -13,6 +13,8 @@ export const env = createEnv({
     R2_BUCKET: z.string(),
     R2_ENDPOINT: z.url(),
     R2_PUBLIC_URL: z.url(),
+    UPSTASH_REDIS_REST_URL: z.url(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.url(),

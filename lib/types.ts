@@ -14,6 +14,9 @@ export const DEFAULT_CORRECT_COUNT = 3;
 /** Session TTL in milliseconds (5 minutes) */
 export const CAPTCHA_SESSION_TTL_MS = 5 * 60 * 1000;
 
+/** Session TTL in seconds for Redis */
+export const CAPTCHA_SESSION_TTL_S = CAPTCHA_SESSION_TTL_MS / 1000;
+
 /** Difficulty presets for puzzle configuration */
 export const DIFFICULTY_PRESETS = [
   { label: "Easy", value: 0.25 },

@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
-import { eq, and, gt } from "drizzle-orm";
-import { db } from "@/lib/db";
-import { captchaSession, puzzle } from "@/lib/db/app-schema";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
+import {
+  getChallengeSession,
+  deleteChallengeSession,
+  createVerifiedSession,
+} from "@/lib/captcha-session";
+import { rateLimiters, checkRateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/v0/captcha/verify
@@ -13,10 +16,13 @@ import { CAPTCHA_GRID_SIZE } from "@/lib/types";
  *
  * Verification logic:
  * - If all 9 selected → auto fail (anti-bot)
- * - Required correct = ceil(correctImageIds.length * difficulty)
+ * - Required correct = ceil(correctCount * difficulty)
  * - Currently only checks correct selection count, no wrong penalty
  */
 export async function POST(request: Request) {
+  const limited = await checkRateLimit(rateLimiters.verify, request);
+  if (limited) return limited;
+
   const body = await request.json().catch(() => null);
   if (!body?.sessionToken || !Array.isArray(body?.selectedIds)) {
     return NextResponse.json(
@@ -30,26 +36,10 @@ export async function POST(request: Request) {
     selectedIds: string[];
   };
 
-  // 1. Find session + puzzle in one query
-  const [row] = await db
-    .select({
-      sessionId: captchaSession.id,
-      sessionToken: captchaSession.token,
-      correctImageIds: puzzle.correctImageIds,
-      correctCount: puzzle.correctCount,
-      difficulty: puzzle.difficulty,
-    })
-    .from(captchaSession)
-    .innerJoin(puzzle, eq(puzzle.id, captchaSession.puzzleId))
-    .where(
-      and(
-        eq(captchaSession.token, sessionToken),
-        eq(captchaSession.solved, false),
-        gt(captchaSession.expiresAt, new Date()),
-      ),
-    );
+  // 1. Get session from Redis
+  const session = await getChallengeSession(sessionToken);
 
-  if (!row) {
+  if (!session) {
     return NextResponse.json(
       { success: false, error: "Invalid or expired session" },
       { status: 400 },
@@ -57,7 +47,7 @@ export async function POST(request: Request) {
   }
 
   // 2. Verify
-  const correctIds = new Set(row.correctImageIds as string[]);
+  const correctIds = new Set(session.correctImageIds);
 
   // Anti-bot: if all selected, auto fail
   if (selectedIds.length === CAPTCHA_GRID_SIZE) {
@@ -65,17 +55,18 @@ export async function POST(request: Request) {
   }
 
   const selectedCorrectCount = selectedIds.filter((id) => correctIds.has(id)).length;
-  const requiredCount = Math.ceil(row.correctCount * row.difficulty);
+  const requiredCount = Math.ceil(session.correctCount * session.difficulty);
 
   if (selectedCorrectCount < requiredCount) {
     return NextResponse.json({ success: false });
   }
 
-  // 3. Mark session as solved
-  await db
-    .update(captchaSession)
-    .set({ solved: true })
-    .where(eq(captchaSession.id, row.sessionId));
+  // 3. Delete challenge session and create verified session
+  await deleteChallengeSession(sessionToken);
+  const verifyToken = await createVerifiedSession({
+    puzzleId: session.puzzleId,
+    siteId: session.siteId,
+  });
 
-  return NextResponse.json({ success: true, token: row.sessionToken });
+  return NextResponse.json({ success: true, token: verifyToken });
 }

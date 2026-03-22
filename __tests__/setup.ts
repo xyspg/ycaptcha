@@ -14,12 +14,35 @@ vi.mock("@/lib/env", () => ({
     R2_ENDPOINT: "https://fake.r2.cloudflarestorage.com",
     R2_PUBLIC_URL: "https://s3.ycaptcha.xyspg.moe",
     NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
+    UPSTASH_REDIS_REST_URL: "https://fake-redis.upstash.io",
+    UPSTASH_REDIS_REST_TOKEN: "fake-token",
   },
 }));
 
 // Mock @/lib/db — empty default, tests override via vi.mocked()
 vi.mock("@/lib/db", () => ({
   db: {},
+}));
+
+// Mock @/lib/redis — empty default, tests override via vi.mocked()
+vi.mock("@/lib/redis", () => ({
+  redis: {
+    get: vi.fn(),
+    setex: vi.fn(),
+    del: vi.fn(),
+  },
+}));
+
+// Mock rate limiting — always allow in tests
+vi.mock("@/lib/rate-limit", () => ({
+  rateLimiters: {
+    challenge: {},
+    verify: {},
+    siteverify: {},
+    image: {},
+    auth: {},
+  },
+  checkRateLimit: vi.fn().mockResolvedValue(null),
 }));
 
 // Mock sharp — not needed in tests

@@ -1,0 +1,62 @@
+import { Ratelimit } from "@upstash/ratelimit";
+import { redis } from "@/lib/redis";
+import { getClientIP } from "@/lib/utils";
+
+/**
+ * Pre-configured rate limiters for each API tier.
+ * All use sliding window algorithm.
+ */
+export const rateLimiters = {
+  challenge: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(20, "1 m"),
+    prefix: "rl:challenge",
+  }),
+  verify: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    prefix: "rl:verify",
+  }),
+  siteverify: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(100, "1 m"),
+    prefix: "rl:siteverify",
+  }),
+  image: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(60, "1 m"),
+    prefix: "rl:image",
+  }),
+  auth: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(10, "1 m"),
+    prefix: "rl:auth",
+  }),
+} as const;
+
+/**
+ * Check rate limit for a request. Returns a Response if rate limited, null otherwise.
+ */
+export async function checkRateLimit(
+  limiter: Ratelimit,
+  request: Request,
+): Promise<Response | null> {
+  const ip = getClientIP(request);
+  const { success, reset } = await limiter.limit(ip);
+
+  if (!success) {
+    const retryAfter = Math.ceil((reset - Date.now()) / 1000);
+    return new Response(
+      JSON.stringify({ error: "Too many requests", retryAfter }),
+      {
+        status: 429,
+        headers: {
+          "Content-Type": "application/json",
+          "Retry-After": String(retryAfter),
+        },
+      },
+    );
+  }
+
+  return null;
+}

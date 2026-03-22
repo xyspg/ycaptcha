@@ -2,7 +2,6 @@ import {
   pgTable,
   text,
   timestamp,
-  boolean,
   integer,
   jsonb,
   index,
@@ -115,28 +114,6 @@ export const puzzle = pgTable(
   (table) => [index("puzzle_siteId_idx").on(table.siteId)],
 );
 
-/**
- * Captcha Sessions - tracks each CAPTCHA attempt.
- * When the widget requests a challenge, a session is created with a unique token.
- * After the user submits, `solved` is updated.
- * The site owner's backend calls /api/v1/captcha/siteverify with this token
- * to confirm the user passed.
- */
-export const captchaSession = pgTable("captcha_session", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => nanoid()),
-  puzzleId: text("puzzle_id")
-    .notNull()
-    .references(() => puzzle.id, { onDelete: "cascade" }),
-  token: text("token")
-    .notNull()
-    .unique()
-    .$defaultFn(() => nanoid(64)),
-  solved: boolean("solved").notNull().default(false),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  expiresAt: timestamp("expires_at").notNull(),
-});
 
 export const siteRelations = relations(site, ({ one, many }) => ({
   user: one(user, { fields: [site.userId], references: [user.id] }),
@@ -155,18 +132,10 @@ export const imageRelations = relations(image, ({ one }) => ({
   }),
 }));
 
-export const puzzleRelations = relations(puzzle, ({ one, many }) => ({
+export const puzzleRelations = relations(puzzle, ({ one }) => ({
   site: one(site, { fields: [puzzle.siteId], references: [site.id] }),
   imageSet: one(imageSet, {
     fields: [puzzle.imageSetId],
     references: [imageSet.id],
-  }),
-  captchaSessions: many(captchaSession),
-}));
-
-export const captchaSessionRelations = relations(captchaSession, ({ one }) => ({
-  puzzle: one(puzzle, {
-    fields: [captchaSession.puzzleId],
-    references: [puzzle.id],
   }),
 }));

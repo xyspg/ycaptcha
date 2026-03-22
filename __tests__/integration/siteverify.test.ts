@@ -3,9 +3,14 @@ import { chainResult, makePostRequest } from "../helpers";
 
 const mockDb = {
   select: vi.fn(),
-  delete: vi.fn(),
 };
 vi.mocked(await import("@/lib/db")).db = mockDb as any;
+
+// Mock captcha-session module
+const mockConsumeVerifiedSession = vi.fn();
+vi.mock("@/lib/captcha-session", () => ({
+  consumeVerifiedSession: (...args: unknown[]) => mockConsumeVerifiedSession(...args),
+}));
 
 const { POST } = await import("@/app/api/v0/captcha/siteverify/route");
 
@@ -20,7 +25,7 @@ describe("POST /api/v0/captcha/siteverify", () => {
   });
 
   it("returns success: false for invalid token", async () => {
-    mockDb.select.mockReturnValueOnce(chainResult([]));
+    mockConsumeVerifiedSession.mockResolvedValue(null);
 
     const res = await POST(
       makePostRequest({ token: "bad", secretKey: "sk_test" }),
@@ -31,20 +36,13 @@ describe("POST /api/v0/captcha/siteverify", () => {
   });
 
   it("returns success: false for wrong secretKey", async () => {
-    mockDb.select
-      // session found
-      .mockReturnValueOnce(
-        chainResult([
-          {
-            id: "cs1",
-            puzzleId: "p1",
-            solved: true,
-            expiresAt: new Date(Date.now() + 60_000),
-          },
-        ]),
-      )
-      // owner check fails
-      .mockReturnValueOnce(chainResult([]));
+    mockConsumeVerifiedSession.mockResolvedValue({
+      puzzleId: "p1",
+      siteId: "s1",
+    });
+
+    // owner check fails
+    mockDb.select.mockReturnValueOnce(chainResult([]));
 
     const res = await POST(
       makePostRequest({ token: "tok1", secretKey: "sk_wrong" }),
@@ -54,71 +52,19 @@ describe("POST /api/v0/captcha/siteverify", () => {
     expect(data.error).toBe("Invalid secretKey");
   });
 
-  it("returns success: false for unsolved session", async () => {
-    mockDb.select
-      .mockReturnValueOnce(
-        chainResult([
-          {
-            id: "cs1",
-            puzzleId: "p1",
-            solved: false,
-            expiresAt: new Date(Date.now() + 60_000),
-          },
-        ]),
-      )
-      .mockReturnValueOnce(chainResult([{ siteId: "s1" }]));
+  it("returns success: true on valid token and secretKey", async () => {
+    mockConsumeVerifiedSession.mockResolvedValue({
+      puzzleId: "p1",
+      siteId: "s1",
+    });
 
-    const res = await POST(
-      makePostRequest({ token: "tok1", secretKey: "sk_test" }),
-    );
-    const data = await res.json();
-    expect(data.success).toBe(false);
-    expect(data.error).toBe("Challenge not solved");
-  });
-
-  it("returns success: false for expired session", async () => {
-    mockDb.select
-      .mockReturnValueOnce(
-        chainResult([
-          {
-            id: "cs1",
-            puzzleId: "p1",
-            solved: true,
-            expiresAt: new Date(Date.now() - 60_000), // expired
-          },
-        ]),
-      )
-      .mockReturnValueOnce(chainResult([{ siteId: "s1" }]));
-
-    const res = await POST(
-      makePostRequest({ token: "tok1", secretKey: "sk_test" }),
-    );
-    const data = await res.json();
-    expect(data.success).toBe(false);
-    expect(data.error).toBe("Token expired");
-  });
-
-  it("returns success: true and deletes session on valid token", async () => {
-    mockDb.select
-      .mockReturnValueOnce(
-        chainResult([
-          {
-            id: "cs1",
-            puzzleId: "p1",
-            solved: true,
-            expiresAt: new Date(Date.now() + 60_000),
-          },
-        ]),
-      )
-      .mockReturnValueOnce(chainResult([{ siteId: "s1" }]));
-
-    mockDb.delete.mockReturnValue(chainResult(undefined));
+    mockDb.select.mockReturnValueOnce(chainResult([{ siteId: "s1" }]));
 
     const res = await POST(
       makePostRequest({ token: "tok1", secretKey: "sk_test" }),
     );
     const data = await res.json();
     expect(data.success).toBe(true);
-    expect(mockDb.delete).toHaveBeenCalled();
+    expect(mockConsumeVerifiedSession).toHaveBeenCalledWith("tok1");
   });
 });

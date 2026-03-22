@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { captchaSession, puzzle, site } from "@/lib/db/app-schema";
+import { puzzle, site } from "@/lib/db/app-schema";
+import { consumeVerifiedSession } from "@/lib/captcha-session";
+import { rateLimiters, checkRateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/v0/captcha/siteverify
@@ -13,6 +15,9 @@ import { captchaSession, puzzle, site } from "@/lib/db/app-schema";
  * This is a one-time check — the token is consumed after verification.
  */
 export async function POST(request: Request) {
+  const limited = await checkRateLimit(rateLimiters.siteverify, request);
+  if (limited) return limited;
+
   const body = await request.json().catch(() => null);
   if (!body?.token || !body?.secretKey) {
     return NextResponse.json(
@@ -23,16 +28,8 @@ export async function POST(request: Request) {
 
   const { token, secretKey } = body as { token: string; secretKey: string };
 
-  // 1. Find session by token
-  const [session] = await db
-    .select({
-      id: captchaSession.id,
-      puzzleId: captchaSession.puzzleId,
-      solved: captchaSession.solved,
-      expiresAt: captchaSession.expiresAt,
-    })
-    .from(captchaSession)
-    .where(eq(captchaSession.token, token));
+  // 1. Consume the verified session from Redis (one-time use)
+  const session = await consumeVerifiedSession(token);
 
   if (!session) {
     return NextResponse.json({ success: false, error: "Invalid token" });
@@ -51,18 +48,6 @@ export async function POST(request: Request) {
   if (!owner) {
     return NextResponse.json({ success: false, error: "Invalid secretKey" });
   }
-
-  // 3. Check if session was solved and not expired
-  if (!session.solved) {
-    return NextResponse.json({ success: false, error: "Challenge not solved" });
-  }
-
-  if (session.expiresAt < new Date()) {
-    return NextResponse.json({ success: false, error: "Token expired" });
-  }
-
-  // 4. Consume the token (delete session so it can't be reused)
-  await db.delete(captchaSession).where(eq(captchaSession.id, session.id));
 
   return NextResponse.json({ success: true });
 }

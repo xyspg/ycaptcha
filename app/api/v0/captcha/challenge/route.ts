@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { eq, and, inArray, notInArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { site, puzzle, image, captchaSession } from "@/lib/db/app-schema";
-import { CAPTCHA_GRID_SIZE, CAPTCHA_SESSION_TTL_MS } from "@/lib/types";
+import { site, puzzle, image } from "@/lib/db/app-schema";
+import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
+import { createChallengeSession } from "@/lib/captcha-session";
+import { rateLimiters, checkRateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/v0/captcha/challenge
@@ -17,10 +19,13 @@ import { shuffle } from "@/lib/utils";
  * 2. Pick a random puzzle for that site
  * 3. Randomly pick `correctCount` from the puzzle's correct pool,
  *    then fill remaining slots from incorrect/random images
- * 4. Create a captchaSession with 5-min expiry
+ * 4. Create a Redis session with 5-min TTL
  * 5. Return shuffled images + session token
  */
 export async function POST(request: Request) {
+  const limited = await checkRateLimit(rateLimiters.challenge, request);
+  if (limited) return limited;
+
   const body = await request.json().catch(() => null);
   if (!body?.siteKey) {
     return NextResponse.json({ error: "Missing siteKey" }, { status: 400 });
@@ -128,19 +133,24 @@ export async function POST(request: Request) {
   // 5. Combine and shuffle
   const allImages = shuffle([...correctImages, ...incorrectImages]);
 
-  // 6. Create captcha session
-  const expiresAt = new Date(Date.now() + CAPTCHA_SESSION_TTL_MS);
-  const [session] = await db
-    .insert(captchaSession)
-    .values({
-      puzzleId: puzzleData.id,
-      expiresAt,
-    })
-    .returning({ token: captchaSession.token });
+  // 6. Create Redis session with all verification data
+  const token = await createChallengeSession({
+    puzzleId: puzzleData.id,
+    siteId: siteData.id,
+    imageUrls: allImages.map((img) => img.url),
+    imageIds: allImages.map((img) => img.id),
+    correctImageIds: allCorrectIds,
+    correctCount,
+    difficulty: puzzleData.difficulty,
+  });
 
+  // 7. Return proxy URLs instead of real R2 URLs
   return NextResponse.json({
-    sessionToken: session.token,
+    sessionToken: token,
     prompt: puzzleData.prompt,
-    images: allImages,
+    images: allImages.map((img, i) => ({
+      id: img.id,
+      url: `/api/v0/captcha/image/${token}/${i}`,
+    })),
   });
 }

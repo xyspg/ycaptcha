@@ -1,4 +1,15 @@
-import { auth } from "@/lib/auth"; // path to your auth file
+import { auth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
+import { rateLimiters, checkRateLimit } from "@/lib/rate-limit";
 
-export const { POST, GET } = toNextJsHandler(auth);
+const handler = toNextJsHandler(auth);
+
+export async function GET(request: Request) {
+  return handler.GET!(request);
+}
+
+export async function POST(request: Request) {
+  const limited = await checkRateLimit(rateLimiters.auth, request);
+  if (limited) return limited;
+  return handler.POST!(request);
+}

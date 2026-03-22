@@ -4,14 +4,20 @@ import { chainResult, makePostRequest } from "../helpers";
 // We need to mock db before importing the route
 const mockDb = {
   select: vi.fn(),
-  insert: vi.fn(),
 };
 vi.mocked(await import("@/lib/db")).db = mockDb as any;
+
+// Mock captcha-session module
+const mockCreateChallengeSession = vi.fn().mockResolvedValue("session-token-123");
+vi.mock("@/lib/captcha-session", () => ({
+  createChallengeSession: (...args: unknown[]) => mockCreateChallengeSession(...args),
+}));
 
 const { POST } = await import("@/app/api/v0/captcha/challenge/route");
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockCreateChallengeSession.mockResolvedValue("session-token-123");
 });
 
 describe("POST /api/v0/captcha/challenge", () => {
@@ -93,6 +99,7 @@ describe("POST /api/v0/captcha/challenge", () => {
             imageSetId: "is1",
             correctImageIds: correctIds,
             incorrectImageIds: null,
+            correctCount: 3,
             prompt: "Select cats",
             difficulty: 0.5,
           },
@@ -103,10 +110,6 @@ describe("POST /api/v0/captcha/challenge", () => {
       // incorrect images
       .mockReturnValueOnce(chainResult(incorrectImages));
 
-    mockDb.insert.mockReturnValue(
-      chainResult([{ token: "session-token-123" }]),
-    );
-
     const res = await POST(makePostRequest({ siteKey: "pk_test" }));
     expect(res.status).toBe(200);
 
@@ -114,5 +117,12 @@ describe("POST /api/v0/captcha/challenge", () => {
     expect(data.sessionToken).toBe("session-token-123");
     expect(data.prompt).toBe("Select cats");
     expect(data.images).toHaveLength(9);
+
+    // Verify createChallengeSession was called with correct data
+    expect(mockCreateChallengeSession).toHaveBeenCalledOnce();
+    const sessionData = mockCreateChallengeSession.mock.calls[0][0];
+    expect(sessionData.puzzleId).toBe("p1");
+    expect(sessionData.siteId).toBe("s1");
+    expect(sessionData.correctImageIds).toEqual(correctIds);
   });
 });
