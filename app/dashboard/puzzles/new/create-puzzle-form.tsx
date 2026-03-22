@@ -77,6 +77,7 @@ export function CreatePuzzleForm({
       if (next.has(id)) {
         next.delete(id);
       } else {
+        if (next.size >= neededIncorrect) return prev;
         next.add(id);
       }
       return next;

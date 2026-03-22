@@ -71,6 +71,9 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
     });
   };
 
+  const requiredCorrect = Math.ceil(correctIds.size * difficulty);
+  const neededIncorrect = CAPTCHA_GRID_SIZE - correctIds.size;
+
   const toggleIncorrect = (id: string) => {
     if (correctIds.has(id)) return;
     setIncorrectIds((prev) => {
@@ -78,14 +81,12 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
       if (next.has(id)) {
         next.delete(id);
       } else {
+        if (next.size >= neededIncorrect) return prev;
         next.add(id);
       }
       return next;
     });
   };
-
-  const requiredCorrect = Math.ceil(correctIds.size * difficulty);
-  const neededIncorrect = CAPTCHA_GRID_SIZE - correctIds.size;
   const incorrectSatisfied =
     !handPickIncorrect || incorrectIds.size >= neededIncorrect;
 
