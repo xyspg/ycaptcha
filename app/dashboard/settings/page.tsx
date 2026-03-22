@@ -22,7 +22,7 @@ function ProfileSection() {
 
   const name = nameOverride ?? session?.user.name ?? "";
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
@@ -117,7 +117,7 @@ function DeleteAccountSection() {
     setError(null);
   };
 
-  const handleDelete = async (e: React.FormEvent) => {
+  const handleDelete = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setDeleting(true);
     setError(null);
