@@ -16,12 +16,21 @@ interface Demo {
 }
 
 function buildSingleDemo(set: SampleSet, shuffled = true): Demo {
-  const images = shuffled ? shuffle(set.images) : set.images;
+  const correctCount = 3 + Math.floor(Math.random() * 3); // 3–5
+  const correctSet = new Set(set.correctHashes);
+  const correct = (shuffled ? shuffle(set.images) : set.images).filter((img) =>
+    correctSet.has(img.contentHash),
+  );
+  const incorrect = (shuffled ? shuffle(set.images) : set.images).filter(
+    (img) => !correctSet.has(img.contentHash),
+  );
+  const picked = shuffle([
+    ...correct.slice(0, correctCount),
+    ...incorrect.slice(0, CAPTCHA_GRID_SIZE - correctCount),
+  ]);
   return {
     prompt: set.name,
-    images: images
-      .slice(0, CAPTCHA_GRID_SIZE)
-      .map((img) => ({ id: img.contentHash, url: img.url })),
+    images: picked.map((img) => ({ id: img.contentHash, url: img.url })),
   };
 }
 

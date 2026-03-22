@@ -4,3 +4,5 @@
 - light/dark mode for widget
 - Passkey
 - Sentry
+- random picked correct image minimum 3
+- - posthog

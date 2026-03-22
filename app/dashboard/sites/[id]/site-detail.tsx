@@ -193,7 +193,7 @@ function PuzzlesSection({
 
 // SRI hash for public/captcha.js — regenerate with:
 //   cat public/captcha.js | openssl dgst -sha384 -binary | openssl base64 -A
-const CAPTCHA_JS_INTEGRITY = "sha384-RN6M9Cu126BzkffRwsssZA2846dB7Be6ih1yDrjqn/OWkxnzcJc/Z49scIC3nyhp"
+const CAPTCHA_JS_INTEGRITY = "sha384-a73YP8tlzlqGToYP+QiCYMQOrfR13zM7EUpUI60nEywSo7A183MuJ5nGs7SnoPHx"
 
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
   const siteUrl = env.NEXT_PUBLIC_SITE_URL

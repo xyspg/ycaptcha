@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import {
   CaptchaCheckbox,
   CaptchaWidget,
@@ -11,8 +11,18 @@ import { CAPTCHA_SESSION_TTL_MS } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "challenge" | "verified" | "failed" | "error";
 
+/** Derive target origin from document.referrer for postMessage. */
+function getTargetOrigin(): string {
+  try {
+    if (document.referrer) return new URL(document.referrer).origin;
+  } catch {
+    // malformed referrer — fall through
+  }
+  return "*";
+}
+
 function postToParent(data: Record<string, unknown>) {
-  window.parent.postMessage({ source: "ycaptcha", ...data }, "*");
+  window.parent.postMessage({ source: "ycaptcha", ...data }, getTargetOrigin());
 }
 
 function postResize(width: number, height: number) {
@@ -21,8 +31,6 @@ function postResize(width: number, height: number) {
 
 export default function WidgetPage() {
   const { siteKey } = useParams<{ siteKey: string }>();
-  const searchParams = useSearchParams();
-  const parentOrigin = searchParams.get("origin");
   const [phase, setPhase] = useState<Phase>("idle");
   const [images, setImages] = useState<CaptchaImage[]>([]);
   const [prompt, setPrompt] = useState("");
@@ -50,6 +58,16 @@ export default function WidgetPage() {
   };
 
   const fetchChallenge = useCallback(async () => {
+    // Use document.referrer to get the parent page's origin for domain validation
+    let parentOrigin: string | undefined;
+    try {
+      if (document.referrer) {
+        parentOrigin = new URL(document.referrer).origin;
+      }
+    } catch {
+      // malformed referrer — skip
+    }
+
     try {
       const res = await fetch("/api/v0/captcha/challenge", {
         method: "POST",

@@ -2,12 +2,10 @@
   "use strict";
 
   var ORIGIN = (function () {
-    var script = document.currentScript;
-    if (script && script.src) {
-      var url = new URL(script.src);
-      return url.origin;
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      return "http://localhost:3000";
     }
-    return "";
+    return "https://ycaptcha.xyspg.moe";
   })();
 
   var SOURCE = "ycaptcha";
@@ -50,7 +48,7 @@
     // Create iframe
     var iframe = document.createElement("iframe");
     iframe.id = widgetId;
-    iframe.src = ORIGIN + "/widget/" + sitekey + "?origin=" + encodeURIComponent(window.location.origin);
+    iframe.src = ORIGIN + "/widget/" + sitekey;
     iframe.style.border = "none";
     iframe.style.overflow = "hidden";
     iframe.style.width = "304px";
