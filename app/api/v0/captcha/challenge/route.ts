@@ -152,12 +152,11 @@ export async function POST(request: Request) {
     difficulty: puzzleData.difficulty,
   });
 
-  // 7. Return proxy URLs instead of real R2 URLs
+  // 7. Return proxy URLs (indices only — no image IDs exposed to client)
   return NextResponse.json({
     sessionToken: token,
     prompt: puzzleData.prompt,
-    images: allImages.map((img, i) => ({
-      id: img.id,
+    images: allImages.map((_, i) => ({
       url: `/api/v0/captcha/image/${token}/${i}`,
     })),
   });

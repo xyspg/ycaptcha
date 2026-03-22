@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { CaptchaContainer, type CaptchaImage } from "@/components/captcha/captcha";
+import { CaptchaContainer } from "@/components/captcha/captcha";
 
-function makeMockImages(seed: number): CaptchaImage[] {
+function makeMockImages(seed: number) {
   return Array.from({ length: 9 }, (_, i) => ({
-    id: `img-${i}`,
     url: `https://picsum.photos/seed/${seed + i}/200/200`,
   }));
 }
@@ -13,12 +12,12 @@ function makeMockImages(seed: number): CaptchaImage[] {
 export default function Page() {
   const [images, setImages] = useState(() => makeMockImages(10));
 
-  const handleVerify = (selectedIds: string[]) => {
-    // Mock: first 3 images are "correct"
-    const correct = new Set(["img-0", "img-1", "img-2"]);
+  const handleVerify = (selectedIndices: number[]) => {
+    // Mock: first 3 images (indices 0, 1, 2) are "correct"
+    const correctIndices = new Set([0, 1, 2]);
     return (
-      selectedIds.every((id) => correct.has(id)) &&
-      selectedIds.length === correct.size
+      selectedIndices.every((i) => correctIndices.has(i)) &&
+      selectedIndices.length === correctIndices.size
     );
   };
 

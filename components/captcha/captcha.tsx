@@ -10,7 +10,7 @@ interface CaptchaContainerProps {
   prompt: string;
   images: CaptchaImage[];
   /** Called when user submits selections. Return `true` if correct, `false` if wrong. */
-  onVerify: (selectedIds: string[]) => boolean | Promise<boolean>;
+  onVerify: (selectedIndices: number[]) => boolean | Promise<boolean>;
   onRefresh: () => void | Promise<void>;
   onCompleted?: () => void;
   /** Fatal error (e.g. invalid siteKey). Disables the widget. */
@@ -50,8 +50,8 @@ export function CaptchaContainer({
     }, 800);
   };
 
-  const handleVerify = async (selectedIds: string[]) => {
-    const pass = await onVerify(selectedIds);
+  const handleVerify = async (selectedIndices: number[]) => {
+    const pass = await onVerify(selectedIndices);
 
     if (pass) {
       updatePhase("verified");
@@ -69,7 +69,7 @@ export function CaptchaContainer({
 
   const widget = (
     <CaptchaWidget
-      key={images[0]?.id}
+      key={images[0]?.url}
       prompt={prompt}
       images={images}
       onVerify={handleVerify}

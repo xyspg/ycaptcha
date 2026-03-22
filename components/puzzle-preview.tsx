@@ -61,10 +61,11 @@ export function PuzzlePreview({
     setTimeout(() => setPhase("challenge"), 500);
   };
 
-  const handleVerify = (selectedIds: string[]) => {
-    const selectedCorrectCount = selectedIds.filter((id) => preview.shownCorrectIds.has(id)).length;
+  const handleVerify = (selectedIndices: number[]) => {
+    const selectedImageIds = selectedIndices.map((i) => preview.grid[i].id);
+    const selectedCorrectCount = selectedImageIds.filter((id) => preview.shownCorrectIds.has(id)).length;
     const requiredCount = Math.ceil(correctCount * difficulty);
-    const allSelected = selectedIds.length === CAPTCHA_GRID_SIZE;
+    const allSelected = selectedIndices.length === CAPTCHA_GRID_SIZE;
     const passed = !allSelected && selectedCorrectCount >= requiredCount;
 
     if (passed) {
@@ -91,7 +92,7 @@ export function PuzzlePreview({
         <CaptchaWidget
           key={preview.grid.map((i) => i.id).join()}
           prompt={prompt || "..."}
-          images={preview.grid.map((img) => ({ id: img.id, url: img.url }))}
+          images={preview.grid.map((img) => ({ url: img.url }))}
           onVerify={handleVerify}
           onRefresh={reshuffleGrid}
           errorMessage={errorMessage}

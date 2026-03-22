@@ -12,7 +12,7 @@ import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
 interface Demo {
   prompt: string;
-  images: { id: string; url: string }[];
+  images: { contentHash: string; url: string }[];
 }
 
 function buildSingleDemo(set: SampleSet, shuffled = true): Demo {
@@ -30,7 +30,7 @@ function buildSingleDemo(set: SampleSet, shuffled = true): Demo {
   ]);
   return {
     prompt: set.name,
-    images: picked.map((img) => ({ id: img.contentHash, url: img.url })),
+    images: picked.map((img) => ({ contentHash: img.contentHash, url: img.url })),
   };
 }
 
@@ -88,21 +88,22 @@ export function DemoShowcase() {
     setOrder((prev) => [prev[1], prev[2], prev[0]]);
   };
 
-  const handleVerify = (demoIndex: number, selectedIds: string[]) => {
+  const handleVerify = (demoIndex: number, selectedIndices: number[]) => {
     if (justSwitchedRef.current) return;
-    if (selectedIds.length === 0) return;
+    if (selectedIndices.length === 0) return;
 
     const correctSet = new Set(SAMPLE_SETS[demoIndex].correctHashes);
-    const correctCount = selectedIds.filter((id) => correctSet.has(id)).length;
+    const selectedHashes = selectedIndices.map((i) => demos[demoIndex].images[i].contentHash);
+    const correctCount = selectedHashes.filter((h) => correctSet.has(h)).length;
     const totalCorrectInGrid = demos[demoIndex].images.filter((img) =>
-      correctSet.has(img.id),
+      correctSet.has(img.contentHash),
     ).length;
-    const allSelected = selectedIds.length === CAPTCHA_GRID_SIZE;
+    const allSelected = selectedIndices.length === CAPTCHA_GRID_SIZE;
 
     if (
       !allSelected &&
       correctCount >= totalCorrectInGrid &&
-      selectedIds.length === totalCorrectInGrid
+      selectedIndices.length === totalCorrectInGrid
     ) {
       setErrorMessages((prev) => {
         const next = [...prev];
@@ -187,7 +188,7 @@ export function DemoShowcase() {
               <CaptchaWidget
                 prompt={demos[demoIndex].prompt}
                 images={demos[demoIndex].images}
-                onVerify={(ids) => handleVerify(demoIndex, ids)}
+                onVerify={(indices) => handleVerify(demoIndex, indices)}
                 onRefresh={() => handleRefresh(demoIndex)}
                 errorMessage={errorMessages[demoIndex]}
               />

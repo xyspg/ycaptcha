@@ -5,14 +5,13 @@ import { Check, RotateCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface CaptchaImage {
-  id: string;
   url: string;
 }
 
 interface CaptchaWidgetProps {
   prompt: string;
   images: CaptchaImage[];
-  onVerify: (selectedIds: string[]) => void;
+  onVerify: (selectedIndices: number[]) => void;
   onRefresh: () => void;
   loading?: boolean;
   errorMessage?: string | null;
@@ -26,15 +25,15 @@ export function CaptchaWidget({
   loading,
   errorMessage,
 }: CaptchaWidgetProps) {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [selected, setSelected] = useState<Set<number>>(new Set());
 
-  const toggleSelect = useCallback((id: string) => {
+  const toggleSelect = useCallback((index: number) => {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
+      if (next.has(index)) {
+        next.delete(index);
       } else {
-        next.add(id);
+        next.add(index);
       }
       return next;
     });
@@ -76,13 +75,13 @@ export function CaptchaWidget({
         )}
 
         <div className="grid grid-cols-3 gap-px bg-[#e0e0e0]">
-          {images.map((img) => {
-            const isSelected = selected.has(img.id);
+          {images.map((img, index) => {
+            const isSelected = selected.has(index);
             return (
               <button
-                key={img.id}
+                key={index}
                 type="button"
-                onClick={() => toggleSelect(img.id)}
+                onClick={() => toggleSelect(index)}
                 className="relative aspect-square cursor-pointer overflow-hidden bg-white outline-none"
               >
                 <img

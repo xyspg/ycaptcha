@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import {
   CaptchaCheckbox,
   CaptchaWidget,
-  type CaptchaImage,
 } from "@/components/captcha/captcha";
 import { CAPTCHA_SESSION_TTL_MS } from "@/lib/types";
 
@@ -32,7 +31,7 @@ function postResize(width: number, height: number) {
 export default function WidgetPage() {
   const { siteKey } = useParams<{ siteKey: string }>();
   const [phase, setPhase] = useState<Phase>("idle");
-  const [images, setImages] = useState<CaptchaImage[]>([]);
+  const [images, setImages] = useState<{ url: string }[]>([]);
   const [prompt, setPrompt] = useState("");
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [errorText, setErrorText] = useState<string | null>(null);
@@ -110,14 +109,14 @@ export default function WidgetPage() {
     }
   };
 
-  const handleVerify = async (selectedIds: string[]) => {
+  const handleVerify = async (selectedIndices: number[]) => {
     if (!sessionToken) return;
 
     try {
       const res = await fetch("/api/v0/captcha/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionToken, selectedIds }),
+        body: JSON.stringify({ sessionToken, selectedIndices }),
       });
 
       const data = await res.json();
@@ -157,7 +156,7 @@ export default function WidgetPage() {
 
       {phase === "challenge" && (
         <CaptchaWidget
-          key={images[0]?.id}
+          key={images[0]?.url}
           prompt={prompt}
           images={images}
           onVerify={handleVerify}

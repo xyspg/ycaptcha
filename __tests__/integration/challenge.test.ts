@@ -60,6 +60,17 @@ describe("POST /api/v0/captcha/challenge", () => {
     expect(await res.json()).toMatchObject({ error: "Invalid origin" });
   });
 
+  it("returns 400 when origin is missing and site has domain", async () => {
+    mockDb.select
+      .mockReturnValueOnce(
+        chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
+      );
+
+    const res = await POST(makePostRequest({ siteKey: "pk_test" }));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toMatchObject({ error: "Missing origin" });
+  });
+
   it("returns 404 when no puzzles configured", async () => {
     mockDb.select
       .mockReturnValueOnce(
@@ -67,7 +78,9 @@ describe("POST /api/v0/captcha/challenge", () => {
       )
       .mockReturnValueOnce(chainResult([])); // no puzzles
 
-    const res = await POST(makePostRequest({ siteKey: "pk_test" }));
+    const res = await POST(
+      makePostRequest({ siteKey: "pk_test", origin: "https://example.com" }),
+    );
     expect(res.status).toBe(404);
     expect(await res.json()).toMatchObject({
       error: "No puzzles configured for this site",
@@ -100,6 +113,8 @@ describe("POST /api/v0/captcha/challenge", () => {
             correctImageIds: correctIds,
             incorrectImageIds: null,
             correctCount: 3,
+            correctCountMax: null,
+            enabled: true,
             prompt: "Select cats",
             difficulty: 0.5,
           },
@@ -117,12 +132,19 @@ describe("POST /api/v0/captcha/challenge", () => {
     expect(data.sessionToken).toBe("session-token-123");
     expect(data.prompt).toBe("Select cats");
     expect(data.images).toHaveLength(9);
+    // Images should only contain url (no id exposed to client)
+    expect(data.images[0]).toHaveProperty("url");
+    expect(data.images[0]).not.toHaveProperty("id");
 
     // Verify createChallengeSession was called with correct data
     expect(mockCreateChallengeSession).toHaveBeenCalledOnce();
     const sessionData = mockCreateChallengeSession.mock.calls[0][0];
     expect(sessionData.puzzleId).toBe("p1");
     expect(sessionData.siteId).toBe("s1");
-    expect(sessionData.correctImageIds).toEqual(correctIds);
+    // correctImageIds should be the displayed subset, not the full pool
+    expect(sessionData.correctImageIds).toHaveLength(3);
+    sessionData.correctImageIds.forEach((id: string) => {
+      expect(correctIds).toContain(id);
+    });
   });
 });
