@@ -34,6 +34,7 @@ export const site = pgTable(
       .$defaultFn(() => `pk_${nanoid(32)}`),
     secretKey: text("secret_key")
       .notNull()
+      .unique()
       .$defaultFn(() => `sk_${nanoid(32)}`),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
