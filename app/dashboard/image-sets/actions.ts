@@ -21,7 +21,6 @@ async function requireOwnedSet(setId: string, userId: string) {
   return set ?? null;
 }
 
-// --- Create Image Set ---
 
 const createSetSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
@@ -52,7 +51,6 @@ export async function createImageSet(
   redirect(`/dashboard/image-sets/${created.id}`);
 }
 
-// --- Update Image Set Name ---
 
 const updateSetSchema = z.object({
   setId: z.string().min(1),
@@ -93,7 +91,6 @@ export async function updateImageSetName(
   return { success: true, message: "Name updated" };
 }
 
-// --- Upload Images ---
 
 export async function uploadImages(
   prevState: ActionState,
@@ -132,7 +129,6 @@ export async function uploadImages(
     }
   }
 
-  // Phase 1: process all images to get hashes (no DB)
   const processed = await Promise.all(
     validFiles.map(async (file) => {
       const rawBuffer = Buffer.from(await file.arrayBuffer());
@@ -141,7 +137,7 @@ export async function uploadImages(
     }),
   );
 
-  // Phase 2: batch lookup existing hashes in one query
+  // deduplicate: skip upload if content hash already exists
   const hashes = processed.map((p) => p.contentHash);
   const existingRows = hashes.length > 0
     ? await db
@@ -151,7 +147,6 @@ export async function uploadImages(
     : [];
   const existingMap = new Map(existingRows.map((e) => [e.contentHash, e.url]));
 
-  // Phase 3: upload only new images, reuse existing URLs
   const results = await Promise.allSettled(
     processed.map(async ({ file, buffer, contentHash }) => {
       const existingUrl = existingMap.get(contentHash);
@@ -188,7 +183,6 @@ export async function uploadImages(
   return { success: true, message };
 }
 
-// --- Delete Image ---
 
 export async function deleteImage(
   prevState: ActionState,
@@ -205,7 +199,7 @@ export async function deleteImage(
   const set = await requireOwnedSet(setId, session.user.id);
   if (!set) return { errors: { setId: ["Image set not found"] } };
 
-  // Check if image is referenced by any puzzle
+  // can't delete images that puzzles depend on
   const [ref] = await db
     .select({ id: puzzle.id })
     .from(puzzle)
@@ -225,7 +219,6 @@ export async function deleteImage(
     };
   }
 
-  // Get image for R2 deletion
   const [img] = await db
     .select({ id: image.id, url: image.url, contentHash: image.contentHash })
     .from(image)
@@ -233,10 +226,9 @@ export async function deleteImage(
 
   if (!img) return { errors: { imageId: ["Image not found"] } };
 
-  // Delete DB row first
   await db.delete(image).where(eq(image.id, imageId));
 
-  // Only delete from R2 if no other rows reference the same content
+  // only delete from R2 if no other rows share the same content hash
   if (img.contentHash) {
     const [ref] = await db
       .select({ id: image.id })
@@ -254,7 +246,6 @@ export async function deleteImage(
   return { success: true, message: "Image deleted" };
 }
 
-// --- Delete Image Set ---
 
 export async function deleteImageSet(
   prevState: ActionState,
@@ -268,16 +259,13 @@ export async function deleteImageSet(
   const set = await requireOwnedSet(setId, session.user.id);
   if (!set) return { errors: { setId: ["Image set not found"] } };
 
-  // Get all images for R2 cleanup
   const imgs = await db
     .select({ url: image.url, contentHash: image.contentHash })
     .from(image)
     .where(eq(image.imageSetId, setId));
 
-  // Cascade delete handles images in DB
+  // cascade handles image rows; clean up R2 for orphaned content hashes
   await db.delete(imageSet).where(eq(imageSet.id, setId));
-
-  // Batch check which hashes still have surviving references
   const hashesToCheck = imgs
     .map((i) => i.contentHash)
     .filter((h): h is string => h !== null);
@@ -301,7 +289,6 @@ export async function deleteImageSet(
   redirect("/dashboard/image-sets");
 }
 
-// --- Import Sample Set ---
 
 const importSampleSchema = z.object({
   slug: z.string().min(1),

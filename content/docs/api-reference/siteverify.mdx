@@ -38,10 +38,8 @@ All failures return HTTP 200 with `success: false` and an `error` field:
 | Error                          | Meaning                                                       |
 | ------------------------------ | ------------------------------------------------------------- |
 | `"Missing token or secretKey"` | Request body missing required fields.                         |
-| `"Invalid token"`              | Token not found — never issued, already consumed, or deleted. |
+| `"Invalid token"`              | Token not found — never issued, already consumed, or expired. |
 | `"Invalid secretKey"`          | Secret key doesn't match the site owning this puzzle.         |
-| `"Challenge not solved"`       | Session exists but user never passed verification.            |
-| `"Token expired"`              | The 5-minute window has elapsed.                              |
 
 ## Error (400 Bad Request)
 
@@ -51,6 +49,6 @@ All failures return HTTP 200 with `success: false` and an `error` field:
 
 ## Important
 
-- **Tokens are single-use.** On success, the session row is deleted. Calling siteverify again returns `"Invalid token"`.
+- **Tokens are single-use.** On success, the session is atomically consumed from Redis. Calling siteverify again returns `"Invalid token"`.
 - The `secretKey` is verified by joining through the puzzle to its site — a token from one site cannot be validated with another site's key.
 - Always check `result.success === true` explicitly. A 200 status alone does not mean success.

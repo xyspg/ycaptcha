@@ -1,4 +1,4 @@
 {
   "title": "API Reference",
-  "pages": ["index", "challenge", "verify", "siteverify"]
+  "pages": ["index", "siteverify"]
 }

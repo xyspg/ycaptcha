@@ -10,7 +10,6 @@ import { CAPTCHA_SESSION_TTL_MS } from "@/lib/types";
 
 type Phase = "idle" | "loading" | "challenge" | "verified" | "failed" | "error";
 
-/** Derive target origin from document.referrer for postMessage. */
 function getTargetOrigin(): string {
   try {
     if (document.referrer) return new URL(document.referrer).origin;
@@ -22,7 +21,7 @@ function getTargetOrigin(): string {
 
 function postToParent(data: Record<string, unknown>) {
   const target = getTargetOrigin();
-  // Never broadcast the verification token to unknown origins
+  // don't leak verification tokens to unknown origins
   if (target === "*" && "token" in data) return;
   window.parent.postMessage({ source: "ycaptcha", ...data }, target);
 }
@@ -60,7 +59,6 @@ export default function WidgetPage() {
   };
 
   const fetchChallenge = useCallback(async () => {
-    // Use document.referrer to get the parent page's origin for domain validation
     let parentOrigin: string | undefined;
     try {
       if (document.referrer) {

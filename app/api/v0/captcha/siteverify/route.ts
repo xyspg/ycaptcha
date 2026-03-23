@@ -5,15 +5,6 @@ import { puzzle, site } from "@/lib/db/app-schema";
 import { consumeVerifiedSession } from "@/lib/captcha-session";
 import { rateLimiters, checkRateLimit } from "@/lib/rate-limit";
 
-/**
- * POST /api/v0/captcha/siteverify
- *
- * Called by the site owner's backend to validate a verification token.
- * Body: { token: string, secretKey: string }
- * Returns: { success: boolean }
- *
- * This is a one-time check — the token is consumed after verification.
- */
 export async function POST(request: Request) {
   const limited = await checkRateLimit(rateLimiters.siteverify, request);
   if (limited) return limited;
@@ -28,14 +19,14 @@ export async function POST(request: Request) {
 
   const { token, secretKey } = body as { token: string; secretKey: string };
 
-  // 1. Consume the verified session from Redis (one-time use)
+  // one-time use — consumed on read
   const session = await consumeVerifiedSession(token);
 
   if (!session) {
     return NextResponse.json({ success: false, error: "Invalid token" });
   }
 
-  // 2. Verify secretKey via puzzle → site JOIN (single query)
+  // single JOIN instead of two queries — proves secretKey owns the puzzle's site
   const [owner] = await db
     .select({ siteId: site.id })
     .from(puzzle)

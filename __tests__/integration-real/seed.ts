@@ -39,7 +39,6 @@ export async function seed() {
   // Clean up any leftover data from a previous run
   await db.delete(user).where(eq(user.id, TEST_USER_ID)).catch(() => {});
 
-  // 1. User
   await db.insert(user).values({
     id: TEST_USER_ID,
     name: "Test User",
@@ -49,7 +48,6 @@ export async function seed() {
     updatedAt: new Date(),
   });
 
-  // 2. Sites + image set (independent, run in parallel)
   await Promise.all([
     db.insert(site).values([
       {
@@ -76,7 +74,6 @@ export async function seed() {
     }),
   ]);
 
-  // 4. 15 images
   await db.insert(image).values(
     TEST_IMAGE_IDS.map((id, i) => ({
       id,
@@ -86,7 +83,6 @@ export async function seed() {
     })),
   );
 
-  // 5. Puzzles
   await db.insert(puzzle).values([
     {
       id: TEST_PUZZLE_ID,

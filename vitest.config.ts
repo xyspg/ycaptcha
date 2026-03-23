@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     environment: "node",
     setupFiles: ["__tests__/setup.ts"],
-    exclude: ["e2e/**", "node_modules/**", "__tests__/integration-real/**"],
+    exclude: ["e2e/**", "node_modules/**", "__tests__/integration-real/**", ".claude/**"],
   },
   resolve: {
     alias: {

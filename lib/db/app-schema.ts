@@ -12,11 +12,6 @@ import { relations } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { user } from "./schema";
 
-/**
- * Sites - each site represents a domain where the CAPTCHA will be deployed.
- * A user can own multiple sites. Each site gets a unique siteKey (public)
- * and secretKey (private) for API authentication.
- */
 export const site = pgTable(
   "site",
   {
@@ -41,10 +36,7 @@ export const site = pgTable(
   (table) => [index("site_userId_idx").on(table.userId)],
 );
 
-/**
- * Image Sets - a themed pool of images (e.g. "NYC Subway Lines").
- * Owned by user, not site — so the same image set can be reused across multiple sites.
- */
+// owned by user, not site — reusable across sites
 export const imageSet = pgTable(
   "image_set",
   {
@@ -60,10 +52,7 @@ export const imageSet = pgTable(
   (table) => [index("imageSet_userId_idx").on(table.userId)],
 );
 
-/**
- * Images - individual images within an image set.
- * No tags — correctness is determined at the puzzle level, not the image level.
- */
+// no tags — correctness is determined at the puzzle level
 export const image = pgTable(
   "image",
   {
@@ -84,13 +73,6 @@ export const image = pgTable(
   ],
 );
 
-/**
- * Puzzles - a specific question within a site.
- * References an image set for the image pool, and stores which images
- * are correct answers. Optionally stores hand-picked incorrect images
- * for curated misleading answers; if null, incorrect images are randomly
- * drawn from the remaining images in the set.
- */
 export const puzzle = pgTable(
   "puzzle",
   {

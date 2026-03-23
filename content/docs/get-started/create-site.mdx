@@ -35,17 +35,14 @@ Image sets are owned by your account, not a specific site. You can reuse the sam
 | Setting          | Description                                                                                 |
 | ---------------- | ------------------------------------------------------------------------------------------- |
 | Image Set        | Select which image pool to use for this puzzle.                                              |
-| Prompt           | The instruction shown to users (e.g., `Select all images with\|parks`).                     |
+| Prompt           | The keyword shown to users (e.g., `parks`). The widget adds a fixed instruction prefix.     |
 | Correct Images   | Mark which images in the set are the right answers.                                          |
 | Incorrect Images | Optionally hand-pick distractors. If left empty, they are drawn randomly from the pool.      |
 | Difficulty       | Float from 0 to 1 (default 0.5). Controls how many correct selections are required to pass. |
 
-### Prompt format
+### Prompt
 
-Prompts support a `|` separator to split the instruction from the keyword:
-
-- `Select all images with|parks` — renders "Select all images with" on one line and **parks** as a large bold keyword.
-- Without `|`, the entire prompt is used as the keyword with a default instruction.
+Enter just the keyword (e.g., `parks`, `fire hydrants`). The widget always displays "Select all images with" as the instruction prefix.
 
 ### Difficulty
 

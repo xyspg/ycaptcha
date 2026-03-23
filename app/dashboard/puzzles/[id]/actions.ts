@@ -10,7 +10,6 @@ import { and, eq } from "drizzle-orm";
 import type { ActionState } from "@/lib/types";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
-/** Verify puzzle belongs to user via site ownership */
 async function requireOwnedPuzzle(puzzleId: string, userId: string) {
   const [row] = await db
     .select({ id: puzzle.id })
@@ -20,7 +19,6 @@ async function requireOwnedPuzzle(puzzleId: string, userId: string) {
   return row ?? null;
 }
 
-// --- Update Puzzle ---
 
 const updatePuzzleSchema = z
   .object({
@@ -114,7 +112,6 @@ export async function updatePuzzle(
   return { success: true, message: "Puzzle updated" };
 }
 
-// --- Toggle Enabled ---
 
 const toggleSchema = z.object({
   puzzleId: z.string().min(1),
@@ -138,7 +135,6 @@ export async function togglePuzzleEnabled(puzzleId: string, enabled: boolean) {
   revalidatePath("/dashboard", "layout");
 }
 
-// --- Delete Puzzle ---
 
 export async function deletePuzzle(
   prevState: ActionState,

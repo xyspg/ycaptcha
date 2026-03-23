@@ -4,7 +4,7 @@ import { r2KeyFromUrl } from "@/lib/r2";
 describe("r2KeyFromUrl()", () => {
   it("extracts key from public URL", () => {
     expect(
-      r2KeyFromUrl("https://s3.ycaptcha.xyspg.moe/images/abc.webp"),
+      r2KeyFromUrl("https://r2.ycaptcha.xyspg.moe/images/abc.webp"),
     ).toBe("images/abc.webp");
   });
 
@@ -16,7 +16,7 @@ describe("r2KeyFromUrl()", () => {
 
   it("handles nested paths", () => {
     expect(
-      r2KeyFromUrl("https://s3.ycaptcha.xyspg.moe/images/nested/deep/file.webp"),
+      r2KeyFromUrl("https://r2.ycaptcha.xyspg.moe/images/nested/deep/file.webp"),
     ).toBe("images/nested/deep/file.webp");
   });
 });

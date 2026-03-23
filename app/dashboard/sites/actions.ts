@@ -145,7 +145,6 @@ export async function deletePuzzleFromSite(puzzleId: string, siteId: string): Pr
   const parsed = deletePuzzleSchema.safeParse({ puzzleId, siteId })
   if (!parsed.success) throw new Error("Invalid input")
 
-  // Delete with ownership check in a single query
   const result = await db
     .delete(puzzle)
     .where(

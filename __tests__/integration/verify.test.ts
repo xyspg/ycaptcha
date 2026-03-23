@@ -2,12 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { makePostRequest } from "../helpers";
 
 // Mock captcha-session module
-const mockGetChallengeSession = vi.fn();
-const mockDeleteChallengeSession = vi.fn().mockResolvedValue(undefined);
+const mockConsumeChallengeSession = vi.fn();
 const mockCreateVerifiedSession = vi.fn().mockResolvedValue("verify-token-123");
 vi.mock("@/lib/captcha-session", () => ({
-  getChallengeSession: (...args: unknown[]) => mockGetChallengeSession(...args),
-  deleteChallengeSession: (...args: unknown[]) => mockDeleteChallengeSession(...args),
+  consumeChallengeSession: (...args: unknown[]) => mockConsumeChallengeSession(...args),
   createVerifiedSession: (...args: unknown[]) => mockCreateVerifiedSession(...args),
 }));
 
@@ -42,7 +40,7 @@ describe("POST /api/v0/captcha/verify", () => {
   });
 
   it("returns 400 for invalid/expired session", async () => {
-    mockGetChallengeSession.mockResolvedValue(null);
+    mockConsumeChallengeSession.mockResolvedValue(null);
 
     const res = await POST(
       makePostRequest({ sessionToken: "bad", selectedIndices: [0] }),
@@ -60,7 +58,7 @@ describe("POST /api/v0/captcha/verify", () => {
   });
 
   it("returns success: false when all 9 images selected (anti-bot)", async () => {
-    mockGetChallengeSession.mockResolvedValue(
+    mockConsumeChallengeSession.mockResolvedValue(
       mockSession({ correctImageIds: ["a", "b"], correctCount: 2, difficulty: 0.5 }),
     );
 
@@ -75,7 +73,7 @@ describe("POST /api/v0/captcha/verify", () => {
   it("returns success: false with insufficient correct selections", async () => {
     // imageIds: [a, b, c, d, e, f, g, h, i], correctImageIds: [a, b, c, d]
     // correctCount 4, difficulty 0.5 → need ceil(4*0.5)=2 correct
-    mockGetChallengeSession.mockResolvedValue(
+    mockConsumeChallengeSession.mockResolvedValue(
       mockSession({ correctImageIds: ["a", "b", "c", "d"], correctCount: 4, difficulty: 0.5 }),
     );
 
@@ -88,7 +86,7 @@ describe("POST /api/v0/captcha/verify", () => {
   });
 
   it("returns success: true with sufficient correct selections", async () => {
-    mockGetChallengeSession.mockResolvedValue(
+    mockConsumeChallengeSession.mockResolvedValue(
       mockSession({ correctImageIds: ["a", "b", "c", "d"], correctCount: 4, difficulty: 0.5 }),
     );
 
@@ -99,7 +97,7 @@ describe("POST /api/v0/captcha/verify", () => {
     const data = await res.json();
     expect(data.success).toBe(true);
     expect(data.token).toBe("verify-token-123");
-    expect(mockDeleteChallengeSession).toHaveBeenCalledWith("tok1");
+    expect(mockConsumeChallengeSession).toHaveBeenCalledWith("tok1");
     expect(mockCreateVerifiedSession).toHaveBeenCalledWith({
       puzzleId: "p1",
       siteId: "s1",
@@ -107,7 +105,7 @@ describe("POST /api/v0/captcha/verify", () => {
   });
 
   it("requires all correct images at difficulty 1.0", async () => {
-    mockGetChallengeSession.mockResolvedValue(
+    mockConsumeChallengeSession.mockResolvedValue(
       mockSession({ correctImageIds: ["a", "b", "c"], correctCount: 3, difficulty: 1.0 }),
     );
 

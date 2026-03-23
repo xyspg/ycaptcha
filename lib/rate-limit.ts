@@ -2,10 +2,6 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { redis } from "@/lib/redis";
 import { getClientIP } from "@/lib/utils";
 
-/**
- * Pre-configured rate limiters for each API tier.
- * All use sliding window algorithm.
- */
 export const rateLimiters = {
   challenge: new Ratelimit({
     redis,
@@ -34,9 +30,6 @@ export const rateLimiters = {
   }),
 } as const;
 
-/**
- * Check rate limit for a request. Returns a Response if rate limited, null otherwise.
- */
 export async function checkRateLimit(
   limiter: Ratelimit,
   request: Request,

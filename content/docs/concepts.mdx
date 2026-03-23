@@ -21,14 +21,16 @@ A single image within an image set. Has an `id`, a public `url` (hosted on Cloud
 
 Belongs to a site and references an image set. Contains:
 
-- **Prompt** — the instruction shown to the user (e.g., "Select all images with parks")
+- **Prompt** — the keyword shown to the user (e.g., "parks"). The widget displays it with a fixed instruction prefix.
 - **Correct images** — which images from the set are the right answers
+- **Correct count** — how many correct images to show per challenge (randomly selected from the correct pool each time)
 - **Incorrect images** — optional hand-picked distractors. If not set, distractors are drawn randomly from the remaining images in the set
 - **Difficulty** — a float from 0 to 1 (default 0.5) that controls the pass threshold
+- **Enabled** — toggle to disable a puzzle without deleting it
 
 ### CAPTCHA Session
 
-Created when a challenge is requested. Tracks a single attempt with a one-time `token`, the associated `puzzleId`, a `solved` flag, and an `expiresAt` timestamp (5 minutes after creation).
+Stored in Redis with a 5-minute TTL. Challenge sessions hold all verification data (image order, correct answers, difficulty). Verified sessions are created after passing and consumed atomically by siteverify.
 
 ---
 
@@ -48,7 +50,7 @@ Browser                         yCAPTCHA Server           Your Backend
    | 3. User selects images           |                         |
    |                                  |                         |
    | 4. POST /verify                  |                         |
-   |    {sessionToken, selectedIds}   |                         |
+   |    {sessionToken, selectedIndices}                         |
    |--------------------------------->|                         |
    |  { success: true, token }        |                         |
    |<---------------------------------|                         |
@@ -73,22 +75,22 @@ Browser                         yCAPTCHA Server           Your Backend
 
 ### Grid assembly
 
-Every challenge serves exactly **9 images** in a 3x3 grid. The server combines the puzzle's correct images with distractors (hand-picked or random), then shuffles them with a Fisher-Yates algorithm. The widget receives only `{ id, url }` pairs — it cannot distinguish correct from incorrect.
+Every challenge serves exactly **9 images** in a 3x3 grid. The server randomly picks `correctCount` images from the puzzle's correct pool, fills remaining slots with distractors (hand-picked or random), then shuffles with Fisher-Yates. The widget receives only proxy URLs — it cannot see image IDs or distinguish correct from incorrect.
 
 ### Pass threshold
 
 The number of correct selections required to pass is:
 
 ```
-requiredCorrect = Math.ceil(correctImageIds.length * difficulty)
+requiredCorrect = Math.ceil(correctCount * difficulty)
 ```
 
-| Correct images | Difficulty | Required selections |
-| -------------- | ---------- | ------------------- |
-| 3              | 0.5        | 2                   |
-| 3              | 1.0        | 3                   |
-| 3              | 0.3        | 1                   |
-| 5              | 0.5        | 3                   |
+| correctCount | Difficulty | Required selections |
+| ------------ | ---------- | ------------------- |
+| 3            | 0.5        | 2                   |
+| 3            | 1.0        | 3                   |
+| 3            | 0.25       | 1                   |
+| 5            | 0.5        | 3                   |
 
 ### Anti-bot rule
 
@@ -102,7 +104,7 @@ Currently, selecting incorrect images does **not** reduce the score. Only the co
 
 ## Token lifecycle
 
-1. Session created with `solved = false` when a challenge is requested
-2. `/verify` sets `solved = true` on pass and returns the `sessionToken` as the verification token
-3. `/siteverify` checks `solved = true` and `expiresAt`, then **deletes** the session row
+1. **Challenge session** created in Redis when `/challenge` is called (5-minute TTL)
+2. `/verify` atomically consumes the challenge session (prevents replay) and creates a **verified session** in Redis
+3. `/siteverify` atomically consumes the verified session (one-time use) and validates the secret key
 4. Any subsequent call with the same token returns `"Invalid token"`

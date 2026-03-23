@@ -82,7 +82,6 @@ export async function createPuzzle(
     return { errors: z.flattenError(parsed.error).fieldErrors };
   }
 
-  // Verify site belongs to user
   const [siteData] = await db
     .select({ id: site.id })
     .from(site)
@@ -94,7 +93,6 @@ export async function createPuzzle(
     return { errors: { siteId: ["Site not found"] } };
   }
 
-  // Verify imageSet belongs to user
   const [setData] = await db
     .select({ id: imageSet.id })
     .from(imageSet)

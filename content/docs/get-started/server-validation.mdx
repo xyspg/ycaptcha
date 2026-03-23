@@ -44,10 +44,8 @@ All failures return HTTP 200 with `success: false` and an `error` field:
 | Error                          | Meaning                                                       |
 | ------------------------------ | ------------------------------------------------------------- |
 | `"Missing token or secretKey"` | Request body missing required fields.                         |
-| `"Invalid token"`              | Token not found — never issued, already consumed, or deleted. |
+| `"Invalid token"`              | Token not found — never issued, already consumed, or expired. |
 | `"Invalid secretKey"`          | Secret key doesn't match the site owning this puzzle.         |
-| `"Challenge not solved"`       | Session exists but the user never passed verification.        |
-| `"Token expired"`              | The 5-minute window has elapsed.                              |
 
 ## Examples
 
