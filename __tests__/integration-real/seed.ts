@@ -81,7 +81,7 @@ export async function seed() {
     TEST_IMAGE_IDS.map((id, i) => ({
       id,
       imageSetId: TEST_IMAGE_SET_ID,
-      url: `https://s3.ycaptcha.xyspg.moe/images/test-${i}.webp`,
+      url: `https://r2.ycaptcha.xyspg.moe/images/test-${i}.webp`,
       name: `test-image-${i}`,
     })),
   );

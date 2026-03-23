@@ -91,11 +91,11 @@ describe("POST /api/v0/captcha/challenge", () => {
     const correctIds = ["img1", "img2", "img3"];
     const correctImages = correctIds.map((id) => ({
       id,
-      url: `https://s3.ycaptcha.xyspg.moe/images/${id}.webp`,
+      url: `https://r2.ycaptcha.xyspg.moe/images/${id}.webp`,
     }));
     const incorrectImages = Array.from({ length: 6 }, (_, i) => ({
       id: `inc${i}`,
-      url: `https://s3.ycaptcha.xyspg.moe/images/inc${i}.webp`,
+      url: `https://r2.ycaptcha.xyspg.moe/images/inc${i}.webp`,
     }));
 
     mockDb.select

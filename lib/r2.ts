@@ -76,7 +76,7 @@ export async function deleteFromR2(key: string): Promise<void> {
 
 /**
  * Extract the R2 key from a public URL.
- * e.g. "https://s3.ycaptcha.xyspg.moe/images/abc.webp" → "images/abc.webp"
+ * e.g. "https://r2.ycaptcha.xyspg.moe/images/abc.webp" → "images/abc.webp"
  */
 export function r2KeyFromUrl(url: string): string {
   const prefix = env.R2_PUBLIC_URL + "/";

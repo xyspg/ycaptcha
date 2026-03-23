@@ -14,7 +14,7 @@ vi.mock("@/lib/env", () => ({
     R2_SECRET_ACCESS_KEY: "test-r2-secret",
     R2_BUCKET: "ycaptcha",
     R2_ENDPOINT: "https://fake.r2.cloudflarestorage.com",
-    R2_PUBLIC_URL: "https://s3.ycaptcha.xyspg.moe",
+    R2_PUBLIC_URL: "https://r2.ycaptcha.xyspg.moe",
     NEXT_PUBLIC_SITE_URL: "http://localhost:3000",
   },
 }));

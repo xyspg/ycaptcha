@@ -83,7 +83,7 @@ export function mockR2Fetch() {
             ? input.toString()
             : input.url;
 
-      if (url.includes("s3.ycaptcha.xyspg.moe")) {
+      if (url.includes("r2.ycaptcha.xyspg.moe")) {
         return new Response(Buffer.from("fake-image-data"), {
           status: 200,
           headers: { "Content-Type": "image/webp" },
