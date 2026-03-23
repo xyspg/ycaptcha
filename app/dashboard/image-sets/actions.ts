@@ -303,10 +303,17 @@ export async function deleteImageSet(
 
 // --- Import Sample Set ---
 
+const importSampleSchema = z.object({
+  slug: z.string().min(1),
+});
+
 export async function importSampleSet(slug: string): Promise<void> {
   const session = await requireSession();
 
-  const sample = SAMPLE_SETS.find((s) => s.slug === slug);
+  const parsed = importSampleSchema.safeParse({ slug });
+  if (!parsed.success) throw new Error("Invalid input");
+
+  const sample = SAMPLE_SETS.find((s) => s.slug === parsed.data.slug);
   if (!sample) throw new Error("Unknown sample set");
 
   const [created] = await db

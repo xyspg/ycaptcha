@@ -134,15 +134,23 @@ export async function regenerateKeys(
   return { success: true, message: "Keys regenerated" }
 }
 
+const deletePuzzleSchema = z.object({
+  puzzleId: z.string().min(1),
+  siteId: z.string().min(1),
+})
+
 export async function deletePuzzleFromSite(puzzleId: string, siteId: string): Promise<void> {
   const session = await requireSession()
+
+  const parsed = deletePuzzleSchema.safeParse({ puzzleId, siteId })
+  if (!parsed.success) throw new Error("Invalid input")
 
   // Delete with ownership check in a single query
   const result = await db
     .delete(puzzle)
     .where(
       and(
-        eq(puzzle.id, puzzleId),
+        eq(puzzle.id, parsed.data.puzzleId),
         inArray(
           puzzle.siteId,
           db.select({ id: site.id }).from(site).where(eq(site.userId, session.user.id)),
@@ -153,5 +161,5 @@ export async function deletePuzzleFromSite(puzzleId: string, siteId: string): Pr
 
   if (result.length === 0) throw new Error("Puzzle not found")
 
-  revalidatePath(`/dashboard/sites/${siteId}`)
+  revalidatePath(`/dashboard/sites/${parsed.data.siteId}`)
 }

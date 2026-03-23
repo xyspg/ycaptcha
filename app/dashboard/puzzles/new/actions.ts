@@ -50,16 +50,25 @@ export async function createPuzzle(
 ): Promise<ActionState> {
   const session = await requireSession();
 
+  let correctImageIds: string[];
+  let incorrectImageIds: string[] | null;
+  try {
+    correctImageIds = JSON.parse(
+      (formData.get("correctImageIds") as string) || "[]",
+    );
+    incorrectImageIds = formData.get("incorrectImageIds")
+      ? JSON.parse(formData.get("incorrectImageIds") as string)
+      : null;
+  } catch {
+    return { errors: { correctImageIds: ["Invalid format"] } };
+  }
+
   const raw = {
     siteId: formData.get("siteId") as string,
     imageSetId: formData.get("imageSetId") as string,
     prompt: formData.get("prompt") as string,
-    correctImageIds: JSON.parse(
-      (formData.get("correctImageIds") as string) || "[]",
-    ),
-    incorrectImageIds: formData.get("incorrectImageIds")
-      ? JSON.parse(formData.get("incorrectImageIds") as string)
-      : null,
+    correctImageIds,
+    incorrectImageIds,
     correctCount: Number(formData.get("correctCount")),
     correctCountMax: formData.get("correctCountMax")
       ? Number(formData.get("correctCountMax"))

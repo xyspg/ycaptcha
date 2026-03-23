@@ -62,15 +62,24 @@ export async function updatePuzzle(
 ): Promise<ActionState> {
   const session = await requireSession();
 
+  let correctImageIds: string[];
+  let incorrectImageIds: string[] | null;
+  try {
+    correctImageIds = JSON.parse(
+      (formData.get("correctImageIds") as string) || "[]",
+    );
+    incorrectImageIds = formData.get("incorrectImageIds")
+      ? JSON.parse(formData.get("incorrectImageIds") as string)
+      : null;
+  } catch {
+    return { errors: { correctImageIds: ["Invalid format"] } };
+  }
+
   const raw = {
     puzzleId: formData.get("puzzleId") as string,
     prompt: formData.get("prompt") as string,
-    correctImageIds: JSON.parse(
-      (formData.get("correctImageIds") as string) || "[]",
-    ),
-    incorrectImageIds: formData.get("incorrectImageIds")
-      ? JSON.parse(formData.get("incorrectImageIds") as string)
-      : null,
+    correctImageIds,
+    incorrectImageIds,
     correctCount: Number(formData.get("correctCount")),
     correctCountMax: formData.get("correctCountMax")
       ? Number(formData.get("correctCountMax"))
@@ -107,16 +116,24 @@ export async function updatePuzzle(
 
 // --- Toggle Enabled ---
 
+const toggleSchema = z.object({
+  puzzleId: z.string().min(1),
+  enabled: z.boolean(),
+});
+
 export async function togglePuzzleEnabled(puzzleId: string, enabled: boolean) {
   const session = await requireSession();
 
-  const owned = await requireOwnedPuzzle(puzzleId, session.user.id);
-  if (!owned) return;
+  const parsed = toggleSchema.safeParse({ puzzleId, enabled });
+  if (!parsed.success) throw new Error("Invalid input");
+
+  const owned = await requireOwnedPuzzle(parsed.data.puzzleId, session.user.id);
+  if (!owned) throw new Error("Puzzle not found");
 
   await db
     .update(puzzle)
-    .set({ enabled })
-    .where(eq(puzzle.id, puzzleId));
+    .set({ enabled: parsed.data.enabled })
+    .where(eq(puzzle.id, parsed.data.puzzleId));
 
   revalidatePath("/dashboard", "layout");
 }
