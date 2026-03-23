@@ -108,7 +108,7 @@ export async function POST(request: Request) {
   let incorrectImages: { id: string; url: string }[] = [];
 
   if (puzzleData.incorrectImageIds) {
-    // Use hand-picked incorrect images (random subset)
+    // Use hand-picked incorrect images (random subset), excluding any that are also correct
     const incorrectIds = puzzleData.incorrectImageIds as string[];
     incorrectImages = await db
       .select({ id: image.id, url: image.url })
@@ -117,6 +117,9 @@ export async function POST(request: Request) {
         and(
           eq(image.imageSetId, puzzleData.imageSetId),
           inArray(image.id, incorrectIds),
+          ...(selectedCorrectIds.length > 0
+            ? [notInArray(image.id, selectedCorrectIds)]
+            : []),
         ),
       )
       .orderBy(sql`RANDOM()`)
@@ -140,6 +143,13 @@ export async function POST(request: Request) {
 
   // 5. Combine and shuffle
   const allImages = shuffle([...correctImages, ...incorrectImages]);
+
+  if (allImages.length < CAPTCHA_GRID_SIZE) {
+    return NextResponse.json(
+      { error: "Not enough images configured for this puzzle" },
+      { status: 500 },
+    );
+  }
 
   // 6. Create Redis session with all verification data
   const token = await createChallengeSession({

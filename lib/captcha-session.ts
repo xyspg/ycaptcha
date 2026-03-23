@@ -56,6 +56,13 @@ export async function deleteChallengeSession(token: string): Promise<void> {
   await redis.del(challengeKey(token));
 }
 
+/** Atomically get and delete a challenge session (one-time use). Returns null if not found. */
+export async function consumeChallengeSession(
+  token: string,
+): Promise<ChallengeSession | null> {
+  return redis.getdel<ChallengeSession>(challengeKey(token));
+}
+
 /** Create a verified session (after successful verify). Returns the verification token. */
 export async function createVerifiedSession(
   data: VerifiedSession,

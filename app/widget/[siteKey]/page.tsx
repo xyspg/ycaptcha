@@ -21,7 +21,10 @@ function getTargetOrigin(): string {
 }
 
 function postToParent(data: Record<string, unknown>) {
-  window.parent.postMessage({ source: "ycaptcha", ...data }, getTargetOrigin());
+  const target = getTargetOrigin();
+  // Never broadcast the verification token to unknown origins
+  if (target === "*" && "token" in data) return;
+  window.parent.postMessage({ source: "ycaptcha", ...data }, target);
 }
 
 function postResize(width: number, height: number) {
