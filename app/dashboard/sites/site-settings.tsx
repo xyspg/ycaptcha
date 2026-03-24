@@ -97,7 +97,7 @@ function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <Link href={`/dashboard/sites/${s.id}`}>
-            <Card className="transition-colors hover:bg-muted/50">
+            <Card className="transition-colors hover:bg-accent/50 dark:hover:bg-accent/30">
               <CardHeader>
                 <CardTitle className="text-base">{s.name}</CardTitle>
                 {s.domain && <CardDescription>{s.domain}</CardDescription>}

@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="bg-taupe-50 flex-1 p-6">{children}</main>
+      <main className="flex-1 bg-background p-6">{children}</main>
     </SidebarProvider>
   );
 }

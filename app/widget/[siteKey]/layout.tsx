@@ -5,8 +5,8 @@ export default function WidgetLayout({
 }) {
   return (
     <>
-      <style>{`body { background: transparent !important; margin: 0; padding: 0; }`}</style>
-      {children}
+      <style>{`html { color-scheme: light !important; } body { background: transparent !important; margin: 0; padding: 0; }`}</style>
+      <div className="light">{children}</div>
     </>
   );
 }
