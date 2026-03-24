@@ -2,8 +2,10 @@
   "use strict";
 
   var ORIGIN = (function () {
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
-      return "http://localhost:3000";
+    var s = document.currentScript;
+    if (s && s.src) {
+      var u = new URL(s.src);
+      return u.origin;
     }
     return "https://ycaptcha.xyspg.moe";
   })();
