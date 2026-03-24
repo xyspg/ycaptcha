@@ -1,14 +1,14 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { toast } from "sonner";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-// Vercel overwrites x-forwarded-for at edge, so this is trustworthy
 export function getClientIP(request: Request): string {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-  return !ip || ip === "::1" ? "127.0.0.1" : ip
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  return !ip || ip === "::1" ? "127.0.0.1" : ip;
 }
 
 export function shuffle<T>(arr: T[]): T[] {
@@ -18,4 +18,14 @@ export function shuffle<T>(arr: T[]): T[] {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+export async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  } catch (e) {
+    console.error(e);
+    toast.error("Failed to copy");
+  }
 }

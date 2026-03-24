@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useActionState, useState } from "react"
-import { type InferSelectModel } from "drizzle-orm"
-import Link from "next/link"
-import { Globe, Plus, Trash2 } from "lucide-react"
-import { site } from "@/lib/db/app-schema"
-import { createSite, deleteSite, type ActionState } from "./actions"
-import { Button } from "@/components/ui/button"
+import { useActionState, useState } from "react";
+import { type InferSelectModel } from "drizzle-orm";
+import Link from "next/link";
+import { Globe, Plus, Trash2 } from "lucide-react";
+import { site } from "@/lib/db/app-schema";
+import { createSite, deleteSite, type ActionState } from "./actions";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
   CardContent,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetTrigger,
@@ -23,27 +23,28 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
-} from "@/components/ui/context-menu"
-import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog"
-import { CopyButton } from "@/components/copy-button"
+} from "@/components/ui/context-menu";
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
+import { CopyButton } from "@/components/copy-button";
+import { copyToClipboard } from "@/lib/utils";
 
 function CreateSiteSheet() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const [state, formAction, isPending] = useActionState(
     async (prev: ActionState, formData: FormData) => {
-      const result = await createSite(prev, formData)
-      if (result?.success) setOpen(false)
-      return result
+      const result = await createSite(prev, formData);
+      if (result?.success) setOpen(false);
+      return result;
     },
     null,
-  )
+  );
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -62,16 +63,30 @@ function CreateSiteSheet() {
         <form action={formAction} className="flex flex-col gap-4 px-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" placeholder="My Website" defaultValue={state?.values?.name} required />
+            <Input
+              id="name"
+              name="name"
+              placeholder="My Website"
+              defaultValue={state?.values?.name}
+              required
+            />
             {state?.errors?.name && (
               <p className="text-xs text-destructive">{state.errors.name[0]}</p>
             )}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="domain">Domain</Label>
-            <Input id="domain" name="domain" placeholder="example.com" defaultValue={state?.values?.domain} required />
+            <Input
+              id="domain"
+              name="domain"
+              placeholder="example.com"
+              defaultValue={state?.values?.domain}
+              required
+            />
             {state?.errors?.domain && (
-              <p className="text-xs text-destructive">{state.errors.domain[0]}</p>
+              <p className="text-xs text-destructive">
+                {state.errors.domain[0]}
+              </p>
             )}
           </div>
           <Button type="submit" disabled={isPending}>
@@ -80,35 +95,62 @@ function CreateSiteSheet() {
         </form>
       </SheetContent>
     </Sheet>
-  )
+  );
 }
 
 function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleDelete = async () => {
-    const fd = new FormData()
-    fd.set("siteId", s.id)
-    await deleteSite(null, fd)
-  }
+    const fd = new FormData();
+    fd.set("siteId", s.id);
+    await deleteSite(null, fd);
+  };
 
   return (
     <>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <Link href={`/dashboard/sites/${s.id}`}>
-            <Card className="transition-colors hover:bg-accent/50 dark:hover:bg-accent/30">
-              <CardHeader>
-                <CardTitle className="text-base">{s.name}</CardTitle>
-                {s.domain && <CardDescription>{s.domain}</CardDescription>}
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-                  <span className="truncate">{s.siteKey}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+          <Card className="relative">
+            <Link
+              href={`/dashboard/sites/${s.id}`}
+              className="absolute inset-0 z-0"
+            />
+            <CardHeader>
+              <CardTitle className="text-base">
+                <Link
+                  href={`/dashboard/sites/${s.id}`}
+                  className="relative z-10 hover:underline"
+                >
+                  {s.name}
+                </Link>
+              </CardTitle>
+              {s.domain && (
+                <CardDescription>
+                  <a
+                    href={`https://${s.domain}`}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="relative z-10 hover:underline"
+                  >
+                    {s.domain}
+                  </a>
+                </CardDescription>
+              )}
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+                <span
+                  className="truncate cursor-copy hover:underline relative z-10"
+                  onClick={() => {
+                    copyToClipboard(s.siteKey);
+                  }}
+                >
+                  {s.siteKey}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem
@@ -130,13 +172,13 @@ function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
         onConfirm={handleDelete}
       />
     </>
-  )
+  );
 }
 
 export function SiteSettings({
   sites,
 }: {
-  sites: InferSelectModel<typeof site>[]
+  sites: InferSelectModel<typeof site>[];
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -164,5 +206,5 @@ export function SiteSettings({
         </div>
       )}
     </div>
-  )
+  );
 }
