@@ -26,7 +26,7 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-muted p-8">
       <div className="mx-auto max-w-md">
         <h1 className="mb-6 text-xl font-semibold">yCAPTCHA Demo</h1>
         <CaptchaContainer

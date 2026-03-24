@@ -51,7 +51,7 @@ export function PuzzleCard({
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <Link href={`/dashboard/puzzles/${id}`}>
-            <Card className={`transition-colors hover:bg-muted/50 ${!enabled ? "opacity-50" : ""}`}>
+            <Card className={`transition-colors hover:bg-accent/50 dark:hover:bg-accent/30 ${!enabled ? "opacity-50" : ""}`}>
               <CardHeader>
                 <CardTitle className="text-base">
                   {prompt}

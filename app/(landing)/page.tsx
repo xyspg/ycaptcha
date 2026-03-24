@@ -32,10 +32,10 @@ export function HomePage() {
           </div>
 
           <div className="mb-8 space-y-3">
-            <h1 className="font-heading text-[40px] font-bold leading-tight tracking-tight text-[#111] lg:text-[48px]">
+            <h1 className="font-heading text-[40px] font-bold leading-tight tracking-tight text-foreground lg:text-[48px]">
               Customize your CAPTCHA
             </h1>
-            <p className="max-w-md text-lg leading-relaxed text-gray-600 lg:text-xl">
+            <p className="max-w-md text-lg leading-relaxed text-muted-foreground lg:text-xl">
               Create and deploy your own custom image-based CAPTCHA challenges.
             </p>
           </div>

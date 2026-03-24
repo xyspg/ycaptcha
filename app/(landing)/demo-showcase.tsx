@@ -15,27 +15,28 @@ interface Demo {
   images: { contentHash: string; url: string }[];
 }
 
-function buildSingleDemo(set: SampleSet, shuffled = true): Demo {
-  const correctCount = 3 + Math.floor(Math.random() * 3); // 3–5
+function buildSingleDemo(set: SampleSet, deterministic = false): Demo {
   const correctSet = new Set(set.correctHashes);
-  const correct = (shuffled ? shuffle(set.images) : set.images).filter((img) =>
-    correctSet.has(img.contentHash),
+  const correct = (deterministic ? set.images : shuffle(set.images)).filter(
+    (img) => correctSet.has(img.contentHash),
   );
-  const incorrect = (shuffled ? shuffle(set.images) : set.images).filter(
+  const incorrect = (deterministic ? set.images : shuffle(set.images)).filter(
     (img) => !correctSet.has(img.contentHash),
   );
-  const picked = shuffle([
+  const correctCount = deterministic ? 3 : 3 + Math.floor(Math.random() * 3); // 3–5
+  const combined = [
     ...correct.slice(0, correctCount),
     ...incorrect.slice(0, CAPTCHA_GRID_SIZE - correctCount),
-  ]);
+  ];
+  const picked = deterministic ? combined : shuffle(combined);
   return {
     prompt: set.name,
     images: picked.map((img) => ({ contentHash: img.contentHash, url: img.url })),
   };
 }
 
-function buildDemos(shuffled = true): Demo[] {
-  return SAMPLE_SETS.map((set) => buildSingleDemo(set, shuffled));
+function buildDemos(deterministic = false): Demo[] {
+  return SAMPLE_SETS.map((set) => buildSingleDemo(set, deterministic));
 }
 
 const DESKTOP_POSITIONS = [
@@ -45,7 +46,7 @@ const DESKTOP_POSITIONS = [
 ];
 
 export function DemoShowcase() {
-  const [demos, setDemos] = useState(() => buildDemos(false));
+  const [demos, setDemos] = useState(() => buildDemos(true));
   const [order, setOrder] = useState([0, 1, 2]);
   const [hovered, setHovered] = useState(false);
   const [errorMessages, setErrorMessages] = useState<(string | null)[]>([
@@ -57,7 +58,7 @@ export function DemoShowcase() {
   const justSwitchedRef = useRef(false);
 
   useMountEffect(() => {
-    setDemos(buildDemos());
+    setDemos(buildDemos(false));
   });
 
   const reshuffleSingle = (demoIndex: number) => {
@@ -145,7 +146,7 @@ export function DemoShowcase() {
             bringToFront(i);
           }}
           className={`size-2 rounded-full transition-colors ${
-            frontDemo === i ? "bg-gray-800" : "bg-gray-300 hover:bg-gray-400"
+            frontDemo === i ? "bg-foreground" : "bg-foreground/20 hover:bg-foreground/40"
           }`}
           aria-label={`Show demo ${i + 1}`}
         />
@@ -199,7 +200,7 @@ export function DemoShowcase() {
           <button
             type="button"
             onClick={cycleBackward}
-            className={`absolute -left-18 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/80 p-2 text-gray-500 shadow-md backdrop-blur transition-opacity hover:text-gray-800 ${hovered ? "opacity-100" : "opacity-0"}`}
+            className={`absolute -left-18 top-1/2 z-30 -translate-y-1/2 rounded-full bg-background/80 p-2 text-muted-foreground shadow-md backdrop-blur transition-opacity hover:text-foreground ${hovered ? "opacity-100" : "opacity-0"}`}
             aria-label="Previous demo"
           >
             <ChevronLeft className="size-5" />
@@ -207,7 +208,7 @@ export function DemoShowcase() {
           <button
             type="button"
             onClick={cycleForward}
-            className={`absolute -right-12 top-1/2 z-30 -translate-y-1/2 rounded-full bg-white/80 p-2 text-gray-500 shadow-md backdrop-blur transition-opacity hover:text-gray-800 ${hovered ? "opacity-100" : "opacity-0"}`}
+            className={`absolute -right-12 top-1/2 z-30 -translate-y-1/2 rounded-full bg-background/80 p-2 text-muted-foreground shadow-md backdrop-blur transition-opacity hover:text-foreground ${hovered ? "opacity-100" : "opacity-0"}`}
             aria-label="Next demo"
           >
             <ChevronRight className="size-5" />
@@ -243,7 +244,7 @@ export function DemoShowcase() {
           <button
             type="button"
             onClick={cycleBackward}
-            className="rounded-full bg-white/80 p-1.5 text-gray-500 shadow-md backdrop-blur hover:text-gray-800"
+            className="rounded-full bg-background/80 p-1.5 text-muted-foreground shadow-md backdrop-blur hover:text-foreground"
             aria-label="Previous demo"
           >
             <ChevronLeft className="size-4" />
@@ -252,7 +253,7 @@ export function DemoShowcase() {
           <button
             type="button"
             onClick={cycleForward}
-            className="rounded-full bg-white/80 p-1.5 text-gray-500 shadow-md backdrop-blur hover:text-gray-800"
+            className="rounded-full bg-background/80 p-1.5 text-muted-foreground shadow-md backdrop-blur hover:text-foreground"
             aria-label="Next demo"
           >
             <ChevronRight className="size-4" />

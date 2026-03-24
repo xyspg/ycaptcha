@@ -48,7 +48,7 @@ export function ImageSetCard({
       <ContextMenu>
         <ContextMenuTrigger asChild>
           <Link href={`/dashboard/image-sets/${id}`}>
-            <Card className="transition-colors hover:bg-muted/50">
+            <Card className="transition-colors hover:bg-accent/50 dark:hover:bg-accent/30">
               <CardHeader>
                 <CardTitle className="text-base">{name}</CardTitle>
                 <CardDescription>

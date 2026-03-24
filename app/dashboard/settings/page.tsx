@@ -267,7 +267,7 @@ function DeleteAccountSection() {
                 variant="destructive"
                 size="sm"
                 disabled={deleting || !password}
-                className="bg-red-700 hover:bg-red-800 text-white"
+                className=""
               >
                 {deleting
                   ? "Deleting everything..."
