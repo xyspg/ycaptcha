@@ -226,7 +226,7 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
 
         {/* Advanced Settings */}
         {correctIds.size > 0 && (
-          <Card>
+          <Card className="sm:max-w-[50%]">
             <CardHeader>
               <button
                 type="button"
@@ -244,59 +244,39 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
             </CardHeader>
             {advancedOpen && (
               <CardContent className="flex flex-col gap-6">
-                {/* Correct Count per Challenge */}
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <p className="text-sm font-medium">Correct Images per Challenge</p>
-                    <p className="text-xs text-muted-foreground">
-                      How many correct images to show in each 3×3 grid.
-                    </p>
-                  </div>
-                  <select
-                    value={correctCountMode}
-                    onChange={(e) => {
-                      const mode = e.target.value as CorrectCountMode;
-                      setCorrectCountMode(mode);
-                      if (mode === "exact") {
-                        setCorrectCountMax(null);
-                      } else {
-                        setCorrectCountMax(
-                          Math.min(effectiveCorrectCount + 2, maxCorrectCount),
-                        );
-                      }
-                    }}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="exact">Exact number</option>
-                    <option value="range">Random range</option>
-                  </select>
-
-                  {correctCountMode === "exact" ? (
-                    <div className="flex items-center gap-4">
-                      <Slider
-                        value={[effectiveCorrectCount]}
-                        onValueChange={([v]) => setCorrectCount(v)}
-                        min={1}
-                        max={maxCorrectCount}
-                        step={1}
-                        className="flex-1"
-                      />
-                      <span className="w-8 text-right text-sm font-mono">
-                        {effectiveCorrectCount}
-                      </span>
+                <div className="flex flex-col gap-6">
+                  {/* Correct Count per Challenge */}
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <p className="text-sm font-medium">Correct Images per Challenge</p>
+                      <p className="text-xs text-muted-foreground">
+                        How many correct images to show in each 3×3 grid.
+                      </p>
                     </div>
-                  ) : (
-                    <div className="flex flex-col gap-2">
+                    <select
+                      value={correctCountMode}
+                      onChange={(e) => {
+                        const mode = e.target.value as CorrectCountMode;
+                        setCorrectCountMode(mode);
+                        if (mode === "exact") {
+                          setCorrectCountMax(null);
+                        } else {
+                          setCorrectCountMax(
+                            Math.min(effectiveCorrectCount + 2, maxCorrectCount),
+                          );
+                        }
+                      }}
+                      className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="exact">Exact number</option>
+                      <option value="range">Random range</option>
+                    </select>
+
+                    {correctCountMode === "exact" ? (
                       <div className="flex items-center gap-4">
-                        <span className="w-8 text-xs text-muted-foreground">Min</span>
                         <Slider
                           value={[effectiveCorrectCount]}
-                          onValueChange={([v]) => {
-                            setCorrectCount(v);
-                            if (correctCountMax && v > correctCountMax) {
-                              setCorrectCountMax(v);
-                            }
-                          }}
+                          onValueChange={([v]) => setCorrectCount(v)}
                           min={1}
                           max={maxCorrectCount}
                           step={1}
@@ -306,35 +286,100 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
                           {effectiveCorrectCount}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="w-8 text-xs text-muted-foreground">Max</span>
-                        <Slider
-                          value={[effectiveCorrectCountMax ?? effectiveCorrectCount]}
-                          onValueChange={([v]) => setCorrectCountMax(v)}
-                          min={effectiveCorrectCount}
-                          max={maxCorrectCount}
-                          step={1}
-                          className="flex-1"
-                        />
-                        <span className="w-8 text-right text-sm font-mono">
-                          {effectiveCorrectCountMax ?? effectiveCorrectCount}
-                        </span>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-4">
+                          <span className="w-8 text-xs text-muted-foreground">Min</span>
+                          <Slider
+                            value={[effectiveCorrectCount]}
+                            onValueChange={([v]) => {
+                              setCorrectCount(v);
+                              if (correctCountMax && v > correctCountMax) {
+                                setCorrectCountMax(v);
+                              }
+                            }}
+                            min={1}
+                            max={maxCorrectCount}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="w-8 text-right text-sm font-mono">
+                            {effectiveCorrectCount}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <span className="w-8 text-xs text-muted-foreground">Max</span>
+                          <Slider
+                            value={[effectiveCorrectCountMax ?? effectiveCorrectCount]}
+                            onValueChange={([v]) => setCorrectCountMax(v)}
+                            min={effectiveCorrectCount}
+                            max={maxCorrectCount}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <span className="w-8 text-right text-sm font-mono">
+                            {effectiveCorrectCountMax ?? effectiveCorrectCount}
+                          </span>
+                        </div>
                       </div>
+                    )}
+                    {state?.errors?.correctCount && (
+                      <p className="text-xs text-destructive">
+                        {state.errors.correctCount[0]}
+                      </p>
+                    )}
+                    {state?.errors?.correctCountMax && (
+                      <p className="text-xs text-destructive">
+                        {state.errors.correctCountMax[0]}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Difficulty */}
+                  <div className="flex flex-col gap-3">
+                    <div>
+                      <p className="text-sm font-medium">Difficulty</p>
+                      <p className="text-xs text-muted-foreground">
+                        User must select at least{" "}
+                        <span className="font-medium text-foreground">
+                          {requiredCorrect}
+                        </span>{" "}
+                        of {displayCount} correct image
+                        {effectiveCorrectCount === 1 && !effectiveCorrectCountMax ? "" : "s"} to pass.
+                      </p>
                     </div>
-                  )}
-                  {state?.errors?.correctCount && (
-                    <p className="text-xs text-destructive">
-                      {state.errors.correctCount[0]}
-                    </p>
-                  )}
-                  {state?.errors?.correctCountMax && (
-                    <p className="text-xs text-destructive">
-                      {state.errors.correctCountMax[0]}
-                    </p>
-                  )}
+                    <div className="flex gap-2">
+                      {DIFFICULTY_PRESETS.map((preset) => (
+                        <Button
+                          key={preset.label}
+                          type="button"
+                          variant={
+                            difficulty === preset.value ? "default" : "outline"
+                          }
+                          size="sm"
+                          onClick={() => setDifficulty(preset.value)}
+                        >
+                          {preset.label}
+                        </Button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <Slider
+                        value={[difficulty]}
+                        onValueChange={([v]) => setDifficulty(v)}
+                        min={0.1}
+                        max={1}
+                        step={0.05}
+                        className="flex-1"
+                      />
+                      <span className="w-12 text-right font-mono text-sm">
+                        {difficulty.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Hand-pick incorrect */}
+                {/* Hand-pick incorrect — full width */}
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
                     <div>
@@ -390,49 +435,6 @@ export function PuzzleDetail({ puzzle: p, siteName, images }: PuzzleDetailProps)
                       </p>
                     </>
                   )}
-                </div>
-
-                {/* Difficulty */}
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <p className="text-sm font-medium">Difficulty</p>
-                    <p className="text-xs text-muted-foreground">
-                      User must select at least{" "}
-                      <span className="font-medium text-foreground">
-                        {requiredCorrect}
-                      </span>{" "}
-                      of {displayCount} correct image
-                      {effectiveCorrectCount === 1 && !effectiveCorrectCountMax ? "" : "s"} to pass.
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    {DIFFICULTY_PRESETS.map((preset) => (
-                      <Button
-                        key={preset.label}
-                        type="button"
-                        variant={
-                          difficulty === preset.value ? "default" : "outline"
-                        }
-                        size="sm"
-                        onClick={() => setDifficulty(preset.value)}
-                      >
-                        {preset.label}
-                      </Button>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <Slider
-                      value={[difficulty]}
-                      onValueChange={([v]) => setDifficulty(v)}
-                      min={0.1}
-                      max={1}
-                      step={0.05}
-                      className="flex-1"
-                    />
-                    <span className="w-12 text-right font-mono text-sm">
-                      {difficulty.toFixed(2)}
-                    </span>
-                  </div>
                 </div>
               </CardContent>
             )}
