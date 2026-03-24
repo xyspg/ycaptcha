@@ -29,10 +29,11 @@ export async function proxy(request: NextRequest) {
         .where(eq(site.siteKey, siteKey));
 
       if (siteData?.domain) {
+        const localhost = "http://localhost:* http://127.0.0.1:*";
         if (siteData.domain === "localhost") {
-          frameAncestors = `'self' http://localhost:* http://127.0.0.1:*`;
+          frameAncestors = `'self' ${localhost}`;
         } else {
-          frameAncestors = `'self' https://*.${siteData.domain} https://${siteData.domain}`;
+          frameAncestors = `'self' https://*.${siteData.domain} https://${siteData.domain} ${localhost}`;
         }
       }
     } catch {
