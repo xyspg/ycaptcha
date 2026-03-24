@@ -231,10 +231,9 @@ function PuzzlesSection({
   );
 }
 
-// SRI hash for public/captcha.js — regenerate with:
 //   cat public/captcha.js | openssl dgst -sha384 -binary | openssl base64 -A
 const CAPTCHA_JS_INTEGRITY =
-  "sha384-a73YP8tlzlqGToYP+QiCYMQOrfR13zM7EUpUI60nEywSo7A183MuJ5nGs7SnoPHx";
+  "sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6";
 
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
   const siteUrl = env.NEXT_PUBLIC_SITE_URL;
