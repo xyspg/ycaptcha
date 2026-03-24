@@ -34,7 +34,9 @@ export async function POST(request: Request) {
   if (siteData.domain && body.origin) {
     try {
       const parentHost = new URL(body.origin).hostname;
+      const isLocalhost = parentHost === "localhost" || parentHost === "127.0.0.1";
       if (
+        !isLocalhost &&
         parentHost !== siteData.domain &&
         !parentHost.endsWith(`.${siteData.domain}`)
       ) {
