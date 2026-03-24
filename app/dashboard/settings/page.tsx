@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth/client";
+import { FingerprintPattern, Pencil, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -82,7 +83,7 @@ function ProfileSection() {
             />
           </div>
           <div className="flex items-center gap-3">
-            <Button type="submit" size="sm" disabled={saving}>
+            <Button variant="outline" type="submit" size="sm" disabled={saving}>
               {saving ? "Saving..." : "Save Changes"}
             </Button>
             {message && (
@@ -90,6 +91,168 @@ function ProfileSection() {
             )}
           </div>
         </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function PasskeySection() {
+  const { data: passkeys, isPending } = authClient.useListPasskeys();
+  const [adding, setAdding] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+
+  async function handleRename(id: string) {
+    if (!editName.trim()) return;
+    setError(null);
+    const { error: err } = await authClient.passkey.updatePasskey({
+      id,
+      name: editName.trim(),
+    });
+    if (err) {
+      setError(err.message ?? "Failed to rename passkey");
+    } else {
+      setEditingId(null);
+    }
+  }
+
+  async function handleAdd() {
+    setAdding(true);
+    setError(null);
+    const { error: err } = await authClient.passkey.addPasskey();
+    setAdding(false);
+    if (err) {
+      if (
+        err.message?.includes("aborted") ||
+        err.message?.includes("cancelled")
+      )
+        return;
+      setError(err.message ?? "Failed to add passkey");
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setDeletingId(id);
+    setError(null);
+    const { error: err } = await authClient.passkey.deletePasskey({ id });
+    setDeletingId(null);
+    if (err) {
+      setError(err.message ?? "Failed to delete passkey");
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <FingerprintPattern className="size-5" />
+          Passkeys
+        </CardTitle>
+        <CardDescription>
+          Sign in without a password using biometrics, security keys, or your
+          device.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {isPending ? (
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        ) : passkeys && passkeys.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            {passkeys.map((pk) => (
+              <div
+                key={pk.id}
+                className="flex items-center justify-between rounded-md border px-3 py-2"
+              >
+                <div className="flex min-w-0 flex-1 flex-col">
+                  {editingId === pk.id ? (
+                    <form
+                      className="flex items-center gap-2"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleRename(pk.id);
+                      }}
+                    >
+                      <Input
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="h-7 text-sm mb-1"
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") setEditingId(null);
+                        }}
+                      />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => setEditingId(null)}
+                      >
+                        Cancel
+                      </Button>
+                    </form>
+                  ) : (
+                    <p className="text-sm font-medium">
+                      {pk.name || "Unnamed passkey"}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Added {new Date(pk.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-muted-foreground hover:text-foreground"
+                    onClick={() => {
+                      setEditingId(pk.id);
+                      setEditName(pk.name || "");
+                    }}
+                  >
+                    <Pencil className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-muted-foreground hover:text-destructive"
+                    disabled={deletingId === pk.id}
+                    onClick={() => handleDelete(pk.id)}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No passkeys registered.
+          </p>
+        )}
+
+        {error && <p className="text-xs text-destructive">{error}</p>}
+
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-fit"
+          disabled={adding}
+          onClick={handleAdd}
+        >
+          <Plus className="mr-1 size-4" />
+          {adding ? "Registering..." : "Add passkey"}
+        </Button>
       </CardContent>
     </Card>
   );
@@ -291,6 +454,7 @@ export default function Page() {
       <h1 className="text-2xl font-semibold">Settings</h1>
       <div className="flex flex-col gap-6 max-w-lg">
         <ProfileSection />
+        <PasskeySection />
         <DeleteAccountSection />
       </div>
     </div>
