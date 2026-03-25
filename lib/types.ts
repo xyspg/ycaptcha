@@ -1,8 +1,8 @@
 export type ActionState = {
-  errors?: Record<string, string[]>;
-  message?: string;
-  success?: boolean;
-  values?: Record<string, string>;
+	errors?: Record<string, string[]>;
+	message?: string;
+	success?: boolean;
+	values?: Record<string, string>;
 } | null;
 
 /** Number of images in the CAPTCHA grid (3x3) */
@@ -19,7 +19,7 @@ export const CAPTCHA_SESSION_TTL_S = CAPTCHA_SESSION_TTL_MS / 1000;
 
 /** Difficulty presets for puzzle configuration */
 export const DIFFICULTY_PRESETS = [
-  { label: "Easy", value: 0.25 },
-  { label: "Medium", value: 0.5 },
-  { label: "Hard", value: 0.75 },
+	{ label: "Easy", value: 0.25 },
+	{ label: "Medium", value: 0.5 },
+	{ label: "Hard", value: 0.75 },
 ] as const;

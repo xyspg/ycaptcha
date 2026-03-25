@@ -5,4 +5,5 @@
 - Passkey
 - Sentry
 - random picked correct image minimum 3
-- - posthog
+- posthog
+- x oauth

@@ -1,5 +1,5 @@
-// eslint-disable-next-line no-restricted-imports
-import { useEffect } from "react"
+// biome-ignore lint/style/noRestrictedImports: this is the wrapper itself
+import { useEffect } from "react";
 
-// eslint-disable-next-line react-hooks/exhaustive-deps
-export const useMountEffect = (callback: () => void | (() => void)) => useEffect(callback, [])
+export const useMountEffect = (callback: () => undefined | (() => void)) =>
+	useEffect(callback, []);
