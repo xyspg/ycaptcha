@@ -4,8 +4,8 @@ import { z } from "zod";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { site, puzzle, imageSet } from "@/lib/db/app-schema";
-import { and, eq } from "drizzle-orm";
+import { site, puzzle, imageSet, image } from "@/lib/db/app-schema";
+import { and, eq, inArray } from "drizzle-orm";
 import type { ActionState } from "@/lib/types";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
@@ -102,6 +102,24 @@ export async function createPuzzle(
 
   if (!setData) {
     return { errors: { imageSetId: ["Image set not found"] } };
+  }
+
+  // validate all image IDs belong to the selected imageSet
+  const allImageIds = [
+    ...parsed.data.correctImageIds,
+    ...(parsed.data.incorrectImageIds ?? []),
+  ];
+  const validImages = await db
+    .select({ id: image.id })
+    .from(image)
+    .where(
+      and(
+        eq(image.imageSetId, parsed.data.imageSetId),
+        inArray(image.id, allImageIds),
+      ),
+    );
+  if (validImages.length !== new Set(allImageIds).size) {
+    return { errors: { correctImageIds: ["Some images do not belong to the selected image set"] } };
   }
 
   await db.insert(puzzle).values({

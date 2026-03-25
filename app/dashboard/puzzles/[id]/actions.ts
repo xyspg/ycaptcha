@@ -5,14 +5,14 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { puzzle, site } from "@/lib/db/app-schema";
-import { and, eq } from "drizzle-orm";
+import { puzzle, site, image } from "@/lib/db/app-schema";
+import { and, eq, inArray } from "drizzle-orm";
 import type { ActionState } from "@/lib/types";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
 async function requireOwnedPuzzle(puzzleId: string, userId: string) {
   const [row] = await db
-    .select({ id: puzzle.id })
+    .select({ id: puzzle.id, imageSetId: puzzle.imageSetId })
     .from(puzzle)
     .innerJoin(site, and(eq(site.id, puzzle.siteId), eq(site.userId, userId)))
     .where(eq(puzzle.id, puzzleId));
@@ -94,6 +94,24 @@ export async function updatePuzzle(
   const owned = await requireOwnedPuzzle(parsed.data.puzzleId, session.user.id);
   if (!owned) {
     return { errors: { puzzleId: ["Puzzle not found"] } };
+  }
+
+  // validate all image IDs belong to the puzzle's imageSet
+  const allImageIds = [
+    ...parsed.data.correctImageIds,
+    ...(parsed.data.incorrectImageIds ?? []),
+  ];
+  const validImages = await db
+    .select({ id: image.id })
+    .from(image)
+    .where(
+      and(
+        eq(image.imageSetId, owned.imageSetId),
+        inArray(image.id, allImageIds),
+      ),
+    );
+  if (validImages.length !== new Set(allImageIds).size) {
+    return { errors: { correctImageIds: ["Some images do not belong to the puzzle's image set"] } };
   }
 
   await db
