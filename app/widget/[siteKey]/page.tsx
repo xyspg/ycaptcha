@@ -112,12 +112,14 @@ export default function WidgetPage() {
 
   const handleVerify = async (selectedIndices: number[]) => {
     if (!sessionToken) return;
+    const token = sessionToken;
+    setSessionToken(null);
 
     try {
       const res = await fetch("/api/v0/captcha/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionToken, selectedIndices }),
+        body: JSON.stringify({ sessionToken: token, selectedIndices }),
       });
 
       const data = await res.json();
