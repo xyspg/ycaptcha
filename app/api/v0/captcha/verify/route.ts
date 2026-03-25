@@ -23,6 +23,10 @@ export async function POST(request: Request) {
     selectedIndices: number[];
   };
 
+  if (selectedIndices.length > CAPTCHA_GRID_SIZE) {
+    return NextResponse.json({ error: "Invalid indices" }, { status: 400 });
+  }
+
   const uniqueIndices = [...new Set(selectedIndices)];
 
   if (
