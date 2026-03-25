@@ -129,13 +129,23 @@ export async function uploadImages(
     }
   }
 
-  const processed = await Promise.all(
+  const processResults = await Promise.allSettled(
     validFiles.map(async (file) => {
       const rawBuffer = Buffer.from(await file.arrayBuffer());
       const result = await processImage(rawBuffer);
       return { file, ...result };
     }),
   );
+
+  const processed: { file: File; buffer: Buffer; contentHash: string }[] = [];
+  for (let i = 0; i < processResults.length; i++) {
+    const r = processResults[i];
+    if (r.status === "fulfilled") {
+      processed.push(r.value);
+    } else {
+      skipped.push(`${validFiles[i].name} (invalid image)`);
+    }
+  }
 
   // deduplicate: skip upload if content hash already exists
   const hashes = processed.map((p) => p.contentHash);
