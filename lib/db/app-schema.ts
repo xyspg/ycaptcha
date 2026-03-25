@@ -6,6 +6,7 @@ import {
   integer,
   jsonb,
   index,
+  uniqueIndex,
   real,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
@@ -69,7 +70,7 @@ export const image = pgTable(
   },
   (table) => [
     index("image_imageSetId_idx").on(table.imageSetId),
-    index("image_contentHash_idx").on(table.contentHash),
+    uniqueIndex("image_contentHash_idx").on(table.contentHash),
   ],
 );
 

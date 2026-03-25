@@ -163,14 +163,17 @@ export async function uploadImages(
     .map((r) => r.value);
 
   if (uploaded.length > 0) {
-    await db.insert(image).values(
-      uploaded.map((u) => ({
-        imageSetId: setId,
-        url: u.url,
-        name: u.name,
-        contentHash: u.contentHash,
-      })),
-    );
+    await db
+      .insert(image)
+      .values(
+        uploaded.map((u) => ({
+          imageSetId: setId,
+          url: u.url,
+          name: u.name,
+          contentHash: u.contentHash,
+        })),
+      )
+      .onConflictDoNothing({ target: image.contentHash });
   }
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
