@@ -58,6 +58,12 @@ export async function createVerifiedSession(
   return token;
 }
 
+export async function getVerifiedSession(
+  token: string,
+): Promise<VerifiedSession | null> {
+  return redis.get<VerifiedSession>(verifiedKey(token));
+}
+
 export async function consumeVerifiedSession(
   token: string,
 ): Promise<VerifiedSession | null> {

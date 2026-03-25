@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { puzzle, site } from "@/lib/db/app-schema";
-import { consumeVerifiedSession } from "@/lib/captcha-session";
+import {
+  getVerifiedSession,
+  consumeVerifiedSession,
+} from "@/lib/captcha-session";
 import { rateLimiters, checkRateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
@@ -19,14 +22,14 @@ export async function POST(request: Request) {
 
   const { token, secretKey } = body as { token: string; secretKey: string };
 
-  // one-time use — consumed on read
-  const session = await consumeVerifiedSession(token);
+  // read session without consuming — validate secretKey first
+  const session = await getVerifiedSession(token);
 
   if (!session) {
-    return NextResponse.json({ success: false, error: "Invalid token" });
+    return NextResponse.json({ success: false });
   }
 
-  // single JOIN instead of two queries — proves secretKey owns the puzzle's site
+  // proves secretKey owns the puzzle's site
   const [owner] = await db
     .select({ siteId: site.id })
     .from(puzzle)
@@ -37,8 +40,11 @@ export async function POST(request: Request) {
     .where(eq(puzzle.id, session.puzzleId));
 
   if (!owner) {
-    return NextResponse.json({ success: false, error: "Invalid secretKey" });
+    return NextResponse.json({ success: false });
   }
+
+  // consume only after successful validation
+  await consumeVerifiedSession(token);
 
   return NextResponse.json({ success: true });
 }
