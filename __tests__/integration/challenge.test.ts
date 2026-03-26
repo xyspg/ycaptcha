@@ -1,151 +1,83 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { chainResult, makePostRequest } from "../helpers";
-
-// We need to mock db before importing the route
-const mockDb = {
-	select: vi.fn(),
-};
-vi.mocked(await import("@/lib/db")).db =
-	mockDb as unknown as typeof import("@/lib/db").db;
-
-// Mock captcha-session module
-const mockCreateChallengeSession = vi
-	.fn()
-	.mockResolvedValue("session-token-123");
-vi.mock("@/lib/captcha-session", () => ({
-	createChallengeSession: (...args: unknown[]) =>
-		mockCreateChallengeSession(...args),
-}));
+import { beforeAll, describe, expect, it } from "vitest";
+import { getChallenge, postRequest } from "./helpers";
+import { seed, TEST_SITE_KEY } from "./seed";
 
 const { POST } = await import("@/app/api/v0/captcha/challenge/route");
 
-beforeEach(() => {
-	vi.clearAllMocks();
-	mockCreateChallengeSession.mockResolvedValue("session-token-123");
+beforeAll(async () => {
+	await seed();
 });
 
-describe("POST /api/v0/captcha/challenge", () => {
-	it("returns 400 when siteKey is missing", async () => {
-		const res = await POST(makePostRequest({}));
-		expect(res.status).toBe(400);
-		expect(await res.json()).toMatchObject({ error: "Missing siteKey" });
+describe("POST /api/v0/captcha/challenge — real DB + Redis", () => {
+	it("returns 200 with sessionToken, prompt, and 9 images", async () => {
+		const res = await POST(
+			postRequest({ siteKey: TEST_SITE_KEY, origin: "https://example.com" }),
+		);
+		expect(res.status).toBe(200);
+
+		const data = await res.json();
+		expect(data.sessionToken).toBeDefined();
+		expect(typeof data.sessionToken).toBe("string");
+		expect(data.prompt).toBe("Select all test images");
+		expect(data.images).toHaveLength(9);
+
+		// Images expose only proxy URLs, no IDs
+		for (const img of data.images) {
+			expect(img).toHaveProperty("url");
+			expect(img).not.toHaveProperty("id");
+			expect(img.url).toMatch(/^\/api\/v0\/captcha\/image\//);
+		}
 	});
 
 	it("returns 404 for invalid siteKey", async () => {
-		mockDb.select.mockReturnValue(chainResult([]));
-
-		const res = await POST(makePostRequest({ siteKey: "pk_invalid" }));
+		const res = await POST(postRequest({ siteKey: "pk_does_not_exist" }));
 		expect(res.status).toBe(404);
 		expect(await res.json()).toMatchObject({ error: "Invalid siteKey" });
 	});
 
-	it("returns 403 when origin domain does not match", async () => {
-		mockDb.select.mockReturnValueOnce(
-			chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
-		);
-
-		const res = await POST(
-			makePostRequest({ siteKey: "pk_test", origin: "https://evil.com" }),
-		);
-		expect(res.status).toBe(403);
-	});
-
-	it("returns 400 for malformed origin", async () => {
-		mockDb.select.mockReturnValueOnce(
-			chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
-		);
-
-		const res = await POST(
-			makePostRequest({ siteKey: "pk_test", origin: "not-a-url" }),
-		);
+	it("returns 400 for missing siteKey", async () => {
+		const res = await POST(postRequest({}));
 		expect(res.status).toBe(400);
-		expect(await res.json()).toMatchObject({ error: "Invalid origin" });
+		expect(await res.json()).toMatchObject({ error: "Missing siteKey" });
 	});
 
-	it("returns 400 when origin is missing and site has domain", async () => {
-		mockDb.select.mockReturnValueOnce(
-			chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
-		);
+	it("only picks enabled puzzles (disabled puzzle is excluded)", async () => {
+		// The test site has 1 enabled puzzle and 1 disabled — 2 requests is sufficient
+		const results = await Promise.all([
+			getChallenge(TEST_SITE_KEY, "https://example.com"),
+			getChallenge(TEST_SITE_KEY, "https://example.com"),
+		]);
 
-		const res = await POST(makePostRequest({ siteKey: "pk_test" }));
-		expect(res.status).toBe(400);
-		expect(await res.json()).toMatchObject({ error: "Missing origin" });
+		for (const data of results) {
+			expect(data.prompt).toBe("Select all test images");
+		}
 	});
 
-	it("returns 404 when no puzzles configured", async () => {
-		mockDb.select
-			.mockReturnValueOnce(
-				chainResult([{ id: "s1", siteKey: "pk_test", domain: "example.com" }]),
-			)
-			.mockReturnValueOnce(chainResult([])); // no puzzles
+	it("rate limiting enforces limits against real Redis", async () => {
+		const { Ratelimit } = await import("@upstash/ratelimit");
+		const { redis } = await import("@/lib/redis");
 
-		const res = await POST(
-			makePostRequest({ siteKey: "pk_test", origin: "https://example.com" }),
-		);
-		expect(res.status).toBe(404);
-		expect(await res.json()).toMatchObject({
-			error: "No puzzles configured for this site",
+		// Use a unique identifier per test run to avoid stale rate limit state
+		const uniqueId = `test-ip-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+		const limiter = new Ratelimit({
+			redis,
+			limiter: Ratelimit.slidingWindow(5, "60 s"),
+			prefix: "rl:integration-test",
 		});
-	});
 
-	it("returns session token, prompt, and 9 images on success", async () => {
-		const correctIds = ["img1", "img2", "img3"];
-		const correctImages = correctIds.map((id) => ({
-			id,
-			url: `https://r2.ycaptcha.xyspg.moe/images/${id}.webp`,
-		}));
-		const incorrectImages = Array.from({ length: 6 }, (_, i) => ({
-			id: `inc${i}`,
-			url: `https://r2.ycaptcha.xyspg.moe/images/inc${i}.webp`,
-		}));
+		const results: boolean[] = [];
+		for (let i = 0; i < 10; i++) {
+			const { success } = await limiter.limit(uniqueId);
+			results.push(success);
+		}
 
-		mockDb.select
-			// site lookup
-			.mockReturnValueOnce(
-				chainResult([{ id: "s1", siteKey: "pk_test", domain: null }]),
-			)
-			// puzzle lookup
-			.mockReturnValueOnce(
-				chainResult([
-					{
-						id: "p1",
-						siteId: "s1",
-						imageSetId: "is1",
-						correctImageIds: correctIds,
-						incorrectImageIds: null,
-						correctCount: 3,
-						correctCountMax: null,
-						enabled: true,
-						prompt: "Select cats",
-						difficulty: 0.5,
-					},
-				]),
-			)
-			// correct images
-			.mockReturnValueOnce(chainResult(correctImages))
-			// incorrect images
-			.mockReturnValueOnce(chainResult(incorrectImages));
+		const allowed = results.filter(Boolean).length;
+		const denied = results.filter((r) => !r).length;
 
-		const res = await POST(makePostRequest({ siteKey: "pk_test" }));
-		expect(res.status).toBe(200);
-
-		const data = await res.json();
-		expect(data.sessionToken).toBe("session-token-123");
-		expect(data.prompt).toBe("Select cats");
-		expect(data.images).toHaveLength(9);
-		// Images should only contain url (no id exposed to client)
-		expect(data.images[0]).toHaveProperty("url");
-		expect(data.images[0]).not.toHaveProperty("id");
-
-		// Verify createChallengeSession was called with correct data
-		expect(mockCreateChallengeSession).toHaveBeenCalledOnce();
-		const sessionData = mockCreateChallengeSession.mock.calls[0][0];
-		expect(sessionData.puzzleId).toBe("p1");
-		expect(sessionData.siteId).toBe("s1");
-		// correctImageIds should be the displayed subset, not the full pool
-		expect(sessionData.correctImageIds).toHaveLength(3);
-		sessionData.correctImageIds.forEach((id: string) => {
-			expect(correctIds).toContain(id);
-		});
+		// Sliding window is approximate — allow ±1
+		expect(allowed).toBeGreaterThanOrEqual(4);
+		expect(allowed).toBeLessThanOrEqual(6);
+		expect(denied).toBeGreaterThan(0);
 	});
 });

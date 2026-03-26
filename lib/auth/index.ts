@@ -30,7 +30,7 @@ export const auth = betterAuth({
 		deleteUser: {
 			enabled: true,
 			beforeDelete: async (user) => {
-				// Clean up R2 images before cascade delete removes DB records
+				// clean up R2
 				const sets = await db
 					.select({ id: imageSet.id })
 					.from(imageSet)

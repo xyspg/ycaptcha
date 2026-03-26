@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +18,15 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth/client";
 
+function getSafeRedirect(value: string | null): string {
+	if (value?.startsWith("/") && !value.startsWith("//")) return value;
+	return "/dashboard";
+}
+
 export default function SignupPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const redirectTo = getSafeRedirect(searchParams.get("redirect"));
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
@@ -47,7 +54,7 @@ export default function SignupPage() {
 					setError(null);
 				},
 				onSuccess: () => {
-					router.push("/dashboard");
+					router.push(redirectTo);
 				},
 				onError: (ctx) => {
 					setLoading(false);
@@ -140,7 +147,7 @@ export default function SignupPage() {
 						onClick={() =>
 							authClient.signIn.social({
 								provider: "github",
-								callbackURL: "/dashboard",
+								callbackURL: redirectTo,
 							})
 						}
 					>
@@ -158,7 +165,11 @@ export default function SignupPage() {
 					<p className="text-sm text-muted-foreground">
 						Already have an account?{" "}
 						<Link
-							href="/login"
+							href={
+								redirectTo !== "/dashboard"
+									? `/login?redirect=${encodeURIComponent(redirectTo)}`
+									: "/login"
+							}
 							className="font-medium text-foreground underline-offset-4 hover:underline"
 						>
 							Sign in

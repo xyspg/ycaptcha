@@ -37,7 +37,6 @@ export const site = pgTable(
 	(table) => [index("site_userId_idx").on(table.userId)],
 );
 
-// owned by user, not site — reusable across sites
 export const imageSet = pgTable(
 	"image_set",
 	{
@@ -53,7 +52,6 @@ export const imageSet = pgTable(
 	(table) => [index("imageSet_userId_idx").on(table.userId)],
 );
 
-// no tags — correctness is determined at the puzzle level
 export const image = pgTable(
 	"image",
 	{

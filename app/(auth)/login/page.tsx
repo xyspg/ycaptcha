@@ -3,7 +3,7 @@
 import { FingerprintPattern } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,15 +20,22 @@ import { Separator } from "@/components/ui/separator";
 import { useMountEffect } from "@/hooks/use-mount-effect";
 import { authClient } from "@/lib/auth/client";
 
+function getSafeRedirect(value: string | null): string {
+	if (value?.startsWith("/") && !value.startsWith("//")) return value;
+	return "/dashboard";
+}
+
 export default function LoginPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const redirectTo = getSafeRedirect(searchParams.get("redirect"));
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
 	useMountEffect(() => {
 		authClient.signIn.passkey({ autoFill: true }).then(({ error: err }) => {
 			if (err) return;
-			router.push("/dashboard");
+			router.push(redirectTo);
 		});
 	});
 
@@ -47,7 +54,7 @@ export default function LoginPage() {
 					setError(null);
 				},
 				onSuccess: () => {
-					router.push("/dashboard");
+					router.push(redirectTo);
 				},
 				onError: (ctx) => {
 					setLoading(false);
@@ -71,7 +78,7 @@ export default function LoginPage() {
 			setError(err.message ?? "Passkey sign-in failed");
 			return;
 		}
-		router.push("/dashboard");
+		router.push(redirectTo);
 	}
 
 	return (
@@ -148,7 +155,7 @@ export default function LoginPage() {
 							onClick={() =>
 								authClient.signIn.social({
 									provider: "github",
-									callbackURL: "/dashboard",
+									callbackURL: redirectTo,
 								})
 							}
 						>
@@ -167,7 +174,11 @@ export default function LoginPage() {
 					<p className="text-sm text-muted-foreground">
 						Don&apos;t have an account?{" "}
 						<Link
-							href="/signup"
+							href={
+								redirectTo !== "/dashboard"
+									? `/signup?redirect=${encodeURIComponent(redirectTo)}`
+									: "/signup"
+							}
 							className="font-medium text-foreground underline-offset-4 hover:underline"
 						>
 							Sign up

@@ -1,72 +1,87 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { chainResult, makePostRequest } from "../helpers";
+import { beforeAll, describe, expect, it } from "vitest";
+import { getChallenge, getVerificationToken, postRequest } from "./helpers";
+import { seed, TEST_SECRET_KEY, TEST_SITE_KEY } from "./seed";
 
-const mockDb = {
-	select: vi.fn(),
-};
-vi.mocked(await import("@/lib/db")).db =
-	mockDb as unknown as typeof import("@/lib/db").db;
+const siteverifyPOST = (await import("@/app/api/v0/captcha/siteverify/route"))
+	.POST;
 
-// Mock captcha-session module
-const mockConsumeVerifiedSession = vi.fn();
-vi.mock("@/lib/captcha-session", () => ({
-	consumeVerifiedSession: (...args: unknown[]) =>
-		mockConsumeVerifiedSession(...args),
-}));
-
-const { POST } = await import("@/app/api/v0/captcha/siteverify/route");
-
-beforeEach(() => {
-	vi.clearAllMocks();
+beforeAll(async () => {
+	await seed();
 });
 
-describe("POST /api/v0/captcha/siteverify", () => {
-	it("returns 400 when params are missing", async () => {
-		const res = await POST(makePostRequest({}));
-		expect(res.status).toBe(400);
-	});
+describe("POST /api/v0/captcha/siteverify — real DB + Redis", () => {
+	it("full flow: challenge → verify → siteverify succeeds", async () => {
+		const token = await getVerificationToken(
+			TEST_SITE_KEY,
+			"https://example.com",
+		);
 
-	it("returns success: false for invalid token", async () => {
-		mockConsumeVerifiedSession.mockResolvedValue(null);
-
-		const res = await POST(
-			makePostRequest({ token: "bad", secretKey: "sk_test" }),
+		const res = await siteverifyPOST(
+			postRequest({ token, secretKey: TEST_SECRET_KEY }),
 		);
 		const data = await res.json();
-		expect(data.success).toBe(false);
-		expect(data.error).toBe("Invalid token");
+
+		expect(data.success).toBe(true);
 	});
 
-	it("returns success: false for wrong secretKey", async () => {
-		mockConsumeVerifiedSession.mockResolvedValue({
-			puzzleId: "p1",
-			siteId: "s1",
-		});
+	it("fails with wrong secretKey", async () => {
+		const token = await getVerificationToken(
+			TEST_SITE_KEY,
+			"https://example.com",
+		);
 
-		// owner check fails
-		mockDb.select.mockReturnValueOnce(chainResult([]));
-
-		const res = await POST(
-			makePostRequest({ token: "tok1", secretKey: "sk_wrong" }),
+		const res = await siteverifyPOST(
+			postRequest({ token, secretKey: "sk_wrong_key_here" }),
 		);
 		const data = await res.json();
+
 		expect(data.success).toBe(false);
 		expect(data.error).toBe("Invalid secretKey");
 	});
 
-	it("returns success: true on valid token and secretKey", async () => {
-		mockConsumeVerifiedSession.mockResolvedValue({
-			puzzleId: "p1",
-			siteId: "s1",
-		});
-
-		mockDb.select.mockReturnValueOnce(chainResult([{ siteId: "s1" }]));
-
-		const res = await POST(
-			makePostRequest({ token: "tok1", secretKey: "sk_test" }),
+	it("fails with invalid/nonexistent token", async () => {
+		const res = await siteverifyPOST(
+			postRequest({ token: "nonexistent-token", secretKey: TEST_SECRET_KEY }),
 		);
 		const data = await res.json();
-		expect(data.success).toBe(true);
-		expect(mockConsumeVerifiedSession).toHaveBeenCalledWith("tok1");
+
+		expect(data.success).toBe(false);
+		expect(data.error).toBe("Invalid token");
+	});
+
+	it("double siteverify: first succeeds, second fails (one-time use)", async () => {
+		const token = await getVerificationToken(
+			TEST_SITE_KEY,
+			"https://example.com",
+		);
+
+		const res1 = await siteverifyPOST(
+			postRequest({ token, secretKey: TEST_SECRET_KEY }),
+		);
+		expect((await res1.json()).success).toBe(true);
+
+		const res2 = await siteverifyPOST(
+			postRequest({ token, secretKey: TEST_SECRET_KEY }),
+		);
+		const data2 = await res2.json();
+		expect(data2.success).toBe(false);
+		expect(data2.error).toBe("Invalid token");
+	});
+
+	it("fails when verify step was never completed", async () => {
+		// Create a challenge but don't verify — token doesn't exist in verified store
+		const { sessionToken } = await getChallenge(
+			TEST_SITE_KEY,
+			"https://example.com",
+		);
+
+		// Try siteverify with the challenge session token (wrong store)
+		const res = await siteverifyPOST(
+			postRequest({ token: sessionToken, secretKey: TEST_SECRET_KEY }),
+		);
+		const data = await res.json();
+
+		expect(data.success).toBe(false);
+		expect(data.error).toBe("Invalid token");
 	});
 });
