@@ -4,11 +4,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { CaptchaWidget } from "@/components/captcha/captcha-widget";
 import { useMountEffect } from "@/hooks/use-mount-effect";
 import { SAMPLE_SETS, type SampleSet } from "@/lib/samples";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
+import { DemoCaptchaWidget } from "./demo-captcha-widget";
 
 interface Demo {
 	prompt: string;
@@ -170,6 +170,39 @@ export function DemoShowcase() {
 			{/* Desktop: stacked cards */}
 			<div className="hidden lg:block">
 				<div className="relative h-[600px] w-[490px]">
+					<div className="absolute -left-20 -top-12 z-40 select-none">
+						<span
+							className="block text-2xl text-foreground/70 rotate-[-6deg]"
+							style={{ fontFamily: "var(--font-caveat)" }}
+						>
+							Try it out!
+						</span>
+						{/* Hand-drawn arrow curving down-right */}
+						<svg
+							width="80"
+							height="60"
+							viewBox="0 0 80 60"
+							fill="none"
+							className="ml-6 -mt-1 text-foreground/50"
+						>
+							<path
+								d="M4 4 C 20 8, 40 10, 55 30 C 62 40, 65 48, 68 52"
+								stroke="currentColor"
+								strokeWidth="1.8"
+								strokeLinecap="round"
+								fill="none"
+							/>
+							{/* Arrowhead */}
+							<path
+								d="M62 44 L 68 52 L 58 50"
+								stroke="currentColor"
+								strokeWidth="1.8"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								fill="none"
+							/>
+						</svg>
+					</div>
 					{order.map((demoIndex, stackPos) => (
 						<motion.div
 							key={demoIndex}
@@ -193,12 +226,13 @@ export function DemoShowcase() {
 									onClick={() => bringToFront(demoIndex)}
 								/>
 							)}
-							<CaptchaWidget
+							<DemoCaptchaWidget
 								prompt={demos[demoIndex].prompt}
 								images={demos[demoIndex].images}
 								onVerify={(indices) => handleVerify(demoIndex, indices)}
 								onRefresh={() => handleRefresh(demoIndex)}
 								errorMessage={errorMessages[demoIndex]}
+								idleHighlight={stackPos === 2}
 							/>
 						</motion.div>
 					))}
@@ -235,7 +269,7 @@ export function DemoShowcase() {
 							exit={{ x: slideDir * -350, opacity: 0 }}
 							transition={{ type: "spring", stiffness: 300, damping: 30 }}
 						>
-							<CaptchaWidget
+							<DemoCaptchaWidget
 								prompt={demos[frontDemo].prompt}
 								images={demos[frontDemo].images}
 								onVerify={(ids) => handleVerify(frontDemo, ids)}

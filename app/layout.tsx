@@ -1,6 +1,6 @@
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { Caveat, Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 import "./globals.css";
@@ -17,6 +17,11 @@ const geistMono = Geist_Mono({
 
 export const plusJakarta = Plus_Jakarta_Sans({
 	variable: "--font-plus-jakarta",
+	subsets: ["latin"],
+});
+
+const caveat = Caveat({
+	variable: "--font-caveat",
 	subsets: ["latin"],
 });
 
@@ -39,7 +44,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} flex min-h-screen flex-col font-sans antialiased`}
+				className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} ${caveat.variable} flex min-h-screen flex-col font-sans antialiased`}
 			>
 				<RootProvider>
 					<Providers>{children}</Providers>

@@ -29,7 +29,6 @@
 # misc
 .DS_Store
 *.pem
-CLAUDE.md
 .claude/
 .zed/
 .agents/

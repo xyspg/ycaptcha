@@ -7,7 +7,6 @@ import { site } from "@/lib/db/app-schema";
 export async function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 
-	// Dashboard auth guard
 	if (pathname.startsWith("/dashboard")) {
 		const session = await getSession();
 		if (!session) {
@@ -36,8 +35,9 @@ export async function proxy(request: NextRequest) {
 					frameAncestors = `'self' https://*.${siteData.domain} https://${siteData.domain} ${localhost}`;
 				}
 			}
-		} catch {
+		} catch (e) {
 			// DB error — fall back to restrictive policy
+			console.error(e);
 		}
 
 		const response = NextResponse.next();

@@ -23,7 +23,6 @@ export const SAMPLE_SETS: SampleSet[] = [
 		correctHashes: [
 			"051985f8c734ed09f545745f09bd867984e5932bd9f15b6f14a49bad76a3e71f", // bun
 			"f7b6407151cbfcc1db29a2e7f8706e970eacd694b708399e349552d2c2fc6ff3", // nextjs
-			"0307336e328e4d108514b67861095df055f1fbcd7d984d270237c5dbdc105faa", // nodejs
 			"974e53c7a6602e0be8d62013f59a26d0d1186391fe6ded24375908eccd8c57fe", // react
 			"0b7c3bc6a19b7a5bf502902e564ecd7317b569f167f8bf6b7f6d4d6faa6b18d4", // tailwindcss
 			"72a563a66f6b04cbc8c6a693d46f9f5a76a7745c7bdc1ff4f6d5a8215302a8b4", // typescript
