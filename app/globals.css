@@ -6,6 +6,8 @@
 
 @source "../node_modules/fumadocs-ui/dist/**/*.js";
 
+@variant dark (&:where(.dark, .dark *));
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);

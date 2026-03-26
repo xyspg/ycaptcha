@@ -11,7 +11,8 @@
 			"**",
 			"!**/components/ui",
 			"!**/.next",
-			"!**/public/captcha.js"
+			"!**/public/captcha.js",
+			"!**/*.css"
 		]
 	},
 	"formatter": {
