@@ -1,11 +1,29 @@
 "use client";
 
 import type { InferSelectModel } from "drizzle-orm";
-import { ArrowLeft, Eye, EyeOff, Plus, RefreshCw, Trash2 } from "lucide-react";
+import {
+	ArrowLeft,
+	Eye,
+	EyeOff,
+	Plus,
+	RefreshCw,
+	Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { CopyButton } from "@/components/copy-button";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -81,13 +99,36 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
 						<CopyButton value={s.secretKey} />
 					</div>
 				</div>
-				<form action={regenAction}>
-					<input type="hidden" name="siteId" value={s.id} />
-					<Button variant="outline" size="sm" disabled={isRegenerating}>
-						<RefreshCw className="size-3" />
-						{isRegenerating ? "Regenerating..." : "Regenerate Keys"}
-					</Button>
-				</form>
+				<AlertDialog>
+					<AlertDialogTrigger asChild>
+						<Button variant="outline" size="sm" disabled={isRegenerating}>
+							<RefreshCw className="size-3" />
+							{isRegenerating ? "Regenerating..." : "Regenerate Keys"}
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Regenerate API Keys</AlertDialogTitle>
+							<AlertDialogDescription>
+								This will invalidate your current keys. Any existing widget
+								embeds using the old site key will stop working until you update
+								them.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction
+								onClick={() => {
+									const fd = new FormData();
+									fd.set("siteId", s.id);
+									regenAction(fd);
+								}}
+							>
+								Regenerate
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 				{regenState?.success && (
 					<p className="text-xs text-muted-foreground">{regenState.message}</p>
 				)}

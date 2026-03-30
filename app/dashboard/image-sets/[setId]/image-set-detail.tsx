@@ -3,6 +3,7 @@
 import { ArrowLeft, Pencil, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useRef, useState } from "react";
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -198,10 +199,13 @@ function ImageCard({
 }
 
 export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
-	const [deleteState, deleteAction, isDeleting] = useActionState(
-		deleteImageSet,
-		null,
-	);
+	const [deleteOpen, setDeleteOpen] = useState(false);
+
+	const handleDelete = async () => {
+		const fd = new FormData();
+		fd.set("setId", set.id);
+		await deleteImageSet(null, fd);
+	};
 
 	return (
 		<div className="flex flex-col gap-6">
@@ -251,20 +255,23 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form action={deleteAction}>
-						<input type="hidden" name="setId" value={set.id} />
-						<Button variant="destructive" size="sm" disabled={isDeleting}>
-							<Trash2 className="size-3" />
-							{isDeleting ? "Deleting..." : "Delete Image Set"}
-						</Button>
-					</form>
-					{deleteState?.errors?.setId && (
-						<p className="mt-2 text-xs text-destructive">
-							{deleteState.errors.setId[0]}
-						</p>
-					)}
+					<Button
+						variant="destructive"
+						size="sm"
+						onClick={() => setDeleteOpen(true)}
+					>
+						<Trash2 className="size-3" /> Delete Image Set
+					</Button>
 				</CardContent>
 			</Card>
+
+			<ConfirmDeleteDialog
+				open={deleteOpen}
+				onOpenChange={setDeleteOpen}
+				title="Delete Image Set"
+				description="This will permanently delete this image set and all its images from storage. Puzzles using this set will break."
+				onConfirm={handleDelete}
+			/>
 		</div>
 	);
 }

@@ -71,7 +71,7 @@ export function PuzzleDetail({
 				</div>
 			</div>
 
-			<div className="flex gap-6">
+			<div className="flex flex-col gap-6 lg:flex-row">
 				{/* Left: config panel */}
 				<div className="flex min-w-0 flex-1 flex-col gap-6">
 					<form action={formAction} className="flex flex-col gap-6">

@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	Sidebar,
@@ -36,7 +37,6 @@ const navItems = [
 
 export function AppSidebar() {
 	const pathname = usePathname();
-	const router = useRouter();
 	const { data: session, isPending } = authClient.useSession();
 
 	return (
@@ -130,19 +130,7 @@ export function AppSidebar() {
 											{session?.user.email}
 										</span>
 									</div>
-									<button
-										type="button"
-										onClick={() =>
-											authClient.signOut({
-												fetchOptions: {
-													onSuccess: () => router.push("/login"),
-												},
-											})
-										}
-										className="text-muted-foreground hover:text-foreground"
-									>
-										<LogOut className="h-4 w-4" />
-									</button>
+									<SignOutButton />
 								</>
 							)}
 						</div>
@@ -150,5 +138,28 @@ export function AppSidebar() {
 				</SidebarMenu>
 			</SidebarFooter>
 		</Sidebar>
+	);
+}
+
+function SignOutButton() {
+	const router = useRouter();
+	const [signingOut, setSigningOut] = useState(false);
+
+	return (
+		<button
+			type="button"
+			disabled={signingOut}
+			onClick={() => {
+				setSigningOut(true);
+				authClient.signOut({
+					fetchOptions: {
+						onSuccess: () => router.push("/login"),
+					},
+				});
+			}}
+			className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+		>
+			<LogOut className="h-4 w-4" />
+		</button>
 	);
 }

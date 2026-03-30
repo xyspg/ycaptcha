@@ -4,7 +4,7 @@ import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -25,6 +25,14 @@ function getSafeRedirect(value: string | null): string {
 }
 
 export default function SignupPage() {
+	return (
+		<Suspense>
+			<SignupForm />
+		</Suspense>
+	);
+}
+
+function SignupForm() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const redirectTo = getSafeRedirect(searchParams.get("redirect"));
