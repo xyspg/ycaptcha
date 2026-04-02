@@ -1,6 +1,6 @@
-import { createHash } from "crypto";
-import { readFileSync } from "fs";
-import path from "path";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
 import "./lib/env";

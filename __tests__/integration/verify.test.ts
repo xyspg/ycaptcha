@@ -8,7 +8,8 @@ import {
 } from "./helpers";
 import { seed, TEST_HARD_SITE_KEY, TEST_SITE_KEY } from "./seed";
 
-const verifyPOST = (await import("@/app/(main)/api/v0/captcha/verify/route")).POST;
+const verifyPOST = (await import("@/app/(main)/api/v0/captcha/verify/route"))
+	.POST;
 
 beforeAll(async () => {
 	await seed();
