@@ -7,3 +7,4 @@
 - random picked correct image minimum 3
 - posthog
 - x oauth
+- Resend
