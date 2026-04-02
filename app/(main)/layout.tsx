@@ -1,4 +1,3 @@
-import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata, Viewport } from "next";
 import { Caveat, Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
@@ -46,10 +45,10 @@ export default function RootLayout({
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} ${caveat.variable} flex min-h-screen flex-col font-sans antialiased`}
 			>
-				<RootProvider>
-					<Providers>{children}</Providers>
+				<Providers>
+					{children}
 					<Toaster />
-				</RootProvider>
+				</Providers>
 			</body>
 		</html>
 	);
