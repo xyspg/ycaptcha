@@ -43,7 +43,6 @@ function LoginForm() {
 
 	useMountEffect(() => {
 		authClient.signIn.passkey({ autoFill: true }).then(({ error: err }) => {
-			// don't log error bc user silently rejected
 			if (err) return;
 			router.push(redirectTo);
 		});
@@ -96,14 +95,16 @@ function LoginForm() {
 	return (
 		<div className="w-full max-w-sm">
 			<div className="mb-8 flex justify-center">
-				<Image
-					src="/ycaptcha.webp"
-					alt="yCAPTCHA"
-					width={200}
-					height={60}
-					style={{ width: "auto", height: "auto" }}
-					priority
-				/>
+				<Link href="/">
+					<Image
+						src="/ycaptcha.webp"
+						alt="yCAPTCHA"
+						width={200}
+						height={60}
+						style={{ width: "auto", height: "auto" }}
+						priority
+					/>
+				</Link>
 			</div>
 
 			<Card className="bg-background ring-0 md:ring-1">
