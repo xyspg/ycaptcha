@@ -3,7 +3,7 @@ import { getChallenge, mockR2Fetch, restoreFetch } from "./helpers";
 import { seed, TEST_SITE_KEY } from "./seed";
 
 const imageGET = (
-	await import("@/app/api/v0/captcha/image/[sessionToken]/[index]/route")
+	await import("@/app/(main)/api/v0/captcha/image/[sessionToken]/[index]/route")
 ).GET;
 
 let sharedToken: string;

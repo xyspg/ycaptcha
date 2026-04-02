@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 	const session = await getVerifiedSession(token);
 
 	if (!session) {
-		return NextResponse.json({ success: false });
+		return NextResponse.json({ success: false, error: "Invalid token" });
 	}
 
 	// proves secretKey owns the puzzle's site
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 		.where(eq(puzzle.id, session.puzzleId));
 
 	if (!owner) {
-		return NextResponse.json({ success: false });
+		return NextResponse.json({ success: false, error: "Invalid secretKey" });
 	}
 
 	// consume only after successful validation

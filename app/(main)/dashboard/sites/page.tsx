@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { SiteSettings } from "@/app/dashboard/sites/site-settings";
+import { SiteSettings } from "@/app/(main)/dashboard/sites/site-settings";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { site } from "@/lib/db/app-schema";

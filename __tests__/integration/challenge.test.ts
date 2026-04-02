@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { getChallenge, postRequest } from "./helpers";
 import { seed, TEST_SITE_KEY } from "./seed";
 
-const { POST } = await import("@/app/api/v0/captcha/challenge/route");
+const { POST } = await import("@/app/(main)/api/v0/captcha/challenge/route");
 
 beforeAll(async () => {
 	await seed();

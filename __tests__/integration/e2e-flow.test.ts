@@ -7,13 +7,13 @@ import {
 } from "./helpers";
 import { cleanup, seed, TEST_SECRET_KEY, TEST_SITE_KEY } from "./seed";
 
-const challengePOST = (await import("@/app/api/v0/captcha/challenge/route"))
+const challengePOST = (await import("@/app/(main)/api/v0/captcha/challenge/route"))
 	.POST;
-const verifyPOST = (await import("@/app/api/v0/captcha/verify/route")).POST;
-const siteverifyPOST = (await import("@/app/api/v0/captcha/siteverify/route"))
+const verifyPOST = (await import("@/app/(main)/api/v0/captcha/verify/route")).POST;
+const siteverifyPOST = (await import("@/app/(main)/api/v0/captcha/siteverify/route"))
 	.POST;
 const imageGET = (
-	await import("@/app/api/v0/captcha/image/[sessionToken]/[index]/route")
+	await import("@/app/(main)/api/v0/captcha/image/[sessionToken]/[index]/route")
 ).GET;
 
 beforeAll(async () => {

@@ -57,6 +57,7 @@ export function DemoShowcase() {
 		null,
 		null,
 	]);
+
 	const [slideDir, setSlideDir] = useState(1);
 	const justSwitchedRef = useRef(false);
 

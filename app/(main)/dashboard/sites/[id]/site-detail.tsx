@@ -264,15 +264,11 @@ function PuzzlesSection({
 	);
 }
 
-//   cat public/captcha.js | openssl dgst -sha384 -binary | openssl base64 -A
-const CAPTCHA_JS_INTEGRITY =
-	"sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6";
-
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
 	const siteUrl = env.NEXT_PUBLIC_SITE_URL;
 	const widgetUrl = `${siteUrl}/widget/${s.siteKey}`;
 	const snippet = `<div class="y-captcha" data-sitekey="${s.siteKey}"></div>
-<script src="${siteUrl}/captcha.js" integrity="${CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`;
+<script src="${siteUrl}/captcha.js" integrity="${process.env.CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`;
 
 	return (
 		<Card>

@@ -48,7 +48,7 @@ export function AppSidebar() {
 						alt="yCAPTCHA"
 						width={160}
 						height={48}
-						style={{ height: "auto" }}
+						style={{ width: "auto", height: "auto" }}
 						priority
 					/>
 				</Link>

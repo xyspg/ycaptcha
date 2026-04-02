@@ -25,7 +25,7 @@ export function HomePage() {
 							alt="yCAPTCHA"
 							width={450}
 							height={135}
-							style={{ height: "auto" }}
+							style={{ width: "auto", height: "auto" }}
 							className="-rotate-3"
 							priority
 						/>

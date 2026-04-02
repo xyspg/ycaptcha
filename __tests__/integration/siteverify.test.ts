@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { getChallenge, getVerificationToken, postRequest } from "./helpers";
 import { seed, TEST_SECRET_KEY, TEST_SITE_KEY } from "./seed";
 
-const siteverifyPOST = (await import("@/app/api/v0/captcha/siteverify/route"))
+const siteverifyPOST = (await import("@/app/(main)/api/v0/captcha/siteverify/route"))
 	.POST;
 
 beforeAll(async () => {

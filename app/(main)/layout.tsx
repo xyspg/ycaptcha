@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Caveat, Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
-import "./globals.css";
+import "../globals.css";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",

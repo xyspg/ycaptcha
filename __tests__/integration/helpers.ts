@@ -41,7 +41,7 @@ export async function getCorrectIndices(
  * Get a fresh challenge session token from the challenge route.
  */
 export async function getChallenge(siteKey: string, origin?: string) {
-	const { POST } = await import("@/app/api/v0/captcha/challenge/route");
+	const { POST } = await import("@/app/(main)/api/v0/captcha/challenge/route");
 	const body: Record<string, unknown> = { siteKey };
 	if (origin) body.origin = origin;
 	const res = await POST(postRequest(body));
@@ -59,7 +59,7 @@ export async function getVerificationToken(
 	const correctIndices = await getCorrectIndices(sessionToken);
 
 	const { POST: verifyPOST } = await import(
-		"@/app/api/v0/captcha/verify/route"
+		"@/app/(main)/api/v0/captcha/verify/route"
 	);
 	const verifyRes = await verifyPOST(
 		postRequest({ sessionToken, selectedIndices: correctIndices }),
