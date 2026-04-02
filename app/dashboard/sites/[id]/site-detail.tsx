@@ -1,14 +1,7 @@
 "use client";
 
 import type { InferSelectModel } from "drizzle-orm";
-import {
-	ArrowLeft,
-	Eye,
-	EyeOff,
-	Plus,
-	RefreshCw,
-	Trash2,
-} from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Plus, RefreshCw, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";

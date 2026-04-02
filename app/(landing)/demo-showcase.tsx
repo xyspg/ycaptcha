@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { useMountEffect } from "@/hooks/use-mount-effect";
 import { SAMPLE_SETS, type SampleSet } from "@/lib/samples";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
@@ -15,6 +14,7 @@ interface Demo {
 	images: { contentHash: string; url: string }[];
 }
 
+// deterministic to avoid hydration mismatch
 function buildSingleDemo(set: SampleSet, deterministic = false): Demo {
 	const correctSet = new Set(set.correctHashes);
 	const correct = (deterministic ? set.images : shuffle(set.images)).filter(
@@ -59,10 +59,6 @@ export function DemoShowcase() {
 	]);
 	const [slideDir, setSlideDir] = useState(1);
 	const justSwitchedRef = useRef(false);
-
-	useMountEffect(() => {
-		setDemos(buildDemos(false));
-	});
 
 	const reshuffleSingle = (demoIndex: number) => {
 		setDemos((prev) => {

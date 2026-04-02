@@ -43,6 +43,7 @@ function LoginForm() {
 
 	useMountEffect(() => {
 		authClient.signIn.passkey({ autoFill: true }).then(({ error: err }) => {
+			// don't log error bc user silently rejected
 			if (err) return;
 			router.push(redirectTo);
 		});
@@ -67,6 +68,7 @@ function LoginForm() {
 				},
 				onError: (ctx) => {
 					setLoading(false);
+					// TODO(sentry)
 					setError(ctx.error.message);
 				},
 			},
@@ -84,6 +86,7 @@ function LoginForm() {
 				err.message?.includes("cancelled")
 			)
 				return;
+			//TODO(sentry)
 			setError(err.message ?? "Passkey sign-in failed");
 			return;
 		}
