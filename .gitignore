@@ -50,3 +50,5 @@ yarn-error.log*
 next-env.d.ts
 
 .source/
+public/test.html
+public/captcha.js
