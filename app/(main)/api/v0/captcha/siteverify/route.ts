@@ -1,9 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import {
-	consumeVerifiedSession,
-	getVerifiedSession,
-} from "@/lib/captcha-session";
+import { consumeVerifiedSession } from "@/lib/captcha-session";
 import { db } from "@/lib/db";
 import { puzzle, site } from "@/lib/db/app-schema";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
@@ -22,7 +19,7 @@ export async function POST(request: Request) {
 
 	const { token, secretKey } = body as { token: string; secretKey: string };
 
-	const session = await getVerifiedSession(token);
+	const session = await consumeVerifiedSession(token);
 
 	if (!session) {
 		return NextResponse.json({ success: false, error: "Invalid token" });
@@ -41,8 +38,6 @@ export async function POST(request: Request) {
 	if (!owner) {
 		return NextResponse.json({ success: false, error: "Invalid secretKey" });
 	}
-
-	await consumeVerifiedSession(token);
 
 	return NextResponse.json({ success: true });
 }
