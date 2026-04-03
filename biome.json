@@ -12,6 +12,7 @@
 			"!**/components/ui",
 			"!**/.next",
 			"!**/public/captcha.js",
+			"!captcha.js",
 			"!**/*.css"
 		]
 	},

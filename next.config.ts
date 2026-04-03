@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { withSentryConfig } from "@sentry/nextjs";
 import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
 import "./lib/env";
@@ -30,4 +31,16 @@ const nextConfig: NextConfig = {
 
 const withMDX = createMDX();
 
-export default withMDX(nextConfig);
+export default withSentryConfig(withMDX(nextConfig), {
+	org: "xyspg-8610361aa",
+	project: "ycaptcha",
+	silent: !process.env.CI,
+	widenClientFileUpload: true,
+	tunnelRoute: "/monitoring",
+	webpack: {
+		automaticVercelMonitors: true,
+		treeshake: {
+			removeDebugLogging: true,
+		},
+	},
+});

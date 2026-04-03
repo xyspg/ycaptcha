@@ -52,3 +52,5 @@ next-env.d.ts
 .source/
 public/test.html
 public/captcha.js
+# Sentry Config File
+.env.sentry-build-plugin
