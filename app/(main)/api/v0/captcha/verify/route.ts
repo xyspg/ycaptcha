@@ -61,12 +61,14 @@ export async function POST(request: Request) {
 	const selectedCorrectCount = selectedImageIds.filter((id) =>
 		correctIds.has(id),
 	).length;
+	const selectedWrongCount = selectedImageIds.length - selectedCorrectCount;
+	const score = selectedCorrectCount - selectedWrongCount;
 	const requiredCount = Math.max(
 		1,
 		Math.ceil(session.correctCount * session.difficulty),
 	);
 
-	if (selectedCorrectCount < requiredCount) {
+	if (score < requiredCount) {
 		return NextResponse.json({ success: false });
 	}
 

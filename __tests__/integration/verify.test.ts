@@ -108,6 +108,24 @@ describe("POST /api/v0/captcha/verify — real DB + Redis", () => {
 		expect(data.success).toBe(false);
 	});
 
+	it("returns success: false when correct + wrong selections net below threshold", async () => {
+		// Default puzzle: correctCount 3, difficulty 0.5 → required = ceil(1.5) = 2
+		// With net scoring: score = correct - wrong, so 2 correct + 2 wrong = 0 net → fail
+		const { sessionToken } = await getChallenge(
+			TEST_SITE_KEY,
+			"https://example.com",
+		);
+		const { correct, incorrect } = await getChallengeIndices(sessionToken);
+
+		const mixed = [...correct.slice(0, 2), ...incorrect.slice(0, 2)];
+		const res = await verifyPOST(
+			postRequest({ sessionToken, selectedIndices: mixed }),
+		);
+		const data = await res.json();
+
+		expect(data.success).toBe(false);
+	});
+
 	it("difficulty 1.0: partial correct fails, all correct passes", async () => {
 		// Hard site has difficulty 1.0, correctCount 3 → need ceil(3 * 1.0) = 3
 		const { sessionToken: tok1 } = await getChallenge(TEST_HARD_SITE_KEY);

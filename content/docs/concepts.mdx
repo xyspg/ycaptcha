@@ -98,7 +98,7 @@ If all 9 grid positions are selected, the attempt **automatically fails** before
 
 ### Wrong selection penalty
 
-Currently, selecting incorrect images does **not** reduce the score. Only the count of correct images selected is evaluated.
+Each incorrect selection subtracts 1 from the score. The final score is `correctSelections - wrongSelections`, and this must meet or exceed the required threshold. This prevents attackers from selecting large subsets to guarantee enough correct hits.
 
 ---
 
