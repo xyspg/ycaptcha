@@ -48,7 +48,9 @@ export const auth = betterAuth({
 						);
 
 					await Promise.allSettled(
-						images.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
+						images
+							.filter((img) => !img.url.includes("/samples/"))
+							.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
 					);
 				}
 			},
