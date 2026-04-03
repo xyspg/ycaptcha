@@ -86,7 +86,7 @@ export const puzzle = pgTable(
 			.references(() => site.id, { onDelete: "cascade" }),
 		imageSetId: text("image_set_id")
 			.notNull()
-			.references(() => imageSet.id, { onDelete: "cascade" }),
+			.references(() => imageSet.id, { onDelete: "restrict" }),
 		prompt: text("prompt").notNull(),
 		correctImageIds: jsonb("correct_image_ids")
 			.$type<string[]>()

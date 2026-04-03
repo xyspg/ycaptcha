@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { image, imageSet, puzzle } from "@/lib/db/app-schema";
+import { image, imageSet, puzzle, site } from "@/lib/db/app-schema";
 import {
 	deleteFromR2,
 	processImage,
@@ -17,6 +17,13 @@ import { SAMPLE_SETS } from "@/lib/samples";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
+
+export interface ReferencingPuzzle {
+	puzzleId: string;
+	puzzlePrompt: string;
+	siteId: string;
+	siteName: string;
+}
 
 async function requireOwnedSet(setId: string, userId: string) {
 	const [set] = await db
@@ -275,10 +282,14 @@ export async function deleteImage(
 	return { success: true, message: "Image deleted" };
 }
 
+export type DeleteImageSetResult =
+	| (NonNullable<ActionState> & { referencingPuzzles?: ReferencingPuzzle[] })
+	| null;
+
 export async function deleteImageSet(
-	prevState: ActionState,
+	prevState: DeleteImageSetResult,
 	formData: FormData,
-): Promise<ActionState> {
+): Promise<DeleteImageSetResult> {
 	const session = await requireSession();
 	const setId = formData.get("setId") as string;
 
@@ -287,12 +298,33 @@ export async function deleteImageSet(
 	const set = await requireOwnedSet(setId, session.user.id);
 	if (!set) return { errors: { setId: ["Image set not found"] } };
 
+	const referencingPuzzles = await db
+		.select({
+			puzzleId: puzzle.id,
+			puzzlePrompt: puzzle.prompt,
+			siteId: site.id,
+			siteName: site.name,
+		})
+		.from(puzzle)
+		.innerJoin(site, eq(site.id, puzzle.siteId))
+		.where(eq(puzzle.imageSetId, setId));
+
+	if (referencingPuzzles.length > 0) {
+		return {
+			errors: {
+				setId: [
+					"This image set is used by one or more puzzles. Remove those puzzles first.",
+				],
+			},
+			referencingPuzzles,
+		};
+	}
+
 	const imgs = await db
 		.select({ url: image.url, contentHash: image.contentHash })
 		.from(image)
 		.where(eq(image.imageSetId, setId));
 
-	// cascade handles image rows; clean up R2 for orphaned content hashes
 	await db.delete(imageSet).where(eq(imageSet.id, setId));
 	const hashesToCheck = imgs
 		.map((i) => i.contentHash)

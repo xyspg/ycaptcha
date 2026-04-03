@@ -4,6 +4,15 @@ import { ArrowLeft, Pencil, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
 import { useActionState, useRef, useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
+import {
+	AlertDialog,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -17,6 +26,7 @@ import {
 	type ActionState,
 	deleteImage,
 	deleteImageSet,
+	type ReferencingPuzzle,
 	updateImageSetName,
 	uploadImages,
 } from "../actions";
@@ -200,11 +210,15 @@ function ImageCard({
 
 export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
 	const [deleteOpen, setDeleteOpen] = useState(false);
+	const [blockedPuzzles, setBlockedPuzzles] = useState<ReferencingPuzzle[]>([]);
 
 	const handleDelete = async () => {
 		const fd = new FormData();
 		fd.set("setId", set.id);
-		await deleteImageSet(null, fd);
+		const result = await deleteImageSet(null, fd);
+		if (result?.referencingPuzzles) {
+			setBlockedPuzzles(result.referencingPuzzles);
+		}
 	};
 
 	return (
@@ -251,7 +265,7 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
 					<CardTitle className="text-destructive">Danger Zone</CardTitle>
 					<CardDescription>
 						Deleting this image set will also remove all images from storage.
-						Puzzles using this set will break.
+						You must remove any puzzles using this set first.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -269,9 +283,43 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
 				open={deleteOpen}
 				onOpenChange={setDeleteOpen}
 				title="Delete Image Set"
-				description="This will permanently delete this image set and all its images from storage. Puzzles using this set will break."
+				description="This will permanently delete this image set and all its images from storage. You must remove any puzzles using this set first."
 				onConfirm={handleDelete}
 			/>
+
+			<AlertDialog
+				open={blockedPuzzles.length > 0}
+				onOpenChange={(open) => {
+					if (!open) setBlockedPuzzles([]);
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Cannot delete image set</AlertDialogTitle>
+						<AlertDialogDescription>
+							This image set is referenced by the following puzzles. Remove them
+							first.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<ul className="flex flex-col gap-1 text-sm">
+						{blockedPuzzles.map((p) => (
+							<li key={p.puzzleId}>
+								<Link
+									href={`/dashboard/sites/${p.siteId}`}
+									className="text-primary underline underline-offset-4 hover:text-primary/80"
+								>
+									{p.siteName}
+								</Link>
+								{" — "}
+								<span className="text-muted-foreground">{p.puzzlePrompt}</span>
+							</li>
+						))}
+					</ul>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Close</AlertDialogCancel>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }

@@ -6,6 +6,15 @@ import { useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { ImageSetThumbnail } from "@/components/image-set-thumbnail";
 import {
+	AlertDialog,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
 	Card,
 	CardContent,
 	CardDescription,
@@ -18,7 +27,7 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { deleteImageSet } from "./actions";
+import { deleteImageSet, type ReferencingPuzzle } from "./actions";
 
 interface ImageSetCardProps {
 	id: string;
@@ -36,11 +45,15 @@ export function ImageSetCard({
 	images,
 }: ImageSetCardProps) {
 	const [deleteOpen, setDeleteOpen] = useState(false);
+	const [blockedPuzzles, setBlockedPuzzles] = useState<ReferencingPuzzle[]>([]);
 
 	const handleDelete = async () => {
 		const fd = new FormData();
 		fd.set("setId", id);
-		await deleteImageSet(null, fd);
+		const result = await deleteImageSet(null, fd);
+		if (result?.referencingPuzzles) {
+			setBlockedPuzzles(result.referencingPuzzles);
+		}
 	};
 
 	return (
@@ -80,9 +93,43 @@ export function ImageSetCard({
 				open={deleteOpen}
 				onOpenChange={setDeleteOpen}
 				title="Delete Image Set"
-				description="This will permanently delete this image set and all its images. Puzzles using this set will also be deleted."
+				description="This will permanently delete this image set and all its images. You must remove any puzzles using this set first."
 				onConfirm={handleDelete}
 			/>
+
+			<AlertDialog
+				open={blockedPuzzles.length > 0}
+				onOpenChange={(open) => {
+					if (!open) setBlockedPuzzles([]);
+				}}
+			>
+				<AlertDialogContent>
+					<AlertDialogHeader>
+						<AlertDialogTitle>Cannot delete image set</AlertDialogTitle>
+						<AlertDialogDescription>
+							This image set is referenced by the following puzzles. Remove them
+							first.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<ul className="flex flex-col gap-1 text-sm">
+						{blockedPuzzles.map((p) => (
+							<li key={p.puzzleId}>
+								<Link
+									href={`/dashboard/sites/${p.siteId}`}
+									className="text-primary underline underline-offset-4 hover:text-primary/80"
+								>
+									{p.siteName}
+								</Link>
+								{" — "}
+								<span className="text-muted-foreground">{p.puzzlePrompt}</span>
+							</li>
+						))}
+					</ul>
+					<AlertDialogFooter>
+						<AlertDialogCancel>Close</AlertDialogCancel>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</>
 	);
 }
