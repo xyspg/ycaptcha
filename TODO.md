@@ -10,3 +10,5 @@
 - X (Twitter) OAuth
 - Resend email integration
 - React SDK npm package 
+- onboarding flow
+- analytics for site owner
