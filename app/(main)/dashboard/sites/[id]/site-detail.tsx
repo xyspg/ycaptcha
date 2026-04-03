@@ -163,7 +163,12 @@ function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
 							</p>
 						)}
 					</div>
-					<Button type="submit" size="sm" disabled={isPending}>
+					<Button
+						variant="outline"
+						type="submit"
+						size="sm"
+						disabled={isPending}
+					>
 						{isPending ? "Saving..." : "Save Changes"}
 					</Button>
 					{state?.success && (

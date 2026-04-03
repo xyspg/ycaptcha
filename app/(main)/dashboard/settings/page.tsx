@@ -3,6 +3,7 @@
 import { FingerprintPattern, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -448,12 +449,27 @@ function DeleteAccountSection() {
 	);
 }
 
+function ThemeSection() {
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>Appearance</CardTitle>
+				<CardDescription>Choose your preferred color theme.</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<ThemeSwitcher />
+			</CardContent>
+		</Card>
+	);
+}
+
 export default function Page() {
 	return (
 		<div className="flex flex-col gap-6">
 			<h1 className="text-2xl font-semibold">Settings</h1>
 			<div className="flex flex-col gap-6 max-w-lg">
 				<ProfileSection />
+				<ThemeSection />
 				<PasskeySection />
 				<DeleteAccountSection />
 			</div>

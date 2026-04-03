@@ -52,7 +52,7 @@ export default function Page() {
 								</p>
 							)}
 						</div>
-						<Button type="submit" disabled={isPending}>
+						<Button variant="outline" type="submit" disabled={isPending}>
 							{isPending ? "Creating..." : "Create Image Set"}
 						</Button>
 					</form>

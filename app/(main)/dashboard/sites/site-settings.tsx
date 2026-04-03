@@ -88,7 +88,7 @@ function CreateSiteSheet() {
 							</p>
 						)}
 					</div>
-					<Button type="submit" disabled={isPending}>
+					<Button variant="outline" type="submit" disabled={isPending}>
 						{isPending ? "Creating..." : "Create Site"}
 					</Button>
 				</form>

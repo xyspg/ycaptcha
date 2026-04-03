@@ -58,7 +58,7 @@ function NameEditor({ set }: { set: { id: string; name: string } }) {
 				autoFocus
 				required
 			/>
-			<Button type="submit" size="sm" disabled={isPending}>
+			<Button variant="outline" type="submit" size="sm" disabled={isPending}>
 				Save
 			</Button>
 			<Button

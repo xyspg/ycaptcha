@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/session";
 import { DemoShowcase } from "./demo-showcase";
@@ -15,6 +16,9 @@ export default async function Home() {
 export function HomePage() {
 	return (
 		<>
+			<div className="absolute right-6 top-6 z-20">
+				<ThemeSwitcher />
+			</div>
 			{/* Hero — full screen on mobile, side-by-side with demo on desktop */}
 			<section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-8 py-12 lg:flex-row lg:gap-16">
 				{/* Left: Content */}
