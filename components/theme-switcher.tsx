@@ -2,6 +2,7 @@
 
 import { Half2Icon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
+import { useHasMounted } from "@/hooks/use-has-mounted";
 
 const themes = [
 	{ value: "system", icon: Half2Icon },
@@ -11,6 +12,7 @@ const themes = [
 
 export function ThemeSwitcher() {
 	const { theme, setTheme } = useTheme();
+	const mounted = useHasMounted();
 
 	return (
 		<div className="flex w-fit items-center rounded-full border bg-muted/50 p-1">
@@ -20,7 +22,7 @@ export function ThemeSwitcher() {
 					type="button"
 					onClick={() => setTheme(value)}
 					className={`rounded-full p-1.5 transition-colors ${
-						theme === value
+						mounted && theme === value
 							? "bg-background text-foreground shadow-sm"
 							: "text-muted-foreground hover:text-foreground"
 					}`}

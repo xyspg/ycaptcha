@@ -1,0 +1,5 @@
+pre-commit:
+  commands:
+    lint:
+      glob: "*.{ts,tsx,js,jsx,json,css}"
+      run: bunx --bun @biomejs/biome check --staged --no-errors-on-unmatched {staged_files}
