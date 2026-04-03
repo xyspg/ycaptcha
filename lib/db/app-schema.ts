@@ -68,7 +68,10 @@ export const image = pgTable(
 	},
 	(table) => [
 		index("image_imageSetId_idx").on(table.imageSetId),
-		uniqueIndex("image_contentHash_idx").on(table.contentHash),
+		uniqueIndex("image_imageSetId_contentHash_idx").on(
+			table.imageSetId,
+			table.contentHash,
+		),
 	],
 );
 

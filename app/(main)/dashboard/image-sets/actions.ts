@@ -194,7 +194,9 @@ export async function uploadImages(
 					contentHash: u.contentHash,
 				})),
 			)
-			.onConflictDoNothing({ target: image.contentHash });
+			.onConflictDoNothing({
+				target: [image.imageSetId, image.contentHash],
+			});
 	}
 
 	revalidatePath(`/dashboard/image-sets/${setId}`);
@@ -252,17 +254,21 @@ export async function deleteImage(
 	await db.delete(image).where(eq(image.id, imageId));
 
 	// only delete from R2 if no other rows share the same content hash
-	if (img.contentHash) {
-		const [ref] = await db
-			.select({ id: image.id })
-			.from(image)
-			.where(eq(image.contentHash, img.contentHash))
-			.limit(1);
-		if (!ref) {
+	// ignore sample images
+	const isSample = img.url.includes("/samples/");
+	if (!isSample) {
+		if (img.contentHash) {
+			const [ref] = await db
+				.select({ id: image.id })
+				.from(image)
+				.where(eq(image.contentHash, img.contentHash))
+				.limit(1);
+			if (!ref) {
+				await deleteFromR2(r2KeyFromUrl(img.url));
+			}
+		} else {
 			await deleteFromR2(r2KeyFromUrl(img.url));
 		}
-	} else {
-		await deleteFromR2(r2KeyFromUrl(img.url));
 	}
 
 	revalidatePath(`/dashboard/image-sets/${setId}`);
@@ -307,6 +313,7 @@ export async function deleteImageSet(
 	await Promise.allSettled(
 		imgs
 			.filter((img) => !stillReferenced.has(img.contentHash))
+			.filter((img) => !img.url.includes("/samples/"))
 			.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
 	);
 
@@ -334,14 +341,19 @@ export async function importSampleSet(slug: string): Promise<void> {
 		})
 		.returning({ id: imageSet.id });
 
-	await db.insert(image).values(
-		sample.images.map((img) => ({
-			imageSetId: created.id,
-			url: img.url,
-			name: img.name,
-			contentHash: img.contentHash,
-		})),
-	);
+	await db
+		.insert(image)
+		.values(
+			sample.images.map((img) => ({
+				imageSetId: created.id,
+				url: img.url,
+				name: img.name,
+				contentHash: img.contentHash,
+			})),
+		)
+		.onConflictDoNothing({
+			target: [image.imageSetId, image.contentHash],
+		});
 
 	redirect(`/dashboard/image-sets/${created.id}`);
 }

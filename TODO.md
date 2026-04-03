@@ -1,10 +1,12 @@
-- Ratelimiting
+## Done
+- ~~Ratelimiting~~
+- ~~Passkey~~
+- ~~Sentry~~
+
+## Future
+- Light/dark mode for widget
 - i18n
-- Support Audio
-- light/dark mode for widget
-- Passkey
-- Sentry
-- random picked correct image minimum 3
-- posthog
-- x oauth
-- Resend
+- Support Audio CAPTCHA
+- X (Twitter) OAuth
+- Resend email integration
+- React SDK npm package 
