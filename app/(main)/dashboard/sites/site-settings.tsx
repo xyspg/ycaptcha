@@ -19,21 +19,21 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
-} from "@/components/ui/sheet";
 import type { site } from "@/lib/db/app-schema";
 import { copyToClipboard } from "@/lib/utils";
 import { type ActionState, createSite, deleteSite } from "./actions";
 
-function CreateSiteSheet() {
+function CreateSiteDialog() {
 	const [open, setOpen] = useState(false);
 
 	const [state, formAction, isPending] = useActionState(
@@ -46,20 +46,20 @@ function CreateSiteSheet() {
 	);
 
 	return (
-		<Sheet open={open} onOpenChange={setOpen}>
-			<SheetTrigger asChild>
+		<Dialog open={open} onOpenChange={setOpen}>
+			<DialogTrigger asChild>
 				<Button>
 					<Plus /> Add Site
 				</Button>
-			</SheetTrigger>
-			<SheetContent>
-				<SheetHeader>
-					<SheetTitle>Create a new site</SheetTitle>
-					<SheetDescription>
+			</DialogTrigger>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>Create a new site</DialogTitle>
+					<DialogDescription>
 						Add a site to get your API keys for embedding the CAPTCHA widget.
-					</SheetDescription>
-				</SheetHeader>
-				<form action={formAction} className="flex flex-col gap-4 px-4">
+					</DialogDescription>
+				</DialogHeader>
+				<form action={formAction} className="flex flex-col gap-4">
 					<div className="flex flex-col gap-2">
 						<Label htmlFor="name">Name</Label>
 						<Input
@@ -92,8 +92,8 @@ function CreateSiteSheet() {
 						{isPending ? "Creating..." : "Create Site"}
 					</Button>
 				</form>
-			</SheetContent>
-		</Sheet>
+			</DialogContent>
+		</Dialog>
 	);
 }
 
@@ -183,7 +183,7 @@ export function SiteSettings({
 		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-2xl font-semibold">Sites</h1>
-				<CreateSiteSheet />
+				<CreateSiteDialog />
 			</div>
 
 			{sites.length === 0 ? (
@@ -194,7 +194,7 @@ export function SiteSettings({
 						Create your first site to get started with yCAPTCHA.
 					</p>
 					<div className="mt-6">
-						<CreateSiteSheet />
+						<CreateSiteDialog />
 					</div>
 				</Card>
 			) : (

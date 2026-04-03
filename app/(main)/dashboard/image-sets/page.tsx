@@ -1,11 +1,10 @@
 import { count, eq } from "drizzle-orm";
-import { Images, Plus } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Images } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { image, imageSet } from "@/lib/db/app-schema";
+import { CreateImageSetDialog } from "./create-image-set-dialog";
 import { ImageSetCard } from "./image-set-card";
 import { SampleSets } from "./sample-sets";
 
@@ -38,11 +37,7 @@ export default async function Page() {
 		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
 				<h1 className="text-2xl font-semibold">Image Sets</h1>
-				<Button asChild>
-					<Link href="/dashboard/image-sets/new">
-						<Plus className="size-4" /> Create Image Set
-					</Link>
-				</Button>
+				<CreateImageSetDialog />
 			</div>
 
 			{sets.length === 0 ? (
@@ -53,11 +48,7 @@ export default async function Page() {
 						Create an image set and upload images to use in puzzles.
 					</p>
 					<div className="mt-6">
-						<Button asChild>
-							<Link href="/dashboard/image-sets/new">
-								<Plus className="size-4" /> Create Image Set
-							</Link>
-						</Button>
+						<CreateImageSetDialog />
 					</div>
 				</Card>
 			) : (
