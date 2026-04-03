@@ -12,7 +12,6 @@ export default async function Page({
 }) {
 	const [session, { id }] = await Promise.all([requireSession(), params]);
 
-	// Fetch puzzle with site (verify ownership via site.userId)
 	const [puzzleData] = await db
 		.select()
 		.from(puzzle)
@@ -24,7 +23,6 @@ export default async function Page({
 
 	if (!puzzleData) notFound();
 
-	// Fetch all images in the puzzle's image set
 	const images = await db
 		.select({ id: image.id, url: image.url, name: image.name })
 		.from(image)

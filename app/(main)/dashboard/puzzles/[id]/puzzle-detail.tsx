@@ -11,7 +11,7 @@ import {
 	PuzzleHiddenFields,
 	PuzzlePreviewSidebar,
 	usePuzzleConfig,
-} from "@/components/puzzle-config-fields";
+} from "@/app/(main)/dashboard/puzzles/puzzle-config-fields";
 import { Button } from "@/components/ui/button";
 import {
 	Card,

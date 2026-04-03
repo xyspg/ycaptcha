@@ -43,7 +43,6 @@ export async function deleteChallengeSession(token: string): Promise<void> {
 	await redis.del(challengeKey(token));
 }
 
-// getdel is atomic — prevents double-spend
 export async function consumeChallengeSession(
 	token: string,
 ): Promise<ChallengeSession | null> {

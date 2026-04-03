@@ -145,7 +145,7 @@ export function CaptchaCheckbox({
 				<span className="text-[9px] font-bold leading-none text-[#555]">
 					{brandName}
 				</span>
-				<span className="mt-px text-[7px] leading-none text-[#999]">
+				<span className="mt-px pt-0.5 text-[7px] leading-none text-[#999]">
 					Privacy - Terms
 				</span>
 			</div>

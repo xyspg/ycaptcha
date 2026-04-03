@@ -46,7 +46,6 @@ export async function POST(request: Request) {
 		return NextResponse.json({ success: false });
 	}
 
-	// getdel is atomic — prevents replay attacks
 	const session = await consumeChallengeSession(sessionToken);
 
 	if (!session) {

@@ -2,7 +2,7 @@
 
 import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
-import { PuzzlePreviewPanel } from "@/components/puzzle-preview";
+import { PuzzlePreviewPanel } from "@/app/(main)/dashboard/puzzles/puzzle-preview";
 import { Button } from "@/components/ui/button";
 import {
 	Card,

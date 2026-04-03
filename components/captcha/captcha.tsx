@@ -9,7 +9,6 @@ type Phase = "idle" | "loading" | "challenge" | "verified" | "failed";
 interface CaptchaContainerProps {
 	prompt: string;
 	images: CaptchaImage[];
-	/** Called when user submits selections. Return `true` if correct, `false` if wrong. */
 	onVerify: (selectedIndices: number[]) => boolean | Promise<boolean>;
 	onRefresh: () => void | Promise<void>;
 	onCompleted?: () => void;
@@ -19,6 +18,7 @@ interface CaptchaContainerProps {
 	onPhaseChange?: (phase: Phase) => void;
 }
 
+// component for dashboard preview only
 export function CaptchaContainer({
 	prompt,
 	images,

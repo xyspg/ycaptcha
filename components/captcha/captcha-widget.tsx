@@ -104,7 +104,6 @@ export function CaptchaWidget({
 				</div>
 			</div>
 
-			{/* Error message */}
 			{errorMessage && (
 				<p className="py-2 text-center text-[13px] text-[#e53935]">
 					{errorMessage}

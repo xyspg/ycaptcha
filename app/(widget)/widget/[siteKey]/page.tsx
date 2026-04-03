@@ -18,7 +18,6 @@ function getTargetOrigin(): string {
 
 function postToParent(data: Record<string, unknown>) {
 	const target = getTargetOrigin();
-	// don't leak verification tokens to unknown origins
 	if (target === "*" && "token" in data) return;
 	window.parent.postMessage({ source: "ycaptcha", ...data }, target);
 }
@@ -132,7 +131,6 @@ export default function WidgetPage() {
 				return;
 			}
 
-			// Failed — show error, refresh images
 			setChallengeError("Please try again.");
 			await fetchChallenge();
 		} catch {

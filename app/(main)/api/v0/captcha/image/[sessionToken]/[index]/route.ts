@@ -24,7 +24,6 @@ export async function GET(
 		return new Response("Invalid index", { status: 400 });
 	}
 
-	// Look up session from Redis
 	const session = await getChallengeSession(sessionToken);
 
 	if (!session) {
@@ -36,7 +35,6 @@ export async function GET(
 		return new Response("Index out of range", { status: 400 });
 	}
 
-	// Fetch the actual image from R2
 	const imageRes = await fetch(imageUrls[index]);
 	if (!imageRes.ok) {
 		return new Response("Image not found", { status: 502 });

@@ -22,7 +22,6 @@ export async function POST(request: Request) {
 
 	const { token, secretKey } = body as { token: string; secretKey: string };
 
-	// read session without consuming — validate secretKey first
 	const session = await getVerifiedSession(token);
 
 	if (!session) {
@@ -43,7 +42,6 @@ export async function POST(request: Request) {
 		return NextResponse.json({ success: false, error: "Invalid secretKey" });
 	}
 
-	// consume only after successful validation
 	await consumeVerifiedSession(token);
 
 	return NextResponse.json({ success: true });

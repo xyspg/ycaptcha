@@ -11,13 +11,11 @@ export default async function Page({
 }) {
 	const [session, params] = await Promise.all([requireSession(), searchParams]);
 
-	// Fetch all sites for dropdown
 	const sites = await db
 		.select({ id: site.id, name: site.name })
 		.from(site)
 		.where(eq(site.userId, session.user.id));
 
-	// Fetch all image sets with images
 	const imageSets = await db.query.imageSet.findMany({
 		where: (is, { eq: e }) => e(is.userId, session.user.id),
 		with: { images: true },

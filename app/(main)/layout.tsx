@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 	subsets: ["latin"],
 });
 
-export const plusJakarta = Plus_Jakarta_Sans({
+const plusJakarta = Plus_Jakarta_Sans({
 	variable: "--font-plus-jakarta",
 	subsets: ["latin"],
 });
