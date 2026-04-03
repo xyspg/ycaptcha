@@ -81,33 +81,13 @@ import requests
 result = requests.post(
     "https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify",
     json={
-        "token": request.form["captcha-token"],
+        "token": request.form["ycaptcha-response"],
         "secretKey": os.environ["YCAPTCHA_SECRET_KEY"],
     },
 ).json()
 
 if not result.get("success"):
     abort(400, "CAPTCHA verification failed")
-```
-
-### PHP (cURL)
-
-```php
-$response = json_decode(file_get_contents('https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify', false, stream_context_create([
-    'http' => [
-        'method' => 'POST',
-        'header' => 'Content-Type: application/json',
-        'content' => json_encode([
-            'token' => $_POST['captcha-token'],
-            'secretKey' => getenv('YCAPTCHA_SECRET_KEY'),
-        ]),
-    ],
-])), true);
-
-if (!$response['success']) {
-    http_response_code(400);
-    die('CAPTCHA verification failed');
-}
 ```
 
 ## Important notes

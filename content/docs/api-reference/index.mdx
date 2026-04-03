@@ -1,5 +1,5 @@
 ---
-title: API Reference
+title: Overview
 description: Complete reference for the yCAPTCHA REST API.
 ---
 
@@ -9,23 +9,39 @@ Base URL:
 https://ycaptcha.xyspg.moe
 ```
 
-## Endpoints
+## Public Endpoint
 
-| Endpoint | Purpose | Called by |
-| --- | --- | --- |
-| [`POST /api/v0/captcha/siteverify`](/docs/api-reference/siteverify) | Verify a CAPTCHA token server-side | **Your backend** |
+The only endpoint your backend needs to call:
 
-The `/challenge`, `/verify`, and `/image` endpoints are internal to the widget and called automatically. You do not need to interact with them directly.
+<Cards>
+  <Card title="POST /siteverify" href="/docs/api-reference/siteverify">
+    Verify a CAPTCHA token server-side. Requires your Secret Key.
+  </Card>
+</Cards>
 
-## Authentication
+## Widget Internal Endpoints
 
-The **siteverify** endpoint requires your Secret Key (`sk_...`) and must only be called from your server. Never expose your Secret Key in client-side code.
+These are called automatically by the widget. You do not need to interact with them directly.
 
-## Rate limiting
+<Cards>
+  <Card title="POST /challenge" href="/docs/api-reference/challenge">
+    Create a new challenge session with a randomized image grid.
+  </Card>
+  <Card title="POST /verify" href="/docs/api-reference/verify">
+    Submit the user's image selections for verification.
+  </Card>
+  <Card title="GET /image" href="/docs/api-reference/image">
+    Proxy a challenge image without exposing the real storage URL.
+  </Card>
+</Cards>
+
+## Rate Limiting
 
 Per-IP sliding window rate limits are enforced on all API routes:
 
 | Route | Limit |
 | --- | --- |
 | `/siteverify` | 100 requests/min |
-| Widget internal routes | 10–60 requests/min |
+| `/challenge` | 20 requests/min |
+| `/verify` | 10 requests/min |
+| `/image` | 60 requests/min |

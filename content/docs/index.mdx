@@ -1,34 +1,37 @@
 ---
-title: Overview
-description: yCAPTCHA is a custom image-based CAPTCHA platform. Create puzzles, embed a widget, verify tokens server-side.
+title: Quick Start
+description: Getting started with yCAPTCHA.
 ---
 
-## What is yCAPTCHA?
+## Introduction
 
-yCAPTCHA is a custom image-based CAPTCHA service that lets site owners create their own image selection challenges. Unlike traditional CAPTCHAs that use pre-built datasets, you upload your own images and define what's correct — giving you full control over the challenge content.
+yCAPTCHA <span className="text-sm text-neutral-700 dark:text-neutral-400">(your-CAPTCHA)</span> is a custom image-based CAPTCHA service that lets site owners create their own image selection challenges. Unlike traditional CAPTCHAs that use pre-built datasets, you upload your own images and define what's correct — giving you full control over the challenge content.
 
-## How it works
+## Getting your API Key
 
-Implementing yCAPTCHA involves two essential components that work together:
+Create a site and get API key in [Dashboard](https://ycaptcha.xyspg.moe/dashboard).
 
-1. **Client-side**: [Embed the widget](/docs/get-started/embed-widget) — Add the yCAPTCHA iframe to your webpage. Users solve an image selection puzzle and a verification token is generated.
-2. **Server-side**: [Validate the token](/docs/get-started/server-validation) — Verify the token on your server using the Siteverify API to ensure it is authentic and has not been tampered with.
+<Callout title="Security" type="warn">
+  Never expose your Secret Key (`sk_...`) in client-side code.
+</Callout>
 
-| Component  | Description                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| Site Key   | Public key (`pk_...`) used to load the widget on your page.         |
-| Secret Key | Private key (`sk_...`) used for server-side token validation only.  |
-| Puzzle     | An image challenge you configure in the dashboard.                  |
+## Embed in 2 lines
 
-## Security requirements
+```html
+<div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+<script src="https://ycaptcha.xyspg.moe/captcha.js" async defer></script>
+```
 
-- **Server-side validation is mandatory.** Never trust the client alone. You must call the [Siteverify API](/docs/api-reference/siteverify) to confirm every token.
-- **Tokens are single-use.** Once verified, the token is permanently deleted and cannot be reused.
-- **Tokens expire after 5 minutes.** Expired tokens are rejected by the Siteverify API.
-- **Protect your Secret Key.** Never expose `sk_...` in client-side code.
+## Work with LLMs
+
+```
+https://ycaptcha.xyspg.moe/llms-full.txt
+```
 
 ## Next steps
 
-- [Concepts](/docs/concepts) — Understand the data model, verification flow, and scoring logic
-- [Get Started](/docs/get-started) — Step-by-step guide to integrate yCAPTCHA
-- [API Reference](/docs/api-reference) — Full endpoint documentation
+<Cards>
+  <Card title="API Reference" href="/docs/api-reference">
+    Full endpoint documentation.
+  </Card>
+</Cards>

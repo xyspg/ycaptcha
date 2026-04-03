@@ -1,10 +1,12 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/shadcn.css";
 @import "fumadocs-ui/css/preset.css";
+@import "fumadocs-openapi/css/preset.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @source "../node_modules/fumadocs-ui/dist/**/*.js";
+@source "../node_modules/fumadocs-openapi/dist/**/*.js";
 
 @variant dark (&:where(.dark, .dark *));
 
@@ -88,7 +90,7 @@
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
+    --background: oklch(0.18 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(21% 0.006 285.885);
     --card-foreground: oklch(0.985 0 0);
@@ -156,6 +158,11 @@
 
 @utility animate-captcha-spin {
     animation: captcha-spin 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Fix fumadocs page header description spacing */
+.text-fd-muted-foreground.mb-8 {
+    margin-bottom: 0.5rem;
 }
 
 @layer base {
