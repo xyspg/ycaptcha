@@ -2,7 +2,9 @@
 
 import { ArrowLeft, Pencil, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useCallback, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import {
 	AlertDialog,
@@ -28,7 +30,7 @@ import {
 	deleteImageSet,
 	type ReferencingPuzzle,
 	updateImageSetName,
-	uploadImages,
+	uploadSingleImage,
 } from "../actions";
 
 interface ImageSetDetailProps {
@@ -86,75 +88,248 @@ function NameEditor({ set }: { set: { id: string; name: string } }) {
 	);
 }
 
+const MAX_INPUT_FILE_SIZE = 20 * 1024 * 1024;
+const MAX_FILES = 50;
+const COMPRESS_MAX_DIM = 800;
+const COMPRESS_QUALITY = 0.8;
+
+type FileStatus =
+	| { step: "pending" }
+	| { step: "compressing" }
+	| { step: "uploading" }
+	| { step: "done" }
+	| { step: "duplicate" }
+	| { step: "error"; message: string };
+
+interface QueueItem {
+	id: string;
+	name: string;
+	file: File;
+	preview?: string;
+	status: FileStatus;
+}
+
+async function compressImage(file: File): Promise<File> {
+	const bitmap = await createImageBitmap(file);
+	const scale = Math.min(
+		1,
+		COMPRESS_MAX_DIM / Math.max(bitmap.width, bitmap.height),
+	);
+	const w = Math.round(bitmap.width * scale);
+	const h = Math.round(bitmap.height * scale);
+
+	const canvas = new OffscreenCanvas(w, h);
+	const ctx = canvas.getContext("2d")!;
+	ctx.drawImage(bitmap, 0, 0, w, h);
+	bitmap.close();
+
+	const blob = await canvas.convertToBlob({
+		type: "image/webp",
+		quality: COMPRESS_QUALITY,
+	});
+	return new File([blob], file.name.replace(/\.[^.]+$/, ".webp"), {
+		type: "image/webp",
+	});
+}
+
+function StatusIndicator({ status }: { status: FileStatus }) {
+	switch (status.step) {
+		case "pending":
+			return <span className="text-xs text-muted-foreground">Waiting...</span>;
+		case "compressing":
+			return <span className="text-xs text-blue-500">Compressing...</span>;
+		case "uploading":
+			return <span className="text-xs text-blue-500">Uploading...</span>;
+		case "done":
+			return <span className="text-xs text-green-600">Done</span>;
+		case "duplicate":
+			return <span className="text-xs text-yellow-600">Duplicate</span>;
+		case "error":
+			return <span className="text-xs text-destructive">{status.message}</span>;
+	}
+}
+
 function ImageUploader({ setId }: { setId: string }) {
-	const [state, formAction, isPending] = useActionState(uploadImages, null);
-	const [dragOver, setDragOver] = useState(false);
-	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [queue, setQueue] = useState<QueueItem[]>([]);
+	const processingRef = useRef(false);
 
-	const handleDrop = (e: React.DragEvent) => {
-		e.preventDefault();
-		setDragOver(false);
-		if (e.dataTransfer.files.length > 0 && fileInputRef.current) {
-			fileInputRef.current.files = e.dataTransfer.files;
-			fileInputRef.current.form?.requestSubmit();
-		}
-	};
+	const updateItem = useCallback(
+		(id: string, status: FileStatus) =>
+			setQueue((q) => q.map((i) => (i.id === id ? { ...i, status } : i))),
+		[],
+	);
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files.length > 0) {
-			e.target.form?.requestSubmit();
-		}
-	};
+	const processQueue = useCallback(
+		async (items: QueueItem[]) => {
+			if (processingRef.current) return;
+			processingRef.current = true;
+
+			for (const item of items) {
+				// Validate size
+				if (item.file.size > MAX_INPUT_FILE_SIZE) {
+					updateItem(item.id, {
+						step: "error",
+						message: "Exceeds 20MB",
+					});
+					continue;
+				}
+
+				// Compress & convert to WebP
+				let prepared: File;
+				try {
+					updateItem(item.id, { step: "compressing" });
+					prepared = await compressImage(item.file);
+				} catch {
+					const isHeic = item.file.name.toLowerCase().includes(".heic");
+					updateItem(item.id, {
+						step: "error",
+						message: isHeic
+							? "HEIC not supported by this browser. Please use Safari"
+							: "Unsupported format",
+					});
+					continue;
+				}
+
+				// Upload
+				try {
+					updateItem(item.id, { step: "uploading" });
+					const result = await uploadSingleImage(setId, prepared);
+					if (result.status === "ok") {
+						updateItem(item.id, { step: "done" });
+					} else if (result.status === "duplicate") {
+						updateItem(item.id, { step: "duplicate" });
+					} else {
+						updateItem(item.id, { step: "error", message: result.error });
+					}
+				} catch (e) {
+					updateItem(item.id, {
+						step: "error",
+						message: e instanceof Error ? e.message : "Upload failed",
+					});
+				}
+			}
+
+			processingRef.current = false;
+		},
+		[setId, updateItem],
+	);
+
+	const onDrop = useCallback(
+		(
+			accepted: File[],
+			rejected: { file: File; errors: readonly { message: string }[] }[],
+		) => {
+			if (accepted.length + rejected.length > MAX_FILES) {
+				toast.error(`Maximum ${MAX_FILES} files at a time.`);
+				return;
+			}
+
+			const newItems: QueueItem[] = [
+				...rejected.map((r) => ({
+					id: crypto.randomUUID(),
+					name: r.file.name,
+					file: r.file,
+					status: {
+						step: "error" as const,
+						message: "Not an image",
+					},
+				})),
+				...accepted.map((f) => ({
+					id: crypto.randomUUID(),
+					name: f.name,
+					file: f,
+					preview: URL.createObjectURL(f),
+					status: { step: "pending" as const },
+				})),
+			];
+
+			setQueue((prev) => [...newItems, ...prev]);
+			const pending = newItems.filter((i) => i.status.step === "pending");
+			if (pending.length > 0) processQueue(pending);
+		},
+		[processQueue],
+	);
+
+	const { getRootProps, getInputProps, isDragActive } = useDropzone({
+		onDrop,
+		accept: { "image/*": [] },
+		disabled: processingRef.current,
+	});
+
+	const clearDone = () =>
+		setQueue((q) =>
+			q.filter(
+				(i) =>
+					i.status.step !== "done" &&
+					i.status.step !== "duplicate" &&
+					i.status.step !== "error",
+			),
+		);
+
+	const hasClearable = queue.some(
+		(i) =>
+			i.status.step === "done" ||
+			i.status.step === "duplicate" ||
+			i.status.step === "error",
+	);
 
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Upload Images</CardTitle>
-				<CardDescription>
-					Drag and drop images or click to select files.
-				</CardDescription>
+				<div className="flex items-center justify-between">
+					<div>
+						<CardTitle>Upload Images</CardTitle>
+						<CardDescription>
+							Drag and drop or click to select. Non-standard formats (HEIC,
+							TIFF) are auto-converted.
+						</CardDescription>
+					</div>
+					{hasClearable && (
+						<Button variant="ghost" size="sm" onClick={clearDone}>
+							Clear
+						</Button>
+					)}
+				</div>
 			</CardHeader>
-			<CardContent>
-				<form action={formAction}>
-					<input type="hidden" name="setId" value={setId} />
-					<label
-						className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors ${
-							dragOver
-								? "border-primary bg-primary/5"
-								: "border-muted-foreground/25 hover:border-muted-foreground/50"
-						}`}
-						onDragOver={(e) => {
-							e.preventDefault();
-							setDragOver(true);
-						}}
-						onDragLeave={() => setDragOver(false)}
-						onDrop={handleDrop}
-					>
-						<Upload className="mb-3 size-8 text-muted-foreground" />
-						<p className="text-sm text-muted-foreground">
-							{isPending
-								? "Uploading..."
-								: "Drop images here or click to browse"}
-						</p>
-						<input
-							ref={fileInputRef}
-							type="file"
-							name="files"
-							multiple
-							accept="image/*"
-							className="hidden"
-							onChange={handleFileChange}
-							disabled={isPending}
-						/>
-					</label>
-				</form>
-				{state?.success && (
-					<p className="mt-2 text-xs text-muted-foreground">{state.message}</p>
-				)}
-				{state?.errors?.files && (
-					<p className="mt-2 text-xs text-destructive">
-						{state.errors.files[0]}
+			<CardContent className="flex flex-col gap-3">
+				<div
+					{...getRootProps()}
+					className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-8 transition-colors ${
+						isDragActive
+							? "border-primary bg-primary/5"
+							: "border-muted-foreground/25 hover:border-muted-foreground/50"
+					}`}
+				>
+					<input {...getInputProps()} />
+					<Upload className="mb-2 size-6 text-muted-foreground" />
+					<p className="text-sm text-muted-foreground">
+						Drop images here or click to browse
 					</p>
+				</div>
+
+				{queue.length > 0 && (
+					<ul className="flex flex-col gap-1.5">
+						{queue.map((item) => (
+							<li
+								key={item.id}
+								className="flex items-center gap-2 rounded-md border px-3 py-2"
+							>
+								{item.preview ? (
+									<img
+										src={item.preview}
+										alt=""
+										className="size-8 shrink-0 rounded object-cover"
+									/>
+								) : (
+									<div className="size-8 shrink-0 rounded bg-muted" />
+								)}
+								<span className="min-w-0 flex-1 truncate text-sm">
+									{item.name}
+								</span>
+								<StatusIndicator status={item.status} />
+							</li>
+						))}
+					</ul>
 				)}
 			</CardContent>
 		</Card>

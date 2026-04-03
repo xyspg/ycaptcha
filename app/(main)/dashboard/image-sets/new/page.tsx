@@ -2,6 +2,7 @@
 
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +17,20 @@ import { Label } from "@/components/ui/label";
 import { createImageSet } from "../actions";
 
 export default function Page() {
-	const [state, formAction, isPending] = useActionState(createImageSet, null);
+	const router = useRouter();
+	const [state, formAction, isPending] = useActionState(
+		async (
+			prev: Awaited<ReturnType<typeof createImageSet>>,
+			formData: FormData,
+		) => {
+			const result = await createImageSet(prev, formData);
+			if (result?.success && result.values?.id) {
+				router.replace(`/dashboard/image-sets/${result.values.id}`);
+			}
+			return result;
+		},
+		null,
+	);
 
 	return (
 		<div className="flex flex-col gap-6">

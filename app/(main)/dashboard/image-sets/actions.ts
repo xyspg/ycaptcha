@@ -59,7 +59,7 @@ export async function createImageSet(
 		})
 		.returning({ id: imageSet.id });
 
-	redirect(`/dashboard/image-sets/${created.id}`);
+	return { success: true, values: { id: created.id } };
 }
 
 const updateSetSchema = z.object({
@@ -156,20 +156,50 @@ export async function uploadImages(
 		}
 	}
 
-	// deduplicate: skip upload if content hash already exists
+	// deduplicate: check which content hashes already exist in this image set
 	const hashes = processed.map((p) => p.contentHash);
-	const existingRows =
+	const existingInSet =
 		hashes.length > 0
+			? new Set(
+					(
+						await db
+							.select({ contentHash: image.contentHash })
+							.from(image)
+							.where(
+								and(
+									eq(image.imageSetId, setId),
+									inArray(image.contentHash, hashes),
+								),
+							)
+					).map((r) => r.contentHash),
+				)
+			: new Set<string>();
+
+	// check for cross-set dedup (same hash in another set = reuse R2 URL)
+	const newHashes = hashes.filter((h) => !existingInSet.has(h));
+	const crossSetRows =
+		newHashes.length > 0
 			? await db
 					.select({ contentHash: image.contentHash, url: image.url })
 					.from(image)
-					.where(inArray(image.contentHash, hashes))
+					.where(inArray(image.contentHash, newHashes))
 			: [];
-	const existingMap = new Map(existingRows.map((e) => [e.contentHash, e.url]));
+	const crossSetMap = new Map(crossSetRows.map((e) => [e.contentHash, e.url]));
+
+	const newProcessed = processed.filter(
+		(p) => !existingInSet.has(p.contentHash),
+	);
+	const dupeCount = processed.length - newProcessed.length;
+
+	if (dupeCount > 0) {
+		skipped.push(
+			`${dupeCount} duplicate${dupeCount === 1 ? "" : "s"} already in set`,
+		);
+	}
 
 	const results = await Promise.allSettled(
-		processed.map(async ({ file, buffer, contentHash }) => {
-			const existingUrl = existingMap.get(contentHash);
+		newProcessed.map(async ({ file, buffer, contentHash }) => {
+			const existingUrl = crossSetMap.get(contentHash);
 			if (existingUrl) {
 				return { url: existingUrl, name: file.name, contentHash };
 			}
@@ -191,19 +221,14 @@ export async function uploadImages(
 		.map((r) => r.value);
 
 	if (uploaded.length > 0) {
-		await db
-			.insert(image)
-			.values(
-				uploaded.map((u) => ({
-					imageSetId: setId,
-					url: u.url,
-					name: u.name,
-					contentHash: u.contentHash,
-				})),
-			)
-			.onConflictDoNothing({
-				target: [image.imageSetId, image.contentHash],
-			});
+		await db.insert(image).values(
+			uploaded.map((u) => ({
+				imageSetId: setId,
+				url: u.url,
+				name: u.name,
+				contentHash: u.contentHash,
+			})),
+		);
 	}
 
 	revalidatePath(`/dashboard/image-sets/${setId}`);
@@ -214,6 +239,63 @@ export async function uploadImages(
 	}
 
 	return { success: true, message };
+}
+
+export type UploadSingleResult =
+	| { status: "ok"; name: string }
+	| { status: "duplicate"; name: string }
+	| { status: "error"; name: string; error: string };
+
+export async function uploadSingleImage(
+	setId: string,
+	file: File,
+): Promise<UploadSingleResult> {
+	const session = await requireSession();
+	const name = file.name;
+
+	const set = await requireOwnedSet(setId, session.user.id);
+	if (!set) return { status: "error", name, error: "Image set not found" };
+
+	let buffer: Buffer;
+	let contentHash: string;
+	try {
+		const rawBuffer = Buffer.from(await file.arrayBuffer());
+		const result = await processImage(rawBuffer);
+		buffer = result.buffer;
+		contentHash = result.contentHash;
+	} catch {
+		return { status: "error", name, error: "Invalid image" };
+	}
+
+	// Check duplicate in this set
+	const [existing] = await db
+		.select({ id: image.id })
+		.from(image)
+		.where(and(eq(image.imageSetId, setId), eq(image.contentHash, contentHash)))
+		.limit(1);
+
+	if (existing) {
+		return { status: "duplicate", name };
+	}
+
+	// Check cross-set dedup for R2 reuse
+	const [crossSet] = await db
+		.select({ url: image.url })
+		.from(image)
+		.where(eq(image.contentHash, contentHash))
+		.limit(1);
+
+	const url = crossSet ? crossSet.url : (await uploadBufferToR2(buffer)).url;
+
+	await db.insert(image).values({
+		imageSetId: setId,
+		url,
+		name,
+		contentHash,
+	});
+
+	revalidatePath(`/dashboard/image-sets/${setId}`);
+	return { status: "ok", name };
 }
 
 export async function deleteImage(
