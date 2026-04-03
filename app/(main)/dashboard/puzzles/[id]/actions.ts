@@ -19,6 +19,17 @@ async function requireOwnedPuzzle(puzzleId: string, userId: string) {
 	return row ?? null;
 }
 
+/** WHERE clause scoping puzzle writes to the authenticated user via site ownership */
+function ownedPuzzleWhere(puzzleId: string, userId: string) {
+	return and(
+		eq(puzzle.id, puzzleId),
+		inArray(
+			puzzle.siteId,
+			db.select({ id: site.id }).from(site).where(eq(site.userId, userId)),
+		),
+	);
+}
+
 const updatePuzzleSchema = z
 	.object({
 		puzzleId: z.string().min(1),
@@ -141,7 +152,7 @@ export async function updatePuzzle(
 			correctCountMax: parsed.data.correctCountMax,
 			difficulty: parsed.data.difficulty,
 		})
-		.where(eq(puzzle.id, parsed.data.puzzleId));
+		.where(ownedPuzzleWhere(parsed.data.puzzleId, session.user.id));
 
 	revalidatePath(`/dashboard/puzzles/${parsed.data.puzzleId}`);
 	return { success: true, message: "Puzzle updated" };
@@ -164,7 +175,7 @@ export async function togglePuzzleEnabled(puzzleId: string, enabled: boolean) {
 	await db
 		.update(puzzle)
 		.set({ enabled: parsed.data.enabled })
-		.where(eq(puzzle.id, parsed.data.puzzleId));
+		.where(ownedPuzzleWhere(parsed.data.puzzleId, session.user.id));
 
 	revalidatePath("/dashboard", "layout");
 }
@@ -183,7 +194,7 @@ export async function deletePuzzle(
 		return { errors: { puzzleId: ["Puzzle not found"] } };
 	}
 
-	await db.delete(puzzle).where(eq(puzzle.id, puzzleId));
+	await db.delete(puzzle).where(ownedPuzzleWhere(puzzleId, session.user.id));
 
 	redirect("/dashboard/puzzles");
 }

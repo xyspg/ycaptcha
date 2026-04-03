@@ -344,6 +344,7 @@ export async function deleteImageSet(
 
 	await Promise.allSettled(
 		imgs
+			.filter((img) => img.contentHash !== null)
 			.filter((img) => !stillReferenced.has(img.contentHash))
 			.filter((img) => !img.url.includes("/samples/"))
 			.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),

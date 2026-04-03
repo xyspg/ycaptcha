@@ -1,6 +1,9 @@
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { consumeVerifiedSession } from "@/lib/captcha-session";
+import {
+	consumeVerifiedSession,
+	createVerifiedSessionWithToken,
+} from "@/lib/captcha-session";
 import { db } from "@/lib/db";
 import { puzzle, site } from "@/lib/db/app-schema";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
@@ -25,15 +28,24 @@ export async function POST(request: Request) {
 		return NextResponse.json({ success: false, error: "Invalid token" });
 	}
 
-	// proves secretKey owns the puzzle's site
-	const [owner] = await db
-		.select({ siteId: site.id })
-		.from(puzzle)
-		.innerJoin(
-			site,
-			and(eq(site.id, puzzle.siteId), eq(site.secretKey, secretKey)),
-		)
-		.where(eq(puzzle.id, session.puzzleId));
+	let owner: { siteId: string } | undefined;
+	try {
+		[owner] = await db
+			.select({ siteId: site.id })
+			.from(puzzle)
+			.innerJoin(
+				site,
+				and(eq(site.id, puzzle.siteId), eq(site.secretKey, secretKey)),
+			)
+			.where(eq(puzzle.id, session.puzzleId));
+	} catch {
+		// DB failure — restore the token so the caller can retry
+		await createVerifiedSessionWithToken(token, session);
+		return NextResponse.json(
+			{ success: false, error: "Internal error, please retry" },
+			{ status: 500 },
+		);
+	}
 
 	if (!owner) {
 		return NextResponse.json({ success: false, error: "Invalid secretKey" });

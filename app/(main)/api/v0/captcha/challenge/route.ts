@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { createChallengeSession } from "@/lib/captcha-session";
 import { db } from "@/lib/db";
 import { image, puzzle, site } from "@/lib/db/app-schema";
+import { env } from "@/lib/env";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
@@ -31,10 +32,12 @@ export async function POST(request: Request) {
 	if (siteData.domain && body.origin) {
 		try {
 			const parentHost = new URL(body.origin).hostname;
+			const appHost = new URL(env.NEXT_PUBLIC_SITE_URL).hostname;
 			const isLocalhost =
 				parentHost === "localhost" || parentHost === "127.0.0.1";
 			if (
 				!isLocalhost &&
+				parentHost !== appHost &&
 				parentHost !== siteData.domain &&
 				!parentHost.endsWith(`.${siteData.domain}`)
 			) {
@@ -133,7 +136,7 @@ export async function POST(request: Request) {
 		imageUrls: allImages.map((img) => img.url),
 		imageIds: allImages.map((img) => img.id),
 		correctImageIds: correctImages.map((img) => img.id),
-		correctCount,
+		correctCount: correctImages.length,
 		difficulty: puzzleData.difficulty,
 	});
 

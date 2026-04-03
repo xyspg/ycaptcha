@@ -57,6 +57,13 @@ export async function createVerifiedSession(
 	return token;
 }
 
+export async function createVerifiedSessionWithToken(
+	token: string,
+	data: VerifiedSession,
+): Promise<void> {
+	await redis.setex(verifiedKey(token), CAPTCHA_SESSION_TTL_S, data);
+}
+
 export async function getVerifiedSession(
 	token: string,
 ): Promise<VerifiedSession | null> {
