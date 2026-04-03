@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useMountEffect } from "@/hooks/use-mount-effect";
 import { authClient } from "@/lib/auth/client";
 
 function ProfileSection() {
@@ -265,6 +266,14 @@ function DeleteAccountSection() {
 	const { data: session } = authClient.useSession();
 	const router = useRouter();
 	const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+	const [hasPassword, setHasPassword] = useState<boolean | null>(null);
+
+	useMountEffect(() => {
+		authClient.listAccounts().then(({ data }) => {
+			setHasPassword(data?.some((a) => a.providerId === "credential") ?? false);
+		});
+	});
+
 	const [emailInput, setEmailInput] = useState("");
 	const [phraseInput, setPhraseInput] = useState("");
 	const [password, setPassword] = useState("");
@@ -281,8 +290,8 @@ function DeleteAccountSection() {
 		setError(null);
 	};
 
-	const handleDelete = async (e: React.SubmitEvent) => {
-		e.preventDefault();
+	const handleDelete = async (e?: React.SubmitEvent) => {
+		e?.preventDefault();
 		setDeleting(true);
 		setError(null);
 
@@ -388,10 +397,13 @@ function DeleteAccountSection() {
 								variant="destructive"
 								size="sm"
 								disabled={
+									hasPassword === null ||
 									emailInput.toLowerCase() !== userEmail ||
 									phraseInput.toLowerCase() !== DELETE_CONFIRMATION_PHRASE
 								}
-								onClick={() => setStep(4)}
+								onClick={() =>
+									hasPassword === false ? handleDelete() : setStep(4)
+								}
 							>
 								Continue
 							</Button>
