@@ -34,6 +34,8 @@ export async function checkRateLimit(
 	limiter: Ratelimit,
 	request: Request,
 ): Promise<Response | null> {
+	if (process.env.DISABLE_RATE_LIMIT === "true") return null;
+
 	const ip = getClientIP(request);
 	const { success, reset } = await limiter.limit(ip);
 

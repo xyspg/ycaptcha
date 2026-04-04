@@ -53,5 +53,8 @@ next-env.d.ts
 .source/
 public/test.html
 public/captcha.js
+# Playwright auth state
+e2e/.auth/
+
 # Sentry Config File
 .env.sentry-build-plugin

@@ -10,6 +10,7 @@
 		"lint:fix": "bunx --bun @biomejs/biome check --write --unsafe",
 		"db:push": "bun --env-file=.env.local drizzle-kit push",
 		"db:push:prod": "bun --env-file=.env.production drizzle-kit push",
+		"db:push:test": "bun --env-file=.env.test drizzle-kit push",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"test": "vitest run",

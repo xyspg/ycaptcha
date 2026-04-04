@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { image, imageSet, puzzle, site } from "@/lib/db/app-schema";
 import { user } from "@/lib/db/schema";
@@ -136,7 +136,21 @@ export async function seed() {
 }
 
 export async function cleanup() {
-	// Deleting the user cascades to sites → puzzles, and imageSets → images
+	// Must delete puzzles first: puzzle.imageSetId has onDelete:"restrict",
+	// so cascading user → imageSet would fail if puzzles still exist.
+	await db
+		.delete(puzzle)
+		.where(
+			inArray(
+				puzzle.siteId,
+				db
+					.select({ id: site.id })
+					.from(site)
+					.where(eq(site.userId, TEST_USER_ID)),
+			),
+		)
+		.catch(() => {});
+
 	await db
 		.delete(user)
 		.where(eq(user.id, TEST_USER_ID))
