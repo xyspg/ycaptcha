@@ -3,6 +3,7 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -65,8 +66,7 @@ export async function deleteSite(
 		return { errors: { siteId: ["Site not found"] } };
 	}
 
-	revalidatePath("/dashboard/sites");
-	return { success: true, message: "Site deleted" };
+	redirect("/dashboard/sites");
 }
 
 const updateSiteSchema = z.object({
