@@ -14,6 +14,7 @@ const nextConfig: NextConfig = {
 	env: {
 		CAPTCHA_JS_INTEGRITY: `sha384-${captchaJsHash}`,
 	},
+	devIndicators: false,
 	experimental: {
 		serverActions: {
 			bodySizeLimit: "10mb",
