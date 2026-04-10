@@ -19,9 +19,7 @@ export function HomePage() {
 			<div className="absolute right-6 top-6 z-20">
 				<ThemeSwitcher />
 			</div>
-			{/* Hero — full screen on mobile, side-by-side with demo on desktop */}
 			<section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-8 py-12 lg:flex-row lg:gap-16">
-				{/* Left: Content */}
 				<div className="flex max-w-xl flex-col items-center text-center lg:items-start lg:text-left">
 					<div className="mb-4">
 						<Image
@@ -44,18 +42,22 @@ export function HomePage() {
 						</p>
 					</div>
 
-					<Button asChild size="lg">
-						<Link href="/login">Get Started</Link>
-					</Button>
+					<div className="flex flex-row gap-4 items-center">
+						<Button asChild size="lg">
+							<Link href="/login">Get Started</Link>
+						</Button>
+
+						<Button asChild variant="outline" size="lg">
+							<Link href="/docs">Read Docs</Link>
+						</Button>
+					</div>
 				</div>
 
-				{/* Right: Demo — desktop inline, mobile hidden (shown below) */}
 				<div className="hidden lg:block">
 					<DemoShowcase />
 				</div>
 			</section>
 
-			{/* Demo section — mobile only, below hero */}
 			<section className="relative z-10 flex flex-col items-center px-4 pb-16 lg:hidden">
 				<DemoShowcase />
 			</section>

@@ -469,6 +469,4 @@ export async function importSampleSet(slug: string): Promise<void> {
 		.onConflictDoNothing({
 			target: [image.imageSetId, image.contentHash],
 		});
-
-	redirect(`/dashboard/image-sets/${created.id}`);
 }
