@@ -1,0 +1,11 @@
+services:
+  srh:
+    image: hiett/serverless-redis-http:latest
+    container_name: ycaptcha-srh-local
+    ports:
+      - "8079:80"
+    environment:
+      SRH_MODE: env
+      SRH_TOKEN: local_dev_srh_token
+      SRH_CONNECTION_STRING: redis://host.docker.internal:6379
+    restart: unless-stopped
