@@ -58,3 +58,5 @@ e2e/.auth/
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+captcha-sample-images/

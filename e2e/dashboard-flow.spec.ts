@@ -14,12 +14,12 @@ test.describe
 			await page.goto("/dashboard/sites");
 			await page.getByRole("button", { name: "Add Site" }).first().click();
 
-			const sheet = page.locator("[data-slot='sheet-content']");
-			await expect(sheet).toBeVisible();
-			await sheet.getByLabel("Name").fill(siteName);
-			await sheet.getByLabel("Domain").fill(siteDomain);
-			await sheet.getByRole("button", { name: "Create Site" }).click();
-			await expect(sheet).not.toBeVisible({ timeout: 10_000 });
+			const dialog = page.locator("[data-slot='dialog-content']");
+			await expect(dialog).toBeVisible();
+			await dialog.getByLabel("Name").fill(siteName);
+			await dialog.getByLabel("Domain").fill(siteDomain);
+			await dialog.getByRole("button", { name: "Create Site" }).click();
+			await expect(dialog).not.toBeVisible({ timeout: 10_000 });
 			await expect(page.getByText(siteName)).toBeVisible();
 		});
 

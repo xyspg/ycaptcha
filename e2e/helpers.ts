@@ -11,12 +11,12 @@ export async function createSiteWithKeys(
 	await page.goto("/dashboard/sites");
 	await page.getByRole("button", { name: "Add Site" }).first().click();
 
-	const sheet = page.locator("[data-slot='sheet-content']");
-	await expect(sheet).toBeVisible();
-	await sheet.getByLabel("Name").fill(name);
-	await sheet.getByLabel("Domain").fill("localhost");
-	await sheet.getByRole("button", { name: "Create Site" }).click();
-	await expect(sheet).not.toBeVisible({ timeout: 10_000 });
+	const dialog = page.locator("[data-slot='dialog-content']");
+	await expect(dialog).toBeVisible();
+	await dialog.getByLabel("Name").fill(name);
+	await dialog.getByLabel("Domain").fill("localhost");
+	await dialog.getByRole("button", { name: "Create Site" }).click();
+	await expect(dialog).not.toBeVisible({ timeout: 10_000 });
 
 	await page.getByRole("link", { name: name }).click();
 	await page.waitForURL("**/dashboard/sites/**");
@@ -73,8 +73,40 @@ export async function deleteSite(page: Page, url: string, name: string) {
 /** Import the first available sample set. Returns the image set detail URL. */
 export async function importSampleSet(page: Page): Promise<string> {
 	await page.goto("/dashboard/image-sets");
-	await page.locator("button").filter({ hasText: "Import" }).first().click();
-	await page.waitForURL("**/dashboard/image-sets/**", { timeout: 15_000 });
+
+	const setLinks = page.locator("a[href^='/dashboard/image-sets/']");
+	const before = new Set(
+		await setLinks.evaluateAll((els) =>
+			els.map((el) => (el as HTMLAnchorElement).getAttribute("href") ?? ""),
+		),
+	);
+
+	await page
+		.getByRole("button", { name: "Import", exact: true })
+		.first()
+		.click();
+
+	await expect
+		.poll(
+			async () =>
+				(
+					await setLinks.evaluateAll((els) =>
+						els.map(
+							(el) => (el as HTMLAnchorElement).getAttribute("href") ?? "",
+						),
+					)
+				).some((href) => !before.has(href)),
+			{ timeout: 15_000 },
+		)
+		.toBe(true);
+
+	const after = await setLinks.evaluateAll((els) =>
+		els.map((el) => (el as HTMLAnchorElement).getAttribute("href") ?? ""),
+	);
+	const newHref = after.find((href) => !before.has(href));
+	if (!newHref) throw new Error("No new image set detected after import");
+
+	await page.goto(newHref);
 	return page.url();
 }
 
