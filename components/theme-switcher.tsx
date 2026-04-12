@@ -5,32 +5,32 @@ import { useTheme } from "next-themes";
 import { useHasMounted } from "@/hooks/use-has-mounted";
 
 const themes = [
-	{ value: "system", icon: Half2Icon },
-	{ value: "light", icon: SunIcon },
-	{ value: "dark", icon: MoonIcon },
+  { value: "system", icon: Half2Icon },
+  { value: "light", icon: SunIcon },
+  { value: "dark", icon: MoonIcon },
 ] as const;
 
 export function ThemeSwitcher() {
-	const { theme, setTheme } = useTheme();
-	const mounted = useHasMounted();
+  const { theme, setTheme } = useTheme();
+  const mounted = useHasMounted();
 
-	return (
-		<div className="flex w-fit items-center rounded-full border bg-muted/50 p-1">
-			{themes.map(({ value, icon: Icon }) => (
-				<button
-					key={value}
-					type="button"
-					onClick={() => setTheme(value)}
-					className={`rounded-full p-1.5 transition-colors ${
-						mounted && theme === value
-							? "bg-background text-foreground shadow-sm"
-							: "text-muted-foreground hover:text-foreground"
-					}`}
-					aria-label={`${value} theme`}
-				>
-					<Icon className="size-3.5" />
-				</button>
-			))}
-		</div>
-	);
+  return (
+    <div className="flex w-fit items-center rounded-full border bg-muted/50 p-1">
+      {themes.map(({ value, icon: Icon }) => (
+        <button
+          key={value}
+          type="button"
+          onClick={() => setTheme(value)}
+          className={`rounded-full p-1.5 transition-colors ${
+            mounted && theme === value
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+          aria-label={`${value} theme`}
+        >
+          <Icon className="size-3.5" />
+        </button>
+      ))}
+    </div>
+  );
 }

@@ -5,12 +5,12 @@ import { db } from "@/lib/db";
 import { site } from "@/lib/db/app-schema";
 
 export default async function Page() {
-	const session = await requireSession();
+  const session = await requireSession();
 
-	const sites = await db
-		.select()
-		.from(site)
-		.where(eq(site.userId, session.user.id));
+  const sites = await db
+    .select()
+    .from(site)
+    .where(eq(site.userId, session.user.id));
 
-	return <SiteSettings sites={sites} />;
+  return <SiteSettings sites={sites} />;
 }

@@ -4,5 +4,5 @@ import * as appSchema from "./app-schema";
 import * as schema from "./schema";
 
 export const db = drizzle(env.DATABASE_URL, {
-	schema: { ...schema, ...appSchema },
+  schema: { ...schema, ...appSchema },
 });

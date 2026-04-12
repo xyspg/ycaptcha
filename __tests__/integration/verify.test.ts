@@ -1,155 +1,155 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { deleteChallengeSession } from "@/lib/captcha-session";
 import {
-	getChallenge,
-	getChallengeIndices,
-	getCorrectIndices,
-	postRequest,
+  getChallenge,
+  getChallengeIndices,
+  getCorrectIndices,
+  postRequest,
 } from "./helpers";
 import { seed, TEST_HARD_SITE_KEY, TEST_SITE_KEY } from "./seed";
 
 const verifyPOST = (await import("@/app/(main)/api/v0/captcha/verify/route"))
-	.POST;
+  .POST;
 
 beforeAll(async () => {
-	await seed();
+  await seed();
 });
 
 describe("POST /api/v0/captcha/verify — real DB + Redis", () => {
-	it("returns success with correct selections", async () => {
-		const { sessionToken } = await getChallenge(
-			TEST_SITE_KEY,
-			"https://example.com",
-		);
-		const correctIndices = await getCorrectIndices(sessionToken);
+  it("returns success with correct selections", async () => {
+    const { sessionToken } = await getChallenge(
+      TEST_SITE_KEY,
+      "https://example.com",
+    );
+    const correctIndices = await getCorrectIndices(sessionToken);
 
-		const res = await verifyPOST(
-			postRequest({ sessionToken, selectedIndices: correctIndices }),
-		);
-		const data = await res.json();
+    const res = await verifyPOST(
+      postRequest({ sessionToken, selectedIndices: correctIndices }),
+    );
+    const data = await res.json();
 
-		expect(data.success).toBe(true);
-		expect(data.token).toBeDefined();
-		expect(typeof data.token).toBe("string");
-	});
+    expect(data.success).toBe(true);
+    expect(data.token).toBeDefined();
+    expect(typeof data.token).toBe("string");
+  });
 
-	it("returns success: false with wrong selections", async () => {
-		const { sessionToken } = await getChallenge(
-			TEST_SITE_KEY,
-			"https://example.com",
-		);
-		const { incorrect } = await getChallengeIndices(sessionToken);
+  it("returns success: false with wrong selections", async () => {
+    const { sessionToken } = await getChallenge(
+      TEST_SITE_KEY,
+      "https://example.com",
+    );
+    const { incorrect } = await getChallengeIndices(sessionToken);
 
-		const res = await verifyPOST(
-			postRequest({ sessionToken, selectedIndices: incorrect.slice(0, 3) }),
-		);
-		const data = await res.json();
+    const res = await verifyPOST(
+      postRequest({ sessionToken, selectedIndices: incorrect.slice(0, 3) }),
+    );
+    const data = await res.json();
 
-		expect(data.success).toBe(false);
-	});
+    expect(data.success).toBe(false);
+  });
 
-	it("returns success: false when all 9 selected (anti-bot)", async () => {
-		const { sessionToken } = await getChallenge(
-			TEST_SITE_KEY,
-			"https://example.com",
-		);
+  it("returns success: false when all 9 selected (anti-bot)", async () => {
+    const { sessionToken } = await getChallenge(
+      TEST_SITE_KEY,
+      "https://example.com",
+    );
 
-		const res = await verifyPOST(
-			postRequest({
-				sessionToken,
-				selectedIndices: [0, 1, 2, 3, 4, 5, 6, 7, 8],
-			}),
-		);
-		const data = await res.json();
+    const res = await verifyPOST(
+      postRequest({
+        sessionToken,
+        selectedIndices: [0, 1, 2, 3, 4, 5, 6, 7, 8],
+      }),
+    );
+    const data = await res.json();
 
-		expect(data.success).toBe(false);
-	});
+    expect(data.success).toBe(false);
+  });
 
-	it("returns success: false with empty selection", async () => {
-		const { sessionToken } = await getChallenge(
-			TEST_SITE_KEY,
-			"https://example.com",
-		);
+  it("returns success: false with empty selection", async () => {
+    const { sessionToken } = await getChallenge(
+      TEST_SITE_KEY,
+      "https://example.com",
+    );
 
-		const res = await verifyPOST(
-			postRequest({ sessionToken, selectedIndices: [] }),
-		);
-		const data = await res.json();
+    const res = await verifyPOST(
+      postRequest({ sessionToken, selectedIndices: [] }),
+    );
+    const data = await res.json();
 
-		expect(data.success).toBe(false);
-	});
+    expect(data.success).toBe(false);
+  });
 
-	it("returns 400 for invalid sessionToken", async () => {
-		const res = await verifyPOST(
-			postRequest({
-				sessionToken: "nonexistent-token",
-				selectedIndices: [0],
-			}),
-		);
-		expect(res.status).toBe(400);
-		const data = await res.json();
-		expect(data.success).toBe(false);
-	});
+  it("returns 400 for invalid sessionToken", async () => {
+    const res = await verifyPOST(
+      postRequest({
+        sessionToken: "nonexistent-token",
+        selectedIndices: [0],
+      }),
+    );
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.success).toBe(false);
+  });
 
-	it("returns 400 for expired (deleted) session", async () => {
-		const { sessionToken } = await getChallenge(
-			TEST_SITE_KEY,
-			"https://example.com",
-		);
+  it("returns 400 for expired (deleted) session", async () => {
+    const { sessionToken } = await getChallenge(
+      TEST_SITE_KEY,
+      "https://example.com",
+    );
 
-		// Simulate expiry by deleting the session
-		await deleteChallengeSession(sessionToken);
+    // Simulate expiry by deleting the session
+    await deleteChallengeSession(sessionToken);
 
-		const res = await verifyPOST(
-			postRequest({ sessionToken, selectedIndices: [0] }),
-		);
-		expect(res.status).toBe(400);
-		const data = await res.json();
-		expect(data.success).toBe(false);
-	});
+    const res = await verifyPOST(
+      postRequest({ sessionToken, selectedIndices: [0] }),
+    );
+    expect(res.status).toBe(400);
+    const data = await res.json();
+    expect(data.success).toBe(false);
+  });
 
-	it("returns success: false when correct + wrong selections net below threshold", async () => {
-		// Default puzzle: correctCount 3, difficulty 0.5 → required = ceil(1.5) = 2
-		// With net scoring: score = correct - wrong, so 2 correct + 2 wrong = 0 net → fail
-		const { sessionToken } = await getChallenge(
-			TEST_SITE_KEY,
-			"https://example.com",
-		);
-		const { correct, incorrect } = await getChallengeIndices(sessionToken);
+  it("returns success: false when correct + wrong selections net below threshold", async () => {
+    // Default puzzle: correctCount 3, difficulty 0.5 → required = ceil(1.5) = 2
+    // With net scoring: score = correct - wrong, so 2 correct + 2 wrong = 0 net → fail
+    const { sessionToken } = await getChallenge(
+      TEST_SITE_KEY,
+      "https://example.com",
+    );
+    const { correct, incorrect } = await getChallengeIndices(sessionToken);
 
-		const mixed = [...correct.slice(0, 2), ...incorrect.slice(0, 2)];
-		const res = await verifyPOST(
-			postRequest({ sessionToken, selectedIndices: mixed }),
-		);
-		const data = await res.json();
+    const mixed = [...correct.slice(0, 2), ...incorrect.slice(0, 2)];
+    const res = await verifyPOST(
+      postRequest({ sessionToken, selectedIndices: mixed }),
+    );
+    const data = await res.json();
 
-		expect(data.success).toBe(false);
-	});
+    expect(data.success).toBe(false);
+  });
 
-	it("difficulty 1.0: partial correct fails, all correct passes", async () => {
-		// Hard site has difficulty 1.0, correctCount 3 → need ceil(3 * 1.0) = 3
-		const { sessionToken: tok1 } = await getChallenge(TEST_HARD_SITE_KEY);
-		const correctIndices1 = await getCorrectIndices(tok1);
+  it("difficulty 1.0: partial correct fails, all correct passes", async () => {
+    // Hard site has difficulty 1.0, correctCount 3 → need ceil(3 * 1.0) = 3
+    const { sessionToken: tok1 } = await getChallenge(TEST_HARD_SITE_KEY);
+    const correctIndices1 = await getCorrectIndices(tok1);
 
-		// Submit only 2 of 3 correct → should fail
-		const res1 = await verifyPOST(
-			postRequest({
-				sessionToken: tok1,
-				selectedIndices: correctIndices1.slice(0, 2),
-			}),
-		);
-		expect((await res1.json()).success).toBe(false);
+    // Submit only 2 of 3 correct → should fail
+    const res1 = await verifyPOST(
+      postRequest({
+        sessionToken: tok1,
+        selectedIndices: correctIndices1.slice(0, 2),
+      }),
+    );
+    expect((await res1.json()).success).toBe(false);
 
-		// New challenge — submit all correct → should pass
-		const { sessionToken: tok2 } = await getChallenge(TEST_HARD_SITE_KEY);
-		const correctIndices2 = await getCorrectIndices(tok2);
+    // New challenge — submit all correct → should pass
+    const { sessionToken: tok2 } = await getChallenge(TEST_HARD_SITE_KEY);
+    const correctIndices2 = await getCorrectIndices(tok2);
 
-		const res2 = await verifyPOST(
-			postRequest({
-				sessionToken: tok2,
-				selectedIndices: correctIndices2,
-			}),
-		);
-		expect((await res2.json()).success).toBe(true);
-	});
+    const res2 = await verifyPOST(
+      postRequest({
+        sessionToken: tok2,
+        selectedIndices: correctIndices2,
+      }),
+    );
+    expect((await res2.json()).success).toBe(true);
+  });
 });

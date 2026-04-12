@@ -1,296 +1,296 @@
 {
-	"openapi": "3.1.0",
-	"info": {
-		"title": "yCAPTCHA API",
-		"version": "0.1.0",
-		"description": "REST API for yCAPTCHA — a custom image-based CAPTCHA service."
-	},
-	"servers": [
-		{
-			"url": "https://ycaptcha.xyspg.moe",
-			"description": "Production"
-		}
-	],
-	"paths": {
-		"/api/v0/captcha/siteverify": {
-			"post": {
-				"operationId": "siteverify",
-				"summary": "Verify a CAPTCHA token",
-				"description": "Verifies a one-time token after the user completed the CAPTCHA challenge. This is the only endpoint your backend needs to call.\n\n**Must be called from your server — never from the browser.**",
-				"tags": ["Verification"],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"required": ["token", "secretKey"],
-								"properties": {
-									"token": {
-										"type": "string",
-										"description": "The verification token received from the widget's `postMessage`.",
-										"example": "aB3dEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOpQrStUvWx01"
-									},
-									"secretKey": {
-										"type": "string",
-										"description": "Your site's secret key (`sk_...`). Found in the dashboard.",
-										"example": "sk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "Verification result. Check `success` field — a 200 status alone does not mean the token is valid.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"required": ["success"],
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"description": "`true` if the token is valid and has been consumed."
-										},
-										"error": {
-											"type": "string",
-											"description": "Present when `success` is `false`.",
-											"enum": ["Invalid token", "Invalid secretKey"]
-										}
-									}
-								},
-								"examples": {
-									"success": {
-										"summary": "Valid token",
-										"value": { "success": true }
-									},
-									"invalid-token": {
-										"summary": "Invalid or expired token",
-										"value": { "success": false, "error": "Invalid token" }
-									},
-									"invalid-secret": {
-										"summary": "Wrong secret key",
-										"value": { "success": false, "error": "Invalid secretKey" }
-									}
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Missing required fields.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean",
-											"enum": [false]
-										},
-										"error": {
-											"type": "string"
-										}
-									}
-								},
-								"example": {
-									"success": false,
-									"error": "Missing token or secretKey"
-								}
-							}
-						}
-					},
-					"429": {
-						"description": "Rate limit exceeded (100 requests/min per IP)."
-					}
-				}
-			}
-		},
-		"/api/v0/captcha/challenge": {
-			"post": {
-				"operationId": "challenge",
-				"summary": "Create a CAPTCHA challenge",
-				"description": "Creates a new challenge session with a randomized image grid. Called automatically by the widget — you do not need to call this directly.",
-				"tags": ["Widget (Internal)"],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"required": ["siteKey"],
-								"properties": {
-									"siteKey": {
-										"type": "string",
-										"description": "Your site's public key (`pk_...`).",
-										"example": "pk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
-									},
-									"origin": {
-										"type": "string",
-										"description": "The parent page's origin, used for domain validation.",
-										"example": "https://example.com"
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "Challenge created.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"sessionToken": {
-											"type": "string",
-											"description": "Opaque session token for this challenge."
-										},
-										"prompt": {
-											"type": "string",
-											"description": "The instruction shown to the user (e.g. \"Select all parks\")."
-										},
-										"images": {
-											"type": "array",
-											"description": "Array of 9 proxy image URLs.",
-											"items": {
-												"type": "object",
-												"properties": {
-													"url": {
-														"type": "string",
-														"description": "Relative proxy URL for the image."
-													}
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Missing siteKey or invalid origin."
-					},
-					"403": {
-						"description": "Domain not allowed for this siteKey."
-					},
-					"404": {
-						"description": "Invalid siteKey or no puzzles configured."
-					},
-					"429": {
-						"description": "Rate limit exceeded (20 requests/min per IP)."
-					}
-				}
-			}
-		},
-		"/api/v0/captcha/verify": {
-			"post": {
-				"operationId": "verify",
-				"summary": "Submit challenge answer",
-				"description": "Submits the user's image selections for verification. Called automatically by the widget — you do not need to call this directly.",
-				"tags": ["Widget (Internal)"],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"type": "object",
-								"required": ["sessionToken", "selectedIndices"],
-								"properties": {
-									"sessionToken": {
-										"type": "string",
-										"description": "The session token from the challenge response."
-									},
-									"selectedIndices": {
-										"type": "array",
-										"items": {
-											"type": "integer",
-											"minimum": 0,
-											"maximum": 8
-										},
-										"description": "Array of selected image indices (0-8)."
-									}
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "Verification result.",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "object",
-									"properties": {
-										"success": {
-											"type": "boolean"
-										},
-										"token": {
-											"type": "string",
-											"description": "Verification token (only present on success). Pass this to your backend for server-side validation via `/siteverify`."
-										}
-									}
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Missing fields, invalid indices, or expired session."
-					},
-					"429": {
-						"description": "Rate limit exceeded (10 requests/min per IP)."
-					}
-				}
-			}
-		},
-		"/api/v0/captcha/image/{sessionToken}/{index}": {
-			"get": {
-				"operationId": "image",
-				"summary": "Fetch a challenge image",
-				"description": "Proxies a challenge image from storage without exposing the real URL. Called automatically by the widget — you do not need to call this directly.",
-				"tags": ["Widget (Internal)"],
-				"parameters": [
-					{
-						"name": "sessionToken",
-						"in": "path",
-						"required": true,
-						"schema": { "type": "string" },
-						"description": "The session token from the challenge response."
-					},
-					{
-						"name": "index",
-						"in": "path",
-						"required": true,
-						"schema": { "type": "integer", "minimum": 0, "maximum": 8 },
-						"description": "Image index in the grid (0-8)."
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "The image binary.",
-						"content": {
-							"image/*": {
-								"schema": {
-									"type": "string",
-									"format": "binary"
-								}
-							}
-						}
-					},
-					"400": {
-						"description": "Invalid index."
-					},
-					"404": {
-						"description": "Session not found or expired."
-					},
-					"429": {
-						"description": "Rate limit exceeded (60 requests/min per IP)."
-					}
-				}
-			}
-		}
-	}
+  "openapi": "3.1.0",
+  "info": {
+    "title": "yCAPTCHA API",
+    "version": "0.1.0",
+    "description": "REST API for yCAPTCHA — a custom image-based CAPTCHA service."
+  },
+  "servers": [
+    {
+      "url": "https://ycaptcha.xyspg.moe",
+      "description": "Production"
+    }
+  ],
+  "paths": {
+    "/api/v0/captcha/siteverify": {
+      "post": {
+        "operationId": "siteverify",
+        "summary": "Verify a CAPTCHA token",
+        "description": "Verifies a one-time token after the user completed the CAPTCHA challenge. This is the only endpoint your backend needs to call.\n\n**Must be called from your server — never from the browser.**",
+        "tags": ["Verification"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token", "secretKey"],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The verification token received from the widget's `postMessage`.",
+                    "example": "aB3dEfGhIjKlMnOpQrStUvWxYz0123456789AbCdEfGhIjKlMnOpQrStUvWx01"
+                  },
+                  "secretKey": {
+                    "type": "string",
+                    "description": "Your site's secret key (`sk_...`). Found in the dashboard.",
+                    "example": "sk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification result. Check `success` field — a 200 status alone does not mean the token is valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["success"],
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "description": "`true` if the token is valid and has been consumed."
+                    },
+                    "error": {
+                      "type": "string",
+                      "description": "Present when `success` is `false`.",
+                      "enum": ["Invalid token", "Invalid secretKey"]
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Valid token",
+                    "value": { "success": true }
+                  },
+                  "invalid-token": {
+                    "summary": "Invalid or expired token",
+                    "value": { "success": false, "error": "Invalid token" }
+                  },
+                  "invalid-secret": {
+                    "summary": "Wrong secret key",
+                    "value": { "success": false, "error": "Invalid secretKey" }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "enum": [false]
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "success": false,
+                  "error": "Missing token or secretKey"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded (100 requests/min per IP)."
+          }
+        }
+      }
+    },
+    "/api/v0/captcha/challenge": {
+      "post": {
+        "operationId": "challenge",
+        "summary": "Create a CAPTCHA challenge",
+        "description": "Creates a new challenge session with a randomized image grid. Called automatically by the widget — you do not need to call this directly.",
+        "tags": ["Widget (Internal)"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["siteKey"],
+                "properties": {
+                  "siteKey": {
+                    "type": "string",
+                    "description": "Your site's public key (`pk_...`).",
+                    "example": "pk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+                  },
+                  "origin": {
+                    "type": "string",
+                    "description": "The parent page's origin, used for domain validation.",
+                    "example": "https://example.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Challenge created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sessionToken": {
+                      "type": "string",
+                      "description": "Opaque session token for this challenge."
+                    },
+                    "prompt": {
+                      "type": "string",
+                      "description": "The instruction shown to the user (e.g. \"Select all parks\")."
+                    },
+                    "images": {
+                      "type": "array",
+                      "description": "Array of 9 proxy image URLs.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "description": "Relative proxy URL for the image."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing siteKey or invalid origin."
+          },
+          "403": {
+            "description": "Domain not allowed for this siteKey."
+          },
+          "404": {
+            "description": "Invalid siteKey or no puzzles configured."
+          },
+          "429": {
+            "description": "Rate limit exceeded (20 requests/min per IP)."
+          }
+        }
+      }
+    },
+    "/api/v0/captcha/verify": {
+      "post": {
+        "operationId": "verify",
+        "summary": "Submit challenge answer",
+        "description": "Submits the user's image selections for verification. Called automatically by the widget — you do not need to call this directly.",
+        "tags": ["Widget (Internal)"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["sessionToken", "selectedIndices"],
+                "properties": {
+                  "sessionToken": {
+                    "type": "string",
+                    "description": "The session token from the challenge response."
+                  },
+                  "selectedIndices": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 8
+                    },
+                    "description": "Array of selected image indices (0-8)."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "token": {
+                      "type": "string",
+                      "description": "Verification token (only present on success). Pass this to your backend for server-side validation via `/siteverify`."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing fields, invalid indices, or expired session."
+          },
+          "429": {
+            "description": "Rate limit exceeded (10 requests/min per IP)."
+          }
+        }
+      }
+    },
+    "/api/v0/captcha/image/{sessionToken}/{index}": {
+      "get": {
+        "operationId": "image",
+        "summary": "Fetch a challenge image",
+        "description": "Proxies a challenge image from storage without exposing the real URL. Called automatically by the widget — you do not need to call this directly.",
+        "tags": ["Widget (Internal)"],
+        "parameters": [
+          {
+            "name": "sessionToken",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The session token from the challenge response."
+          },
+          {
+            "name": "index",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 0, "maximum": 8 },
+            "description": "Image index in the grid (0-8)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The image binary.",
+            "content": {
+              "image/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid index."
+          },
+          "404": {
+            "description": "Session not found or expired."
+          },
+          "429": {
+            "description": "Rate limit exceeded (60 requests/min per IP)."
+          }
+        }
+      }
+    }
+  }
 }

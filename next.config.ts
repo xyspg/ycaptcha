@@ -7,41 +7,41 @@ import type { NextConfig } from "next";
 import "./lib/env";
 
 const captchaJsHash = createHash("sha384")
-	.update(readFileSync(path.join(process.cwd(), "public/captcha.js")))
-	.digest("base64");
+  .update(readFileSync(path.join(process.cwd(), "public/captcha.js")))
+  .digest("base64");
 
 const nextConfig: NextConfig = {
-	env: {
-		CAPTCHA_JS_INTEGRITY: `sha384-${captchaJsHash}`,
-	},
-	devIndicators: false,
-	experimental: {
-		serverActions: {
-			bodySizeLimit: "10mb",
-		},
-	},
-	async rewrites() {
-		return [
-			{
-				source: "/docs/:path*.mdx",
-				destination: "/llms.mdx/docs/:path*",
-			},
-		];
-	},
+  env: {
+    CAPTCHA_JS_INTEGRITY: `sha384-${captchaJsHash}`,
+  },
+  devIndicators: false,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/docs/:path*.mdx",
+        destination: "/llms.mdx/docs/:path*",
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX();
 
 export default withSentryConfig(withMDX(nextConfig), {
-	org: "xyspg-8610361aa",
-	project: "ycaptcha",
-	silent: !process.env.CI,
-	widenClientFileUpload: true,
-	tunnelRoute: "/monitoring",
-	webpack: {
-		automaticVercelMonitors: true,
-		treeshake: {
-			removeDebugLogging: true,
-		},
-	},
+  org: "xyspg-8610361aa",
+  project: "ycaptcha",
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  tunnelRoute: "/monitoring",
+  webpack: {
+    automaticVercelMonitors: true,
+    treeshake: {
+      removeDebugLogging: true,
+    },
+  },
 });
