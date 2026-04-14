@@ -77,7 +77,7 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
           </Label>
           <div className="flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm">
             <span className="flex-1 truncate">
-              {showSecret ? s.secretKey : `sk_${"\u2022".repeat(32)}`}
+              {showSecret ? s.secretKey : "\u2022".repeat(32)}
             </span>
             <Button
               variant="ghost"
