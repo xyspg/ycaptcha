@@ -5,6 +5,7 @@ import { FingerprintPattern } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,6 +36,8 @@ export default function LoginPage() {
 }
 
 function LoginForm() {
+  const t = useTranslations("auth.login");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = getSafeRedirect(searchParams.get("redirect"));
@@ -86,7 +89,7 @@ function LoginForm() {
       )
         return;
       //TODO(sentry)
-      setError(err.message ?? "Passkey sign-in failed");
+      setError(err.message ?? t("passkeyFailed"));
       return;
     }
     router.push(redirectTo);
@@ -109,29 +112,29 @@ function LoginForm() {
 
       <Card className="bg-background ring-0 md:ring-1">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Sign in to your account</CardDescription>
+          <CardTitle className="text-xl">{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{tc("email")}</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
                 autoComplete="username webauthn"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{tc("password")}</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t("passwordPlaceholder")}
                 autoComplete="current-password"
                 required
               />
@@ -140,14 +143,14 @@ function LoginForm() {
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? t("signingIn") : t("signIn")}
             </Button>
           </form>
 
           <div className="relative my-6">
             <Separator />
             <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-              or
+              {tc("or")}
             </span>
           </div>
 
@@ -159,7 +162,7 @@ function LoginForm() {
               onClick={handlePasskeySignIn}
             >
               <FingerprintPattern className="mr-2 h-4 w-4" />
-              Sign in with Passkey
+              {t("signInWithPasskey")}
             </Button>
 
             <Button
@@ -173,13 +176,13 @@ function LoginForm() {
               }
             >
               <GitHubLogoIcon className="mr-1" />
-              Continue with GitHub
+              {t("continueWithGitHub")}
             </Button>
           </div>
         </CardContent>
         <CardFooter className="bg-background md:bg-muted/50 justify-center">
           <p className="text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
+            {t("noAccount")}{" "}
             <Link
               href={
                 redirectTo !== "/dashboard"
@@ -188,7 +191,7 @@ function LoginForm() {
               }
               className="font-medium text-foreground underline-offset-4 hover:underline"
             >
-              Sign up
+              {t("signUp")}
             </Link>
           </p>
         </CardFooter>

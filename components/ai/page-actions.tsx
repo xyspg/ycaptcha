@@ -14,6 +14,7 @@ import {
   ExternalLinkIcon,
   TextIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { type ComponentProps, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +32,7 @@ export function MarkdownCopyButton({
    */
   markdownUrl: string;
 }) {
+  const t = useTranslations("pageActions");
   const [isLoading, setLoading] = useState(false);
   const [checked, onClick] = useCopyButton(async () => {
     const cached = cache.get(markdownUrl);
@@ -66,7 +68,7 @@ export function MarkdownCopyButton({
       )}
     >
       {checked ? <Check /> : <Copy />}
-      {props.children ?? "Copy Markdown"}
+      {props.children ?? t("copyMarkdown")}
     </button>
   );
 }
@@ -89,6 +91,7 @@ export function ViewOptionsPopover({
    */
   githubUrl?: string;
 }) {
+  const t = useTranslations("pageActions");
   const pathname = usePathname();
   const items = useMemo(() => {
     const pageUrl =
@@ -99,7 +102,7 @@ export function ViewOptionsPopover({
 
     return [
       githubUrl && {
-        title: "Open in GitHub",
+        title: t("openInGitHub"),
         href: githubUrl,
         icon: (
           <svg fill="currentColor" role="img" viewBox="0 0 24 24">
@@ -109,12 +112,12 @@ export function ViewOptionsPopover({
         ),
       },
       markdownUrl && {
-        title: "View as Markdown",
+        title: t("viewAsMarkdown"),
         href: markdownUrl,
         icon: <TextIcon />,
       },
       {
-        title: "Open in Scira AI",
+        title: t("openInSciraAI"),
         href: `https://scira.ai/?${new URLSearchParams({
           q,
         })}`,
@@ -178,7 +181,7 @@ export function ViewOptionsPopover({
         ),
       },
       {
-        title: "Open in ChatGPT",
+        title: t("openInChatGPT"),
         href: `https://chatgpt.com/?${new URLSearchParams({
           hints: "search",
           q,
@@ -196,7 +199,7 @@ export function ViewOptionsPopover({
         ),
       },
       {
-        title: "Open in Claude",
+        title: t("openInClaude"),
         href: `https://claude.ai/new?${new URLSearchParams({
           q,
         })}`,
@@ -213,7 +216,7 @@ export function ViewOptionsPopover({
         ),
       },
       {
-        title: "Open in Cursor",
+        title: t("openInCursor"),
         icon: (
           <svg
             fill="currentColor"
@@ -230,7 +233,7 @@ export function ViewOptionsPopover({
         })}`,
       },
     ].filter((v) => !!v);
-  }, [githubUrl, markdownUrl, pathname]);
+  }, [githubUrl, markdownUrl, pathname, t]);
 
   return (
     <Popover>
@@ -245,7 +248,7 @@ export function ViewOptionsPopover({
           props.className,
         )}
       >
-        {props.children ?? "Open"}
+        {props.children ?? t("open")}
         <ChevronDown className="size-3.5 text-fd-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">

@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { KeyRound, Plus } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
@@ -10,6 +11,7 @@ import { PuzzleCard } from "./puzzle-card";
 
 export default async function Page() {
   const session = await requireSession();
+  const t = await getTranslations("puzzles");
 
   const userSites = await db
     .select()
@@ -32,11 +34,11 @@ export default async function Page() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Puzzles</h1>
+        <h1 className="text-2xl font-semibold">{t("title")}</h1>
         {hasPrereqs && (
           <Button asChild>
             <Link href="/dashboard/puzzles/new">
-              <Plus className="size-4" /> Create Puzzle
+              <Plus className="size-4" /> {t("createPuzzle")}
             </Link>
           </Button>
         )}
@@ -45,7 +47,7 @@ export default async function Page() {
       {puzzles.length === 0 ? (
         <Card className="flex flex-col items-center justify-center py-12">
           <KeyRound className="size-10 text-muted-foreground" />
-          <p className="mt-4 text-lg font-medium">No puzzles yet</p>
+          <p className="mt-4 text-lg font-medium">{t("noPuzzlesYet")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {!hasPrereqs ? (
               <>
@@ -53,19 +55,19 @@ export default async function Page() {
                   href="/dashboard/sites"
                   className="underline hover:text-foreground"
                 >
-                  Create a site
+                  {t("createSiteFirst")}
                 </Link>
-                {" first, then add puzzles to it."}
+                {t("createSiteFirstSuffix")}
               </>
             ) : (
-              "Create a puzzle to start using yCAPTCHA."
+              t("noPuzzlesDescription")
             )}
           </p>
           {hasPrereqs && (
             <div className="mt-6">
               <Button asChild>
                 <Link href="/dashboard/puzzles/new">
-                  <Plus className="size-4" /> Create Puzzle
+                  <Plus className="size-4" /> {t("createPuzzle")}
                 </Link>
               </Button>
             </div>

@@ -1,0 +1,303 @@
+{
+  "common": {
+    "save": "保存",
+    "saveChanges": "保存更改",
+    "cancel": "取消",
+    "delete": "删除",
+    "deleting": "删除中...",
+    "creating": "创建中...",
+    "saving": "保存中...",
+    "loading": "加载中...",
+    "close": "关闭",
+    "clear": "清除",
+    "or": "或",
+    "name": "名称",
+    "email": "邮箱",
+    "password": "密码",
+    "domain": "域名",
+    "manage": "管理",
+    "import": "导入",
+    "importing": "导入中...",
+    "copiedToClipboard": "已复制到剪贴板",
+    "failedToCopy": "复制失败"
+  },
+  "metadata": {
+    "title": "yCAPTCHA",
+    "description": "定制你的验证码"
+  },
+  "landing": {
+    "heroHeadline": "告别红绿灯",
+    "tagline": "自定义你的图片验证码",
+    "tryItOut": "Try it out",
+    "getStarted": "立即开始",
+    "readDocs": "阅读文档",
+    "verificationPassed": "验证通过！",
+    "pleaseRetry": "请重试。",
+    "previousDemo": "上一个演示",
+    "nextDemo": "下一个演示",
+    "showDemo": "显示演示 {number}"
+  },
+  "auth": {
+    "login": {
+      "title": "欢迎回来",
+      "description": "登录你的账户",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "signingIn": "登录中...",
+      "signIn": "登录",
+      "signInWithPasskey": "使用通行密钥登录",
+      "continueWithGitHub": "使用 GitHub 继续",
+      "noAccount": "还没有账户？",
+      "signUp": "注册",
+      "passkeyFailed": "通行密钥登录失败"
+    },
+    "signup": {
+      "title": "创建账户",
+      "description": "开始使用 yCAPTCHA",
+      "namePlaceholder": "你的名字",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "确认密码",
+      "creatingAccount": "创建账户中...",
+      "signUp": "注册",
+      "continueWithGitHub": "使用 GitHub 继续",
+      "hasAccount": "已有账户？",
+      "signIn": "登录",
+      "passwordsMismatch": "两次密码输入不一致"
+    }
+  },
+  "sidebar": {
+    "manage": "管理",
+    "sites": "站点",
+    "puzzles": "验证题目",
+    "imageSets": "图片集",
+    "homePage": "首页",
+    "docs": "文档",
+    "settings": "设置"
+  },
+  "dashboard": {
+    "errorTitle": "出错了",
+    "genericError": "发生了意外错误。",
+    "tryAgain": "重试"
+  },
+  "sites": {
+    "title": "站点",
+    "addSite": "添加站点",
+    "noSitesYet": "还没有站点",
+    "noSitesDescription": "创建你的第一个站点以开始使用 yCAPTCHA。",
+    "createSheet": {
+      "title": "创建新站点",
+      "description": "添加一个站点以获取用于嵌入验证码组件的 API 密钥。",
+      "namePlaceholder": "我的网站",
+      "domainPlaceholder": "example.com",
+      "createSite": "创建站点"
+    },
+    "deleteSite": "删除站点",
+    "deleteSiteDescription": "此操作将永久删除此站点及其所有验证题目，且无法撤销。",
+    "detail": {
+      "apiKeys": "API 密钥",
+      "apiKeysDescription": "使用这些密钥将 yCAPTCHA 集成到你的站点。",
+      "siteKeyPublic": "站点密钥（公开）",
+      "secretKeyPrivate": "私有密钥（私密）",
+      "regenerating": "重新生成中...",
+      "regenerateKeys": "重新生成密钥",
+      "regenerateConfirmTitle": "重新生成 API 密钥",
+      "regenerateConfirmDescription": "此操作将使当前密钥失效。使用旧站点密钥的现有组件嵌入将停止工作，直到你更新它们。",
+      "regenerate": "重新生成",
+      "siteSettings": "站点设置",
+      "domainPlaceholder": "example.com",
+      "saveChanges": "保存更改",
+      "puzzles": "验证题目",
+      "noPuzzlesYet": "还没有题目。创建一个以开始在此站点上使用 yCAPTCHA。",
+      "puzzleCount": "{count, plural, other {# 个题目}}",
+      "difficulty": "难度：{value}",
+      "createPuzzle": "创建题目",
+      "deletePuzzle": "删除题目",
+      "deletePuzzleDescription": "此操作将永久删除此题目。使用它的现有验证码会话将停止工作。",
+      "embedWidget": "嵌入组件",
+      "embedDescription": "复制下面的代码并粘贴到你的网站中。",
+      "previewLabel": "预览",
+      "widgetPreviewTitle": "验证码组件预览",
+      "dangerZone": "危险区域",
+      "dangerDescription": "删除此站点将永久移除其所有题目，活跃的验证码组件将停止工作。",
+      "deleteSiteConfirmDescription": "此操作将永久删除此站点及其所有题目。活跃的验证码组件将停止工作。"
+    }
+  },
+  "puzzles": {
+    "title": "验证题目",
+    "createPuzzle": "创建题目",
+    "noPuzzlesYet": "还没有题目",
+    "createSiteFirst": "创建一个站点",
+    "createSiteFirstSuffix": "，然后再添加题目。",
+    "noPuzzlesDescription": "创建一个题目以开始使用 yCAPTCHA。",
+    "disabled": "（已禁用）",
+    "difficulty": "难度 {value}",
+    "imageSet": "图片集：{name}",
+    "correctPerChallenge": "每次挑战 {count} 张正确图片",
+    "deletePuzzle": "删除题目",
+    "deletePuzzleDescription": "此操作将永久删除此题目。使用它的现有验证码会话将停止工作。",
+    "create": {
+      "title": "创建题目",
+      "site": "站点",
+      "siteDescription": "此题目将用于哪个站点？",
+      "selectSite": "选择一个站点...",
+      "noSitesYet": "还没有站点。",
+      "createOneFirst": "先创建一个",
+      "imageSet": "图片集",
+      "imageSetDescription": "选择此题目的图片池。",
+      "selectImageSet": "选择一个图片集...",
+      "imageSetOption": "{name}（{count} 张图片）",
+      "noImageSetsYet": "还没有图片集。",
+      "prompt": "提示词",
+      "promptDescription": "在「选择所有包含以下内容的图片」之后显示给用户的关键词。",
+      "promptPlaceholder": "例如：火车、公交车、人行横道",
+      "selectCorrectImages": "选择正确图片",
+      "tagged": "（已标记 {count} 张）",
+      "tagDescription": "标记所有正确答案的图片。每次挑战将随机展示其中 {count} 张。",
+      "advancedSettings": "高级设置",
+      "correctPerChallenge": "每次挑战的正确图片数",
+      "correctPerChallengeHelp": "在每个 3×3 网格中显示多少张正确图片。",
+      "exactNumber": "精确数量",
+      "randomRange": "随机范围",
+      "min": "最小",
+      "max": "最大",
+      "difficultyLabel": "难度",
+      "difficultyHelp": "用户必须至少选择 {total} 张正确图片中的 {required} 张才能通过。",
+      "handPickIncorrect": "手动选择错误图片",
+      "handPickIncorrectHelp": "关闭时，错误答案将从剩余图片中随机抽取。",
+      "incorrectSelected": "已选择 {count} 张错误图片"
+    },
+    "edit": {
+      "title": "编辑题目",
+      "prompt": "提示词",
+      "promptDescription": "在「选择所有包含以下内容的图片」之后显示的关键词。",
+      "correctImages": "正确图片",
+      "handPickIncorrectHelp": "关闭时，错误答案将随机抽取。",
+      "dangerZone": "危险区域",
+      "dangerDescription": "删除此题目将把它从站点中移除。使用此题目的现有验证码会话将停止工作。"
+    }
+  },
+  "imageSets": {
+    "title": "图片集",
+    "createImageSet": "创建图片集",
+    "noImageSetsYet": "还没有图片集",
+    "noImageSetsDescription": "创建一个图片集并上传图片以用于题目。",
+    "imageCount": "{count} 张图片",
+    "deleteImageSet": "删除图片集",
+    "deleteImageSetDescription": "此操作将永久删除此图片集及其所有图片。你必须先删除所有使用此图片集的题目。",
+    "cannotDeleteTitle": "无法删除图片集",
+    "cannotDeleteDescription": "以下题目正在引用此图片集，请先删除它们。",
+    "sampleSets": "示例图片集",
+    "sampleSetsDescription": "导入预制的图片集以快速开始。",
+    "sampleImageCount": "{count} 张图片",
+    "create": {
+      "title": "创建图片集",
+      "description": "为你的图片集命名。创建后可以上传图片。",
+      "namePlaceholder": "例如：地铁标志"
+    },
+    "detail": {
+      "uploadImages": "上传图片",
+      "uploadDescription": "拖放或点击选择文件。非标准格式（HEIC、TIFF）将自动转换。",
+      "uploading": "上传中...",
+      "dropOrBrowse": "将图片拖放至此处或点击浏览",
+      "images": "图片",
+      "noImagesYet": "还没有图片。请在上方上传一些。",
+      "dangerZone": "危险区域",
+      "dangerDescription": "删除此图片集将同时从存储中移除所有图片。你必须先删除所有使用此图片集的题目。",
+      "deleteConfirmDescription": "此操作将永久删除此图片集及其存储中的所有图片。你必须先删除所有使用此图片集的题目。",
+      "statusWaiting": "等待中...",
+      "statusCompressing": "压缩中...",
+      "statusUploading": "上传中...",
+      "statusDone": "完成",
+      "statusDuplicate": "重复",
+      "errorExceedsSize": "超过 20MB",
+      "errorHeicUnsupported": "此浏览器不支持 HEIC 格式，请使用 Safari",
+      "errorUnsupportedFormat": "不支持的格式",
+      "errorUploadFailed": "上传失败",
+      "errorNotAnImage": "不是图片",
+      "errorMaxFiles": "每次最多 {count} 个文件。"
+    }
+  },
+  "settings": {
+    "title": "设置",
+    "profile": {
+      "title": "个人资料",
+      "description": "更新你的显示名称",
+      "saveChanges": "保存更改",
+      "nameUpdated": "名称已更新",
+      "failedToUpdate": "更新失败"
+    },
+    "appearance": {
+      "title": "外观",
+      "description": "选择你偏好的颜色主题",
+      "systemTheme": "跟随系统",
+      "lightTheme": "浅色主题",
+      "darkTheme": "深色主题"
+    },
+    "language": {
+      "title": "语言",
+      "description": "选择你偏好的界面语言"
+    },
+    "passkeys": {
+      "title": "通行密钥",
+      "description": "使用生物识别、安全密钥或你的设备进行无密码登录",
+      "noPasskeys": "未注册通行密钥。",
+      "unnamedPasskey": "未命名通行密钥",
+      "added": "添加于 {date}",
+      "registering": "注册中...",
+      "addPasskey": "添加通行密钥",
+      "failedToRename": "重命名通行密钥失败",
+      "failedToAdd": "添加通行密钥失败",
+      "failedToDelete": "删除通行密钥失败"
+    },
+    "deleteAccount": {
+      "title": "删除账户",
+      "description": "永久删除你的账户及所有关联数据，包括站点、题目、图片集和已上传的图片",
+      "deleteButton": "删除账户",
+      "step2Title": "你确定要这样做吗？",
+      "step2Body": "此操作是永久且不可逆的。你的所有站点、题目、图片集和已上传的图片将被永久销毁。你站点上活跃的验证码组件将立即停止工作",
+      "step2Continue": "我已了解，继续",
+      "step3Instruction": "为进行验证，请在下方输入你的邮箱 {email} 和短语 {phrase}",
+      "step3Email": "你的邮箱",
+      "step3Phrase": "输入 {phrase}",
+      "step3Continue": "继续",
+      "step4Title": "最终警告",
+      "step4Body": "这是你最后的机会。此操作之后将无法撤销。",
+      "step4Label": "输入你的密码以永久删除账户",
+      "step4Placeholder": "你的密码",
+      "step4Deleting": "正在删除所有数据...",
+      "step4Confirm": "永久删除我的账户",
+      "failedToDelete": "删除账户失败"
+    }
+  },
+  "puzzlePreview": {
+    "title": "预览",
+    "description": "测试此题目对用户的呈现效果。",
+    "refreshPreview": "刷新预览",
+    "selectCorrectImages": "选择正确图片以查看预览"
+  },
+  "confirmDelete": {
+    "typeToConfirm": "输入 <bold>{text}</bold> 以确认。"
+  },
+  "difficulty": {
+    "easy": "简单",
+    "medium": "中等",
+    "hard": "困难"
+  },
+  "languageSwitcher": {
+    "label": "语言",
+    "en": "English",
+    "zh-CN": "简体中文",
+    "ja": "日本語"
+  },
+  "pageActions": {
+    "copyMarkdown": "复制 Markdown",
+    "open": "打开",
+    "openInGitHub": "在 GitHub 中打开",
+    "viewAsMarkdown": "以 Markdown 查看",
+    "openInSciraAI": "在 Scira AI 中打开",
+    "openInChatGPT": "在 ChatGPT 中打开",
+    "openInClaude": "在 Claude 中打开",
+    "openInCursor": "在 Cursor 中打开"
+  }
+}

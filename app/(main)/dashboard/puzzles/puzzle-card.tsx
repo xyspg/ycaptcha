@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import {
@@ -38,6 +39,7 @@ export function PuzzleCard({
   correctCount,
   enabled,
 }: PuzzleCardProps) {
+  const t = useTranslations("puzzles");
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -59,19 +61,21 @@ export function PuzzleCard({
                   {prompt}
                   {!enabled && (
                     <span className="ml-2 text-xs font-normal text-muted-foreground">
-                      (disabled)
+                      {t("disabled")}
                     </span>
                   )}
                 </CardTitle>
                 <CardDescription>
-                  {siteName} &middot; difficulty {difficulty}
+                  {siteName} &middot; {t("difficulty", { value: difficulty })}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>Image set: {imageSetName}</span>
+                  <span>{t("imageSet", { name: imageSetName })}</span>
                   <span>&middot;</span>
-                  <span>{correctCount} correct per challenge</span>
+                  <span>
+                    {t("correctPerChallenge", { count: correctCount })}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -83,7 +87,7 @@ export function PuzzleCard({
             onSelect={() => setDeleteOpen(true)}
           >
             <Trash2 className="size-3.5" />
-            Delete Puzzle
+            {t("deletePuzzle")}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
@@ -91,8 +95,8 @@ export function PuzzleCard({
       <ConfirmDeleteDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete Puzzle"
-        description="This will permanently delete this puzzle. Existing captcha sessions using it will stop working."
+        title={t("deletePuzzle")}
+        description={t("deletePuzzleDescription")}
         onConfirm={handleDelete}
       />
     </>

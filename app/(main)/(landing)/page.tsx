@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/session";
@@ -13,10 +15,13 @@ export default async function Home() {
   return <HomePage />;
 }
 
-export function HomePage() {
+export async function HomePage() {
+  const t = await getTranslations("landing");
+
   return (
     <>
-      <div className="absolute right-6 top-6 z-20">
+      <div className="absolute right-6 top-6 z-20 flex items-center gap-2">
+        <LanguageSwitcher />
         <ThemeSwitcher />
       </div>
       <section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-8 py-12 lg:flex-row lg:gap-16">
@@ -35,20 +40,20 @@ export function HomePage() {
 
           <div className="mb-8 space-y-3">
             <h1 className="font-heading text-[40px] font-bold leading-tight tracking-tight text-foreground lg:text-[48px]">
-              Stop Picking Traffic Lights
+              {t("heroHeadline")}
             </h1>
             <p className="max-w-md text-lg leading-relaxed text-muted-foreground lg:text-xl">
-              The customizable image CAPTCHA for your site.
+              {t("tagline")}
             </p>
           </div>
 
           <div className="flex flex-row gap-4 items-center">
             <Button asChild size="lg">
-              <Link href="/login">Get Started</Link>
+              <Link href="/login">{t("getStarted")}</Link>
             </Button>
 
             <Button asChild variant="outline" size="lg">
-              <Link href="/docs">Read Docs</Link>
+              <Link href="/docs">{t("readDocs")}</Link>
             </Button>
           </div>
         </div>

@@ -1,0 +1,31 @@
+---
+title: API 参考
+description: yCAPTCHA REST API 的完整参考文档。
+---
+
+基础 URL：
+
+```
+https://ycaptcha.xyspg.moe
+```
+
+## 接口
+
+| 接口 | 用途 | 调用方 |
+| --- | --- | --- |
+| [`POST /api/v0/captcha/siteverify`](/docs/api-reference/siteverify) | 服务器端验证验证码令牌 | **你的后端** |
+
+`/challenge`、`/verify` 和 `/image` 接口是组件内部使用的，会自动调用。你不需要直接与它们交互。
+
+## 认证
+
+**siteverify** 接口需要你的私有密钥（`sk_...`），且只能从你的服务器调用。永远不要在客户端代码中暴露你的私有密钥。
+
+## 速率限制
+
+所有 API 路由都强制执行基于 IP 的滑动窗口速率限制：
+
+| 路由 | 限制 |
+| --- | --- |
+| `/siteverify` | 100 次请求/分钟 |
+| 组件内部路由 | 10-60 次请求/分钟 |

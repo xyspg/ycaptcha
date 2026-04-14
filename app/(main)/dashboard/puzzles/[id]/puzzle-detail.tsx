@@ -2,6 +2,7 @@
 
 import { ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 import {
   AdvancedSettings,
@@ -42,6 +43,9 @@ export function PuzzleDetail({
   siteName,
   images,
 }: PuzzleDetailProps) {
+  const t = useTranslations("puzzles.edit");
+  const tp = useTranslations("puzzles");
+  const tc = useTranslations("common");
   const config = usePuzzleConfig({
     prompt: p.prompt,
     correctImageIds: p.correctImageIds,
@@ -66,7 +70,7 @@ export function PuzzleDetail({
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold">Edit Puzzle</h1>
+          <h1 className="text-2xl font-semibold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{siteName}</p>
         </div>
       </div>
@@ -98,7 +102,7 @@ export function PuzzleDetail({
                 type="submit"
                 disabled={isPending || config.correctIds.size === 0}
               >
-                {isPending ? "Saving..." : "Save Changes"}
+                {isPending ? tc("saving") : tc("saveChanges")}
               </Button>
               {state?.success && (
                 <p className="text-xs text-muted-foreground">{state.message}</p>
@@ -109,18 +113,17 @@ export function PuzzleDetail({
           {/* Danger Zone */}
           <Card className="border-destructive/50">
             <CardHeader>
-              <CardTitle className="text-destructive">Danger Zone</CardTitle>
-              <CardDescription>
-                Deleting this puzzle will remove it from the site. Existing
-                captcha sessions using this puzzle will stop working.
-              </CardDescription>
+              <CardTitle className="text-destructive">
+                {t("dangerZone")}
+              </CardTitle>
+              <CardDescription>{t("dangerDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <form action={deleteAction}>
                 <input type="hidden" name="puzzleId" value={p.id} />
                 <Button variant="destructive" size="sm" disabled={isDeleting}>
                   <Trash2 className="size-3" />
-                  {isDeleting ? "Deleting..." : "Delete Puzzle"}
+                  {isDeleting ? tc("deleting") : tp("deletePuzzle")}
                 </Button>
               </form>
               {deleteState?.errors?.puzzleId && (

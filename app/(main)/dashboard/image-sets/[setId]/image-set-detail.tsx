@@ -2,6 +2,7 @@
 
 import { ArrowLeft, Pencil, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useActionState, useCallback, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -39,6 +40,7 @@ interface ImageSetDetailProps {
 }
 
 function NameEditor({ set }: { set: { id: string; name: string } }) {
+  const tc = useTranslations("common");
   const [editing, setEditing] = useState(false);
   const [state, formAction, isPending] = useActionState(
     async (prev: ActionState, formData: FormData) => {
@@ -71,7 +73,7 @@ function NameEditor({ set }: { set: { id: string; name: string } }) {
         required
       />
       <Button variant="outline" type="submit" size="sm" disabled={isPending}>
-        Save
+        {tc("save")}
       </Button>
       <Button
         type="button"
@@ -79,7 +81,7 @@ function NameEditor({ set }: { set: { id: string; name: string } }) {
         size="sm"
         onClick={() => setEditing(false)}
       >
-        Cancel
+        {tc("cancel")}
       </Button>
       {state?.errors?.name && (
         <span className="text-xs text-destructive">{state.errors.name[0]}</span>
@@ -133,23 +135,36 @@ async function compressImage(file: File): Promise<File> {
 }
 
 function StatusIndicator({ status }: { status: FileStatus }) {
+  const t = useTranslations("imageSets.detail");
   switch (status.step) {
     case "pending":
-      return <span className="text-xs text-muted-foreground">Waiting...</span>;
+      return (
+        <span className="text-xs text-muted-foreground">
+          {t("statusWaiting")}
+        </span>
+      );
     case "compressing":
-      return <span className="text-xs text-blue-500">Compressing...</span>;
+      return (
+        <span className="text-xs text-blue-500">{t("statusCompressing")}</span>
+      );
     case "uploading":
-      return <span className="text-xs text-blue-500">Uploading...</span>;
+      return (
+        <span className="text-xs text-blue-500">{t("statusUploading")}</span>
+      );
     case "done":
-      return <span className="text-xs text-green-600">Done</span>;
+      return <span className="text-xs text-green-600">{t("statusDone")}</span>;
     case "duplicate":
-      return <span className="text-xs text-yellow-600">Duplicate</span>;
+      return (
+        <span className="text-xs text-yellow-600">{t("statusDuplicate")}</span>
+      );
     case "error":
       return <span className="text-xs text-destructive">{status.message}</span>;
   }
 }
 
 function ImageUploader({ setId }: { setId: string }) {
+  const t = useTranslations("imageSets.detail");
+  const tc = useTranslations("common");
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const processingRef = useRef(false);
 
@@ -169,7 +184,7 @@ function ImageUploader({ setId }: { setId: string }) {
         if (item.file.size > MAX_INPUT_FILE_SIZE) {
           updateItem(item.id, {
             step: "error",
-            message: "Exceeds 20MB",
+            message: t("errorExceedsSize"),
           });
           continue;
         }
@@ -184,8 +199,8 @@ function ImageUploader({ setId }: { setId: string }) {
           updateItem(item.id, {
             step: "error",
             message: isHeic
-              ? "HEIC not supported by this browser. Please use Safari"
-              : "Unsupported format",
+              ? t("errorHeicUnsupported")
+              : t("errorUnsupportedFormat"),
           });
           continue;
         }
@@ -204,14 +219,14 @@ function ImageUploader({ setId }: { setId: string }) {
         } catch (e) {
           updateItem(item.id, {
             step: "error",
-            message: e instanceof Error ? e.message : "Upload failed",
+            message: e instanceof Error ? e.message : t("errorUploadFailed"),
           });
         }
       }
 
       processingRef.current = false;
     },
-    [setId, updateItem],
+    [setId, updateItem, t],
   );
 
   const onDrop = useCallback(
@@ -220,7 +235,7 @@ function ImageUploader({ setId }: { setId: string }) {
       rejected: { file: File; errors: readonly { message: string }[] }[],
     ) => {
       if (accepted.length + rejected.length > MAX_FILES) {
-        toast.error(`Maximum ${MAX_FILES} files at a time.`);
+        toast.error(t("errorMaxFiles", { count: MAX_FILES }));
         return;
       }
 
@@ -231,7 +246,7 @@ function ImageUploader({ setId }: { setId: string }) {
           file: r.file,
           status: {
             step: "error" as const,
-            message: "Not an image",
+            message: t("errorNotAnImage"),
           },
         })),
         ...accepted.map((f) => ({
@@ -247,7 +262,7 @@ function ImageUploader({ setId }: { setId: string }) {
       const pending = newItems.filter((i) => i.status.step === "pending");
       if (pending.length > 0) processQueue(pending);
     },
-    [processQueue],
+    [processQueue, t],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -278,15 +293,12 @@ function ImageUploader({ setId }: { setId: string }) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Upload Images</CardTitle>
-            <CardDescription>
-              Drag and drop or click to select. Non-standard formats (HEIC,
-              TIFF) are auto-converted.
-            </CardDescription>
+            <CardTitle>{t("uploadImages")}</CardTitle>
+            <CardDescription>{t("uploadDescription")}</CardDescription>
           </div>
           {hasClearable && (
             <Button variant="ghost" size="sm" onClick={clearDone}>
-              Clear
+              {tc("clear")}
             </Button>
           )}
         </div>
@@ -302,9 +314,7 @@ function ImageUploader({ setId }: { setId: string }) {
         >
           <input {...getInputProps()} />
           <Upload className="mb-2 size-6 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
-            Drop images here or click to browse
-          </p>
+          <p className="text-sm text-muted-foreground">{t("dropOrBrowse")}</p>
         </div>
 
         {queue.length > 0 && (
@@ -384,6 +394,9 @@ function ImageCard({
 }
 
 export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
+  const t = useTranslations("imageSets");
+  const td = useTranslations("imageSets.detail");
+  const tc = useTranslations("common");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [blockedPuzzles, setBlockedPuzzles] = useState<ReferencingPuzzle[]>([]);
 
@@ -413,7 +426,7 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
       <Card>
         <CardHeader>
           <CardTitle>
-            Images{" "}
+            {td("images")}{" "}
             <span className="text-sm font-normal text-muted-foreground">
               ({images.length})
             </span>
@@ -422,7 +435,7 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
         <CardContent>
           {images.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
-              No images yet. Upload some above.
+              {td("noImagesYet")}
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
@@ -437,11 +450,8 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
       {/* Danger Zone */}
       <Card className="border-destructive/50">
         <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
-          <CardDescription>
-            Deleting this image set will also remove all images from storage.
-            You must remove any puzzles using this set first.
-          </CardDescription>
+          <CardTitle className="text-destructive">{td("dangerZone")}</CardTitle>
+          <CardDescription>{td("dangerDescription")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button
@@ -449,7 +459,7 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
             size="sm"
             onClick={() => setDeleteOpen(true)}
           >
-            <Trash2 className="size-3" /> Delete Image Set
+            <Trash2 className="size-3" /> {t("deleteImageSet")}
           </Button>
         </CardContent>
       </Card>
@@ -457,8 +467,8 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
       <ConfirmDeleteDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete Image Set"
-        description="This will permanently delete this image set and all its images from storage. You must remove any puzzles using this set first."
+        title={t("deleteImageSet")}
+        description={td("deleteConfirmDescription")}
         onConfirm={handleDelete}
       />
 
@@ -470,10 +480,9 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cannot delete image set</AlertDialogTitle>
+            <AlertDialogTitle>{t("cannotDeleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This image set is referenced by the following puzzles. Remove them
-              first.
+              {t("cannotDeleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <ul className="flex flex-col gap-1 text-sm">
@@ -491,7 +500,7 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
             ))}
           </ul>
           <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogCancel>{tc("close")}</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

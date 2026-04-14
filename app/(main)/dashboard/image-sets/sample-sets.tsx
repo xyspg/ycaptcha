@@ -1,6 +1,7 @@
 "use client";
 
 import { Download } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { ImageSetThumbnail } from "@/components/image-set-thumbnail";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ import { SAMPLE_SETS, type SampleSet } from "@/lib/samples";
 import { importSampleSet } from "./actions";
 
 function SampleSetCard({ sample }: { sample: SampleSet }) {
+  const t = useTranslations("imageSets");
+  const tc = useTranslations("common");
   const [isPending, startTransition] = useTransition();
 
   const handleImport = () => {
@@ -25,7 +28,9 @@ function SampleSetCard({ sample }: { sample: SampleSet }) {
     <Card>
       <CardHeader>
         <CardTitle className="text-base">{sample.displayName}</CardTitle>
-        <CardDescription>{sample.images.length} images</CardDescription>
+        <CardDescription>
+          {t("sampleImageCount", { count: sample.images.length })}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <ImageSetThumbnail images={sample.images} />
@@ -36,7 +41,7 @@ function SampleSetCard({ sample }: { sample: SampleSet }) {
           onClick={handleImport}
         >
           <Download className="size-3.5" />
-          {isPending ? "Importing..." : "Import"}
+          {isPending ? tc("importing") : tc("import")}
         </Button>
       </CardContent>
     </Card>
@@ -44,12 +49,13 @@ function SampleSetCard({ sample }: { sample: SampleSet }) {
 }
 
 export function SampleSets() {
+  const t = useTranslations("imageSets");
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-medium">Sample Image Sets</h2>
+        <h2 className="text-lg font-medium">{t("sampleSets")}</h2>
         <p className="text-sm text-muted-foreground">
-          Import a pre-built image set to get started quickly.
+          {t("sampleSetsDescription")}
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

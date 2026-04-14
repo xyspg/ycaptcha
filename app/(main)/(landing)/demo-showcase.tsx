@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { SAMPLE_SETS, type SampleSet } from "@/lib/samples";
@@ -49,6 +50,7 @@ const DESKTOP_POSITIONS = [
 ];
 
 export function DemoShowcase() {
+  const t = useTranslations("landing");
   const [demos, setDemos] = useState(() => buildDemos(true));
   const [order, setOrder] = useState([0, 1, 2]);
   const [hovered, setHovered] = useState(false);
@@ -113,12 +115,12 @@ export function DemoShowcase() {
         next[demoIndex] = null;
         return next;
       });
-      toast.success("Verification passed!");
+      toast.success(t("verificationPassed"));
       cycleForward();
     } else {
       setErrorMessages((prev) => {
         const next = [...prev];
-        next[demoIndex] = "Please try again.";
+        next[demoIndex] = t("pleaseRetry");
         return next;
       });
       reshuffleSingle(demoIndex);
@@ -152,7 +154,7 @@ export function DemoShowcase() {
               ? "bg-foreground"
               : "bg-foreground/20 hover:bg-foreground/40"
           }`}
-          aria-label={`Show demo ${i + 1}`}
+          aria-label={t("showDemo", { number: i + 1 })}
         />
       ))}
     </div>
@@ -172,7 +174,7 @@ export function DemoShowcase() {
               className="block text-2xl text-foreground/70 rotate-[-6deg]"
               style={{ fontFamily: "var(--font-caveat)" }}
             >
-              Try it out!
+              {t("tryItOut")}
             </span>
             {/* Hand-drawn arrow curving down-right */}
             <svg
@@ -239,7 +241,7 @@ export function DemoShowcase() {
             type="button"
             onClick={cycleBackward}
             className={`absolute -left-18 top-1/2 z-30 -translate-y-1/2 rounded-full bg-background/80 p-2 text-muted-foreground shadow-md backdrop-blur transition-opacity hover:text-foreground ${hovered ? "opacity-100" : "opacity-0"}`}
-            aria-label="Previous demo"
+            aria-label={t("previousDemo")}
           >
             <ChevronLeft className="size-5" />
           </button>
@@ -247,7 +249,7 @@ export function DemoShowcase() {
             type="button"
             onClick={cycleForward}
             className={`absolute -right-12 top-1/2 z-30 -translate-y-1/2 rounded-full bg-background/80 p-2 text-muted-foreground shadow-md backdrop-blur transition-opacity hover:text-foreground ${hovered ? "opacity-100" : "opacity-0"}`}
-            aria-label="Next demo"
+            aria-label={t("nextDemo")}
           >
             <ChevronRight className="size-5" />
           </button>
@@ -283,7 +285,7 @@ export function DemoShowcase() {
             type="button"
             onClick={cycleBackward}
             className="rounded-full bg-background/80 p-1.5 text-muted-foreground shadow-md backdrop-blur hover:text-foreground"
-            aria-label="Previous demo"
+            aria-label={t("previousDemo")}
           >
             <ChevronLeft className="size-4" />
           </button>
@@ -292,7 +294,7 @@ export function DemoShowcase() {
             type="button"
             onClick={cycleForward}
             className="rounded-full bg-background/80 p-1.5 text-muted-foreground shadow-md backdrop-blur hover:text-foreground"
-            aria-label="Next demo"
+            aria-label={t("nextDemo")}
           >
             <ChevronRight className="size-4" />
           </button>

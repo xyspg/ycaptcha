@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import {
   AlertDialog,
@@ -31,6 +32,8 @@ export function ConfirmDeleteDialog({
   confirmText,
   onConfirm,
 }: ConfirmDeleteDialogProps) {
+  const t = useTranslations("confirmDelete");
+  const tc = useTranslations("common");
   const [typed, setTyped] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -60,9 +63,12 @@ export function ConfirmDeleteDialog({
         {confirmText && (
           <div className="flex flex-col gap-2">
             <p className="text-sm text-muted-foreground">
-              Type{" "}
-              <span className="font-medium text-foreground">{confirmText}</span>{" "}
-              to confirm.
+              {t.rich("typeToConfirm", {
+                bold: (chunks) => (
+                  <span className="font-medium text-foreground">{chunks}</span>
+                ),
+                text: confirmText,
+              })}
             </p>
             <Input
               value={typed}
@@ -74,7 +80,9 @@ export function ConfirmDeleteDialog({
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isPending}>
+            {tc("cancel")}
+          </AlertDialogCancel>
           <AlertDialogAction
             disabled={!canConfirm || isPending}
             onClick={(e) => {
@@ -83,7 +91,7 @@ export function ConfirmDeleteDialog({
             }}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {isPending ? "Deleting..." : "Delete"}
+            {isPending ? tc("deleting") : tc("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

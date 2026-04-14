@@ -2,7 +2,9 @@
 
 import { FingerprintPattern, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +20,8 @@ import { useMountEffect } from "@/hooks/use-mount-effect";
 import { authClient } from "@/lib/auth/client";
 
 function ProfileSection() {
+  const t = useTranslations("settings.profile");
+  const tc = useTranslations("common");
   const { data: session, isPending } = authClient.useSession();
   const [nameOverride, setNameOverride] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -36,9 +40,9 @@ function ProfileSection() {
 
     setSaving(false);
     if (error) {
-      setMessage(error.message ?? "Failed to update");
+      setMessage(error.message ?? t("failedToUpdate"));
     } else {
-      setMessage("Name updated");
+      setMessage(t("nameUpdated"));
     }
   };
 
@@ -46,10 +50,10 @@ function ProfileSection() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Profile</CardTitle>
+          <CardTitle>{t("title")}</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">{tc("loading")}</p>
         </CardContent>
       </Card>
     );
@@ -58,13 +62,13 @@ function ProfileSection() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile</CardTitle>
-        <CardDescription>Update your display name.</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSave} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{tc("email")}</Label>
             <Input
               id="email"
               value={session?.user.email ?? ""}
@@ -73,7 +77,7 @@ function ProfileSection() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{tc("name")}</Label>
             <Input
               id="name"
               value={name}
@@ -86,7 +90,7 @@ function ProfileSection() {
           </div>
           <div className="flex items-center gap-3">
             <Button variant="outline" type="submit" size="sm" disabled={saving}>
-              {saving ? "Saving..." : "Save Changes"}
+              {saving ? tc("saving") : t("saveChanges")}
             </Button>
             {message && (
               <p className="text-xs text-muted-foreground">{message}</p>
@@ -99,6 +103,8 @@ function ProfileSection() {
 }
 
 function PasskeySection() {
+  const t = useTranslations("settings.passkeys");
+  const tc = useTranslations("common");
   const { data: passkeys, isPending } = authClient.useListPasskeys();
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -114,7 +120,7 @@ function PasskeySection() {
       name: editName.trim(),
     });
     if (err) {
-      setError(err.message ?? "Failed to rename passkey");
+      setError(err.message ?? t("failedToRename"));
     } else {
       setEditingId(null);
     }
@@ -131,7 +137,7 @@ function PasskeySection() {
         err.message?.includes("cancelled")
       )
         return;
-      setError(err.message ?? "Failed to add passkey");
+      setError(err.message ?? t("failedToAdd"));
     }
   }
 
@@ -141,7 +147,7 @@ function PasskeySection() {
     const { error: err } = await authClient.passkey.deletePasskey({ id });
     setDeletingId(null);
     if (err) {
-      setError(err.message ?? "Failed to delete passkey");
+      setError(err.message ?? t("failedToDelete"));
     }
   }
 
@@ -150,16 +156,13 @@ function PasskeySection() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FingerprintPattern className="size-5" />
-          Passkeys
+          {t("title")}
         </CardTitle>
-        <CardDescription>
-          Sign in without a password using biometrics, security keys, or your
-          device.
-        </CardDescription>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         {isPending ? (
-          <p className="text-sm text-muted-foreground">Loading...</p>
+          <p className="text-sm text-muted-foreground">{tc("loading")}</p>
         ) : passkeys && passkeys.length > 0 ? (
           <div className="flex flex-col gap-2">
             {passkeys.map((pk) => (
@@ -191,7 +194,7 @@ function PasskeySection() {
                         variant="ghost"
                         className="h-7 px-2 text-xs"
                       >
-                        Save
+                        {tc("save")}
                       </Button>
                       <Button
                         type="button"
@@ -200,16 +203,18 @@ function PasskeySection() {
                         className="h-7 px-2 text-xs"
                         onClick={() => setEditingId(null)}
                       >
-                        Cancel
+                        {tc("cancel")}
                       </Button>
                     </form>
                   ) : (
                     <p className="text-sm font-medium">
-                      {pk.name || "Unnamed passkey"}
+                      {pk.name || t("unnamedPasskey")}
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground">
-                    Added {new Date(pk.createdAt).toLocaleDateString()}
+                    {t("added", {
+                      date: new Date(pk.createdAt).toLocaleDateString(),
+                    })}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center">
@@ -238,9 +243,7 @@ function PasskeySection() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            No passkeys registered.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("noPasskeys")}</p>
         )}
 
         {error && <p className="text-xs text-destructive">{error}</p>}
@@ -253,7 +256,7 @@ function PasskeySection() {
           onClick={handleAdd}
         >
           <Plus className="mr-1 size-4" />
-          {adding ? "Registering..." : "Add passkey"}
+          {adding ? t("registering") : t("addPasskey")}
         </Button>
       </CardContent>
     </Card>
@@ -263,6 +266,8 @@ function PasskeySection() {
 const DELETE_CONFIRMATION_PHRASE = "delete my account";
 
 function DeleteAccountSection() {
+  const t = useTranslations("settings.deleteAccount");
+  const tc = useTranslations("common");
   const { data: session } = authClient.useSession();
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -302,7 +307,7 @@ function DeleteAccountSection() {
 
     setDeleting(false);
     if (err) {
-      setError(err.message ?? "Failed to delete account");
+      setError(err.message ?? t("failedToDelete"));
     } else {
       router.push("/login");
     }
@@ -311,17 +316,14 @@ function DeleteAccountSection() {
   return (
     <Card className="border-destructive/50">
       <CardHeader>
-        <CardTitle className="text-destructive">Delete Account</CardTitle>
-        <CardDescription>
-          Permanently delete your account and all associated data including
-          sites, puzzles, image sets, and uploaded images.
-        </CardDescription>
+        <CardTitle className="text-destructive">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {/* Step 1: Initial button */}
         {step === 1 && (
           <Button variant="destructive" size="sm" onClick={() => setStep(2)}>
-            Delete Account
+            {t("deleteButton")}
           </Button>
         )}
 
@@ -330,13 +332,10 @@ function DeleteAccountSection() {
           <div className="flex flex-col gap-4">
             <div className="rounded-md border border-destructive bg-destructive/10 p-4">
               <p className="text-sm font-semibold text-destructive">
-                Are you sure you want to do this?
+                {t("step2Title")}
               </p>
               <p className="mt-2 text-xs text-destructive/80">
-                This action is <strong>permanent and irreversible</strong>. All
-                your sites, puzzles, image sets, and uploaded images will be
-                permanently destroyed. Active CAPTCHA widgets on your sites will
-                stop working immediately.
+                {t("step2Body")}
               </p>
             </div>
             <div className="flex gap-2">
@@ -345,10 +344,10 @@ function DeleteAccountSection() {
                 size="sm"
                 onClick={() => setStep(3)}
               >
-                I understand, continue
+                {t("step2Continue")}
               </Button>
               <Button variant="ghost" size="sm" onClick={resetAll}>
-                Cancel
+                {tc("cancel")}
               </Button>
             </div>
           </div>
@@ -359,20 +358,23 @@ function DeleteAccountSection() {
           <div className="flex flex-col gap-4">
             <div className="rounded-md border border-destructive bg-destructive/10 p-4">
               <p className="text-xs text-destructive/80">
-                To verify, type your email{" "}
-                <span className="font-mono font-bold text-destructive">
-                  {userEmail}
-                </span>{" "}
-                and the phrase{" "}
-                <span className="font-mono font-bold text-destructive">
-                  {DELETE_CONFIRMATION_PHRASE}
-                </span>{" "}
-                below.
+                {t.rich("step3Instruction", {
+                  email: () => (
+                    <span className="font-mono font-bold text-destructive">
+                      {userEmail}
+                    </span>
+                  ),
+                  phrase: () => (
+                    <span className="font-mono font-bold text-destructive">
+                      {DELETE_CONFIRMATION_PHRASE}
+                    </span>
+                  ),
+                })}
               </p>
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="confirm-email" className="text-xs">
-                Your email
+                {t("step3Email")}
               </Label>
               <Input
                 id="confirm-email"
@@ -383,7 +385,7 @@ function DeleteAccountSection() {
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="confirm-phrase" className="text-xs">
-                Type &quot;{DELETE_CONFIRMATION_PHRASE}&quot;
+                {t("step3Phrase", { phrase: DELETE_CONFIRMATION_PHRASE })}
               </Label>
               <Input
                 id="confirm-phrase"
@@ -405,10 +407,10 @@ function DeleteAccountSection() {
                   hasPassword === false ? handleDelete() : setStep(4)
                 }
               >
-                Continue
+                {t("step3Continue")}
               </Button>
               <Button variant="ghost" size="sm" onClick={resetAll}>
-                Cancel
+                {tc("cancel")}
               </Button>
             </div>
           </div>
@@ -419,22 +421,22 @@ function DeleteAccountSection() {
           <form onSubmit={handleDelete} className="flex flex-col gap-4">
             <div className="rounded-md border-2 border-destructive bg-destructive/15 p-4">
               <p className="text-center text-lg font-bold text-destructive">
-                FINAL WARNING
+                {t("step4Title")}
               </p>
               <p className="mt-2 text-center text-sm text-destructive">
-                This is your last chance. After this, there is no going back.
+                {t("step4Body")}
               </p>
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="delete-password" className="text-xs">
-                Enter your password to permanently delete your account
+                {t("step4Label")}
               </Label>
               <Input
                 id="delete-password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Your password"
+                placeholder={t("step4Placeholder")}
               />
             </div>
             <div className="flex gap-2">
@@ -445,12 +447,10 @@ function DeleteAccountSection() {
                 disabled={deleting || !password}
                 className=""
               >
-                {deleting
-                  ? "Deleting everything..."
-                  : "Permanently delete my account"}
+                {deleting ? t("step4Deleting") : t("step4Confirm")}
               </Button>
               <Button variant="ghost" size="sm" onClick={resetAll}>
-                Cancel
+                {tc("cancel")}
               </Button>
             </div>
             {error && <p className="text-xs text-destructive">{error}</p>}
@@ -462,11 +462,12 @@ function DeleteAccountSection() {
 }
 
 function ThemeSection() {
+  const t = useTranslations("settings.appearance");
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Appearance</CardTitle>
-        <CardDescription>Choose your preferred color theme.</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
         <ThemeSwitcher />
@@ -475,13 +476,30 @@ function ThemeSection() {
   );
 }
 
+function LanguageSection() {
+  const t = useTranslations("settings.language");
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <LanguageSwitcher />
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Page() {
+  const t = useTranslations("settings");
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Settings</h1>
+      <h1 className="text-2xl font-semibold">{t("title")}</h1>
       <div className="flex flex-col gap-6 max-w-lg">
         <ProfileSection />
         <ThemeSection />
+        <LanguageSection />
         <PasskeySection />
         <DeleteAccountSection />
       </div>

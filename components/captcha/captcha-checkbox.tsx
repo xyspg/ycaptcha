@@ -137,7 +137,7 @@ export function CaptchaCheckbox({
             ERROR: {errorText ?? "Something went wrong"}
           </span>
         ) : (
-          <span className="text-[14px] text-[#555]">I&apos;m not a robot</span>
+          <span className="text-[14px] text-[#555]">I'm not a robot</span>
         )}
       </div>
       <div className="flex flex-col items-center gap-0.5">

@@ -1,0 +1,303 @@
+{
+  "common": {
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "creating": "Creating...",
+    "saving": "Saving...",
+    "loading": "Loading...",
+    "close": "Close",
+    "clear": "Clear",
+    "or": "or",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "domain": "Domain",
+    "manage": "Manage",
+    "import": "Import",
+    "importing": "Importing...",
+    "copiedToClipboard": "Copied to clipboard",
+    "failedToCopy": "Failed to copy"
+  },
+  "metadata": {
+    "title": "yCAPTCHA",
+    "description": "Customize your own CAPTCHA"
+  },
+  "landing": {
+    "heroHeadline": "Stop Picking Traffic Lights",
+    "tagline": "The customizable image CAPTCHA for your site.",
+    "tryItOut": "Try it out!",
+    "getStarted": "Get Started",
+    "readDocs": "Read Docs",
+    "verificationPassed": "Verification passed!",
+    "pleaseRetry": "Please try again.",
+    "previousDemo": "Previous demo",
+    "nextDemo": "Next demo",
+    "showDemo": "Show demo {number}"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "description": "Sign in to your account",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "signingIn": "Signing in...",
+      "signIn": "Sign In",
+      "signInWithPasskey": "Sign in with Passkey",
+      "continueWithGitHub": "Continue with GitHub",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "passkeyFailed": "Passkey sign-in failed"
+    },
+    "signup": {
+      "title": "Create an account",
+      "description": "Get started with yCAPTCHA",
+      "namePlaceholder": "Your name",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "Confirm Password",
+      "creatingAccount": "Creating account...",
+      "signUp": "Sign Up",
+      "continueWithGitHub": "Continue with GitHub",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "passwordsMismatch": "Passwords do not match"
+    }
+  },
+  "sidebar": {
+    "manage": "Manage",
+    "sites": "Sites",
+    "puzzles": "Puzzles",
+    "imageSets": "Image Sets",
+    "homePage": "Home Page",
+    "docs": "Docs",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "errorTitle": "Something went wrong",
+    "genericError": "An unexpected error occurred.",
+    "tryAgain": "Try again"
+  },
+  "sites": {
+    "title": "Sites",
+    "addSite": "Add Site",
+    "noSitesYet": "No sites yet",
+    "noSitesDescription": "Create your first site to get started with yCAPTCHA.",
+    "createSheet": {
+      "title": "Create a new site",
+      "description": "Add a site to get your API keys for embedding the CAPTCHA widget.",
+      "namePlaceholder": "My Website",
+      "domainPlaceholder": "example.com",
+      "createSite": "Create Site"
+    },
+    "deleteSite": "Delete Site",
+    "deleteSiteDescription": "This will permanently delete this site and all its puzzles. This action cannot be undone.",
+    "detail": {
+      "apiKeys": "API Keys",
+      "apiKeysDescription": "Use these keys to integrate yCAPTCHA with your site.",
+      "siteKeyPublic": "Site Key (public)",
+      "secretKeyPrivate": "Secret Key (private)",
+      "regenerating": "Regenerating...",
+      "regenerateKeys": "Regenerate Keys",
+      "regenerateConfirmTitle": "Regenerate API Keys",
+      "regenerateConfirmDescription": "This will invalidate your current keys. Any existing widget embeds using the old site key will stop working until you update them.",
+      "regenerate": "Regenerate",
+      "siteSettings": "Site Settings",
+      "domainPlaceholder": "example.com",
+      "saveChanges": "Save Changes",
+      "puzzles": "Puzzles",
+      "noPuzzlesYet": "No puzzles yet. Create one to start using yCAPTCHA on this site.",
+      "puzzleCount": "{count, plural, one {# puzzle} other {# puzzles}}",
+      "difficulty": "difficulty: {value}",
+      "createPuzzle": "Create Puzzle",
+      "deletePuzzle": "Delete Puzzle",
+      "deletePuzzleDescription": "This will permanently delete this puzzle. Existing captcha sessions using it will stop working.",
+      "embedWidget": "Embed Widget",
+      "embedDescription": "Copy the code below and paste it into your website.",
+      "previewLabel": "Preview",
+      "widgetPreviewTitle": "CAPTCHA widget preview",
+      "dangerZone": "Danger Zone",
+      "dangerDescription": "Deleting this site will permanently remove all its puzzles and active CAPTCHA widgets will stop working.",
+      "deleteSiteConfirmDescription": "This will permanently delete this site and all its puzzles. Active CAPTCHA widgets will stop working."
+    }
+  },
+  "puzzles": {
+    "title": "Puzzles",
+    "createPuzzle": "Create Puzzle",
+    "noPuzzlesYet": "No puzzles yet",
+    "createSiteFirst": "Create a site",
+    "createSiteFirstSuffix": " first, then add puzzles to it.",
+    "noPuzzlesDescription": "Create a puzzle to start using yCAPTCHA.",
+    "disabled": "(disabled)",
+    "difficulty": "difficulty {value}",
+    "imageSet": "Image set: {name}",
+    "correctPerChallenge": "{count} correct per challenge",
+    "deletePuzzle": "Delete Puzzle",
+    "deletePuzzleDescription": "This will permanently delete this puzzle. Existing captcha sessions using it will stop working.",
+    "create": {
+      "title": "Create Puzzle",
+      "site": "Site",
+      "siteDescription": "Which site will this puzzle be used on?",
+      "selectSite": "Select a site...",
+      "noSitesYet": "No sites yet.",
+      "createOneFirst": "Create one first",
+      "imageSet": "Image Set",
+      "imageSetDescription": "Choose the image pool for this puzzle.",
+      "selectImageSet": "Select an image set...",
+      "imageSetOption": "{name} ({count} images)",
+      "noImageSetsYet": "No image sets yet.",
+      "prompt": "Prompt",
+      "promptDescription": "The word shown to users after \"Select all images with\".",
+      "promptPlaceholder": "e.g. trains, buses, crosswalks",
+      "selectCorrectImages": "Select Correct Images",
+      "tagged": "({count} tagged)",
+      "tagDescription": "Tag all images that are correct answers. Each challenge will randomly show {count} of them.",
+      "advancedSettings": "Advanced Settings",
+      "correctPerChallenge": "Correct Images per Challenge",
+      "correctPerChallengeHelp": "How many correct images to show in each 3×3 grid.",
+      "exactNumber": "Exact number",
+      "randomRange": "Random range",
+      "min": "Min",
+      "max": "Max",
+      "difficultyLabel": "Difficulty",
+      "difficultyHelp": "User must select at least {required} of {total} correct {count, plural, one {image} other {images}} to pass.",
+      "handPickIncorrect": "Hand-pick Incorrect Images",
+      "handPickIncorrectHelp": "If off, wrong answers are randomly drawn from remaining images.",
+      "incorrectSelected": "{count} incorrect {count, plural, one {image} other {images}} selected"
+    },
+    "edit": {
+      "title": "Edit Puzzle",
+      "prompt": "Prompt",
+      "promptDescription": "The word shown after \"Select all images with\".",
+      "correctImages": "Correct Images",
+      "handPickIncorrectHelp": "If off, wrong answers are randomly drawn.",
+      "dangerZone": "Danger Zone",
+      "dangerDescription": "Deleting this puzzle will remove it from the site. Existing captcha sessions using this puzzle will stop working."
+    }
+  },
+  "imageSets": {
+    "title": "Image Sets",
+    "createImageSet": "Create Image Set",
+    "noImageSetsYet": "No image sets yet",
+    "noImageSetsDescription": "Create an image set and upload images to use in puzzles.",
+    "imageCount": "{count} {count, plural, one {image} other {images}}",
+    "deleteImageSet": "Delete Image Set",
+    "deleteImageSetDescription": "This will permanently delete this image set and all its images. You must remove any puzzles using this set first.",
+    "cannotDeleteTitle": "Cannot delete image set",
+    "cannotDeleteDescription": "This image set is referenced by the following puzzles. Remove them first.",
+    "sampleSets": "Sample Image Sets",
+    "sampleSetsDescription": "Import a pre-built image set to get started quickly.",
+    "sampleImageCount": "{count} images",
+    "create": {
+      "title": "Create Image Set",
+      "description": "Give your image set a name. You can upload images after creating it.",
+      "namePlaceholder": "e.g. NYC Subway Signs"
+    },
+    "detail": {
+      "uploadImages": "Upload Images",
+      "uploadDescription": "Drag and drop or click to select. Non-standard formats (HEIC, TIFF) are auto-converted.",
+      "uploading": "Uploading...",
+      "dropOrBrowse": "Drop images here or click to browse",
+      "images": "Images",
+      "noImagesYet": "No images yet. Upload some above.",
+      "dangerZone": "Danger Zone",
+      "dangerDescription": "Deleting this image set will also remove all images from storage. You must remove any puzzles using this set first.",
+      "deleteConfirmDescription": "This will permanently delete this image set and all its images from storage. You must remove any puzzles using this set first.",
+      "statusWaiting": "Waiting...",
+      "statusCompressing": "Compressing...",
+      "statusUploading": "Uploading...",
+      "statusDone": "Done",
+      "statusDuplicate": "Duplicate",
+      "errorExceedsSize": "Exceeds 20MB",
+      "errorHeicUnsupported": "HEIC not supported by this browser. Please use Safari",
+      "errorUnsupportedFormat": "Unsupported format",
+      "errorUploadFailed": "Upload failed",
+      "errorNotAnImage": "Not an image",
+      "errorMaxFiles": "Maximum {count} files at a time."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "profile": {
+      "title": "Profile",
+      "description": "Update your display name.",
+      "saveChanges": "Save Changes",
+      "nameUpdated": "Name updated",
+      "failedToUpdate": "Failed to update"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "description": "Choose your preferred color theme.",
+      "systemTheme": "System theme",
+      "lightTheme": "Light theme",
+      "darkTheme": "Dark theme"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Choose your preferred language."
+    },
+    "passkeys": {
+      "title": "Passkeys",
+      "description": "Sign in without a password using biometrics, security keys, or your device.",
+      "noPasskeys": "No passkeys registered.",
+      "unnamedPasskey": "Unnamed passkey",
+      "added": "Added {date}",
+      "registering": "Registering...",
+      "addPasskey": "Add passkey",
+      "failedToRename": "Failed to rename passkey",
+      "failedToAdd": "Failed to add passkey",
+      "failedToDelete": "Failed to delete passkey"
+    },
+    "deleteAccount": {
+      "title": "Delete Account",
+      "description": "Permanently delete your account and all associated data including sites, puzzles, image sets, and uploaded images.",
+      "deleteButton": "Delete Account",
+      "step2Title": "Are you sure you want to do this?",
+      "step2Body": "This action is permanent and irreversible. All your sites, puzzles, image sets, and uploaded images will be permanently destroyed. Active CAPTCHA widgets on your sites will stop working immediately.",
+      "step2Continue": "I understand, continue",
+      "step3Instruction": "To verify, type your email {email} and the phrase {phrase} below.",
+      "step3Email": "Your email",
+      "step3Phrase": "Type \"{phrase}\"",
+      "step3Continue": "Continue",
+      "step4Title": "FINAL WARNING",
+      "step4Body": "This is your last chance. After this, there is no going back.",
+      "step4Label": "Enter your password to permanently delete your account",
+      "step4Placeholder": "Your password",
+      "step4Deleting": "Deleting everything...",
+      "step4Confirm": "Permanently delete my account",
+      "failedToDelete": "Failed to delete account"
+    }
+  },
+  "puzzlePreview": {
+    "title": "Preview",
+    "description": "Test how this puzzle works for users.",
+    "refreshPreview": "Refresh preview",
+    "selectCorrectImages": "Select correct images to see preview"
+  },
+  "confirmDelete": {
+    "typeToConfirm": "Type <bold>{text}</bold> to confirm."
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "zh-CN": "简体中文",
+    "ja": "日本語"
+  },
+  "pageActions": {
+    "copyMarkdown": "Copy Markdown",
+    "open": "Open",
+    "openInGitHub": "Open in GitHub",
+    "viewAsMarkdown": "View as Markdown",
+    "openInSciraAI": "Open in Scira AI",
+    "openInChatGPT": "Open in ChatGPT",
+    "openInClaude": "Open in Claude",
+    "openInCursor": "Open in Cursor"
+  }
+}

@@ -2,6 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { ImageSetThumbnail } from "@/components/image-set-thumbnail";
@@ -44,6 +45,8 @@ export function ImageSetCard({
   createdAt,
   images,
 }: ImageSetCardProps) {
+  const t = useTranslations("imageSets");
+  const tc = useTranslations("common");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [blockedPuzzles, setBlockedPuzzles] = useState<ReferencingPuzzle[]>([]);
 
@@ -65,7 +68,7 @@ export function ImageSetCard({
               <CardHeader>
                 <CardTitle className="text-base">{name}</CardTitle>
                 <CardDescription>
-                  {imageCount} image{imageCount === 1 ? "" : "s"}
+                  {t("imageCount", { count: imageCount })}
                   {" · "}
                   {createdAt}
                 </CardDescription>
@@ -84,7 +87,7 @@ export function ImageSetCard({
             onSelect={() => setDeleteOpen(true)}
           >
             <Trash2 className="size-3.5" />
-            Delete Image Set
+            {t("deleteImageSet")}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
@@ -92,8 +95,8 @@ export function ImageSetCard({
       <ConfirmDeleteDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete Image Set"
-        description="This will permanently delete this image set and all its images. You must remove any puzzles using this set first."
+        title={t("deleteImageSet")}
+        description={t("deleteImageSetDescription")}
         onConfirm={handleDelete}
       />
 
@@ -105,10 +108,9 @@ export function ImageSetCard({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cannot delete image set</AlertDialogTitle>
+            <AlertDialogTitle>{t("cannotDeleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              This image set is referenced by the following puzzles. Remove them
-              first.
+              {t("cannotDeleteDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <ul className="flex flex-col gap-1 text-sm">
@@ -126,7 +128,7 @@ export function ImageSetCard({
             ))}
           </ul>
           <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
+            <AlertDialogCancel>{tc("close")}</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

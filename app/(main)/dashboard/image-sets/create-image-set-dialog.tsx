@@ -2,6 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,9 @@ import { Label } from "@/components/ui/label";
 import { createImageSet } from "./actions";
 
 export function CreateImageSetDialog() {
+  const t = useTranslations("imageSets");
+  const tCreate = useTranslations("imageSets.create");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -39,23 +43,21 @@ export function CreateImageSetDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus className="size-4" /> Create Image Set
+          <Plus className="size-4" /> {t("createImageSet")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create Image Set</DialogTitle>
-          <DialogDescription>
-            Give your image set a name. You can upload images after creating it.
-          </DialogDescription>
+          <DialogTitle>{tCreate("title")}</DialogTitle>
+          <DialogDescription>{tCreate("description")}</DialogDescription>
         </DialogHeader>
         <form action={formAction} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{tc("name")}</Label>
             <Input
               id="name"
               name="name"
-              placeholder="e.g. NYC Subway Signs"
+              placeholder={tCreate("namePlaceholder")}
               required
             />
             {state?.errors?.name && (
@@ -63,7 +65,7 @@ export function CreateImageSetDialog() {
             )}
           </div>
           <Button variant="outline" type="submit" disabled={isPending}>
-            {isPending ? "Creating..." : "Create Image Set"}
+            {isPending ? tc("creating") : t("createImageSet")}
           </Button>
         </form>
       </DialogContent>

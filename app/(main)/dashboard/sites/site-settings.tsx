@@ -3,6 +3,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 import { Globe, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,8 @@ import { copyToClipboard } from "@/lib/utils";
 import { type ActionState, createSite, deleteSite } from "./actions";
 
 function CreateSiteDialog() {
+  const t = useTranslations("sites");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
 
   const [state, formAction, isPending] = useActionState(
@@ -49,23 +52,21 @@ function CreateSiteDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>
-          <Plus /> Add Site
+          <Plus /> {t("addSite")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a new site</DialogTitle>
-          <DialogDescription>
-            Add a site to get your API keys for embedding the CAPTCHA widget.
-          </DialogDescription>
+          <DialogTitle>{t("createSheet.title")}</DialogTitle>
+          <DialogDescription>{t("createSheet.description")}</DialogDescription>
         </DialogHeader>
         <form action={formAction} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{tc("name")}</Label>
             <Input
               id="name"
               name="name"
-              placeholder="My Website"
+              placeholder={t("createSheet.namePlaceholder")}
               defaultValue={state?.values?.name}
               required
             />
@@ -74,11 +75,11 @@ function CreateSiteDialog() {
             )}
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="domain">Domain</Label>
+            <Label htmlFor="domain">{tc("domain")}</Label>
             <Input
               id="domain"
               name="domain"
-              placeholder="example.com"
+              placeholder={t("createSheet.domainPlaceholder")}
               defaultValue={state?.values?.domain}
               required
             />
@@ -89,7 +90,7 @@ function CreateSiteDialog() {
             )}
           </div>
           <Button variant="outline" type="submit" disabled={isPending}>
-            {isPending ? "Creating..." : "Create Site"}
+            {isPending ? tc("creating") : t("createSheet.createSite")}
           </Button>
         </form>
       </DialogContent>
@@ -98,6 +99,7 @@ function CreateSiteDialog() {
 }
 
 function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
+  const t = useTranslations("sites");
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleDelete = async () => {
@@ -157,7 +159,7 @@ function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
             onSelect={() => setDeleteOpen(true)}
           >
             <Trash2 className="size-3.5" />
-            Delete Site
+            {t("deleteSite")}
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
@@ -165,8 +167,8 @@ function SiteCard({ s }: { s: InferSelectModel<typeof site> }) {
       <ConfirmDeleteDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete Site"
-        description="This will permanently delete this site and all its puzzles. This action cannot be undone."
+        title={t("deleteSite")}
+        description={t("deleteSiteDescription")}
         confirmText={s.name}
         onConfirm={handleDelete}
       />
@@ -179,19 +181,20 @@ export function SiteSettings({
 }: {
   sites: InferSelectModel<typeof site>[];
 }) {
+  const t = useTranslations("sites");
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Sites</h1>
+        <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <CreateSiteDialog />
       </div>
 
       {sites.length === 0 ? (
         <Card className="flex flex-col items-center justify-center py-12">
           <Globe className="size-10 text-muted-foreground" />
-          <p className="mt-4 text-lg font-medium">No sites yet</p>
+          <p className="mt-4 text-lg font-medium">{t("noSitesYet")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create your first site to get started with yCAPTCHA.
+            {t("noSitesDescription")}
           </p>
           <div className="mt-6">
             <CreateSiteDialog />

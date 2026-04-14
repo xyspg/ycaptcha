@@ -50,9 +50,6 @@ export function CaptchaWidget({
     onRefresh();
   };
 
-  const instruction = "Select all images with";
-  const keyword = prompt;
-
   return (
     <div
       className="w-[350px] select-none overflow-hidden rounded border bg-white shadow-md"
@@ -60,9 +57,11 @@ export function CaptchaWidget({
     >
       {/* Header */}
       <div className="bg-[#4285f4] px-4 py-[14px]">
-        <p className="text-[14px] leading-snug text-white/90">{instruction}</p>
+        <p className="text-[14px] leading-snug text-white/90">
+          Select all images with
+        </p>
         <p className="text-[24px] font-bold leading-tight text-white">
-          {keyword}
+          {prompt}
         </p>
       </div>
 

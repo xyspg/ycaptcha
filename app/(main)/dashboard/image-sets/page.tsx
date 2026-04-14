@@ -1,5 +1,6 @@
 import { count, eq } from "drizzle-orm";
 import { Images } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -10,6 +11,7 @@ import { SampleSets } from "./sample-sets";
 
 export default async function Page() {
   const session = await requireSession();
+  const t = await getTranslations("imageSets");
 
   const [sets, imageCounts] = await Promise.all([
     db.query.imageSet.findMany({
@@ -36,16 +38,16 @@ export default async function Page() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Image Sets</h1>
+        <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <CreateImageSetDialog />
       </div>
 
       {sets.length === 0 ? (
         <Card className="flex flex-col items-center justify-center py-12">
           <Images className="size-10 text-muted-foreground" />
-          <p className="mt-4 text-lg font-medium">No image sets yet</p>
+          <p className="mt-4 text-lg font-medium">{t("noImageSetsYet")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create an image set and upload images to use in puzzles.
+            {t("noImageSetsDescription")}
           </p>
           <div className="mt-6">
             <CreateImageSetDialog />
