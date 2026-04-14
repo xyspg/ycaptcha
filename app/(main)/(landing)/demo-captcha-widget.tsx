@@ -1,7 +1,6 @@
 "use client";
 
 import { Check, RotateCw } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import { useMountEffect } from "@/hooks/use-mount-effect";
 import { cn } from "@/lib/utils";
@@ -28,7 +27,6 @@ export function DemoCaptchaWidget({
 	errorMessage,
 	idleHighlight,
 }: DemoCaptchaWidgetProps) {
-	const t = useTranslations("captcha");
 	const [selected, setSelected] = useState<Set<number>>(new Set());
 	const [ghostCell, setGhostCell] = useState<number | null>(null);
 	const ghostTimeout = useRef<ReturnType<typeof setTimeout>>(null);
@@ -83,7 +81,7 @@ export function DemoCaptchaWidget({
 			{/* Header */}
 			<div className="bg-[#4285f4] px-4 py-[14px]">
 				<p className="text-[14px] leading-snug text-white/90">
-					{t("selectAllImagesWith")}
+					Select all images with
 				</p>
 				<p className="text-[24px] font-bold leading-tight text-white">
 					{prompt}
@@ -142,7 +140,7 @@ export function DemoCaptchaWidget({
 					type="button"
 					onClick={handleRefresh}
 					className="rounded p-2 text-[#9b9b9b] transition-colors hover:text-[#4285f4]"
-					aria-label={t("newChallenge")}
+					aria-label="Get a new challenge"
 				>
 					<RotateCw className="size-[18px]" />
 				</button>
@@ -157,7 +155,7 @@ export function DemoCaptchaWidget({
 							: "bg-[#4285f4] shadow-sm hover:bg-[#3367d6] active:bg-[#2a56c6]",
 					)}
 				>
-					{t("verify")}
+					Verify
 				</button>
 			</div>
 		</div>

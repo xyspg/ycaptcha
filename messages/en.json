@@ -270,24 +270,11 @@
 			"failedToDelete": "Failed to delete account"
 		}
 	},
-	"captcha": {
-		"notARobot": "I'm not a robot",
-		"error": "ERROR: ",
-		"somethingWentWrong": "Something went wrong",
-		"privacyTerms": "Privacy - Terms",
-		"selectAllImagesWith": "Select all images with",
-		"newChallenge": "Get a new challenge",
-		"verify": "Verify"
-	},
-	"widget": {
-		"pleaseRetry": "Please try again."
-	},
 	"puzzlePreview": {
 		"title": "Preview",
 		"description": "Test how this puzzle works for users.",
 		"refreshPreview": "Refresh preview",
-		"selectCorrectImages": "Select correct images to see preview",
-		"pleaseRetry": "Please try again."
+		"selectCorrectImages": "Select correct images to see preview"
 	},
 	"confirmDelete": {
 		"typeToConfirm": "Type <bold>{text}</bold> to confirm."
@@ -300,7 +287,8 @@
 	"languageSwitcher": {
 		"label": "Language",
 		"en": "English",
-		"zh-CN": "简体中文"
+		"zh-CN": "简体中文",
+		"ja": "日本語"
 	},
 	"pageActions": {
 		"copyMarkdown": "Copy Markdown",

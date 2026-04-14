@@ -1,0 +1,37 @@
+---
+title: クイックスタート
+description: yCAPTCHA をはじめる。
+---
+
+## はじめに
+
+yCAPTCHA <span className="text-sm text-neutral-700 dark:text-neutral-400">(your-CAPTCHA)</span> は、サイトオーナーが独自の画像選択チャレンジを作成できるカスタム画像ベースの CAPTCHA サービスです。既成のデータセットを使う従来の CAPTCHA とは異なり、自分で画像をアップロードして正解を定義できるため、チャレンジの内容を完全にコントロールできます。
+
+## API キーの取得
+
+[ダッシュボード](https://ycaptcha.xyspg.moe/dashboard) でサイトを作成し、API キーを取得します。
+
+<Callout title="セキュリティ" type="warn">
+  シークレットキー (`sk_...`) をクライアントサイドのコードに絶対に公開しないでください。
+</Callout>
+
+## 2 行で埋め込む
+
+```html
+<div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+<script src="https://ycaptcha.xyspg.moe/captcha.js" async defer></script>
+```
+
+## LLM との連携
+
+```
+https://ycaptcha.xyspg.moe/llms-full.txt
+```
+
+## 次のステップ
+
+<Cards>
+  <Card title="API リファレンス" href="/docs/api-reference">
+    エンドポイントの完全なドキュメント。
+  </Card>
+</Cards>

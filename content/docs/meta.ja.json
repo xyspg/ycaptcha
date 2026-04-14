@@ -1,0 +1,12 @@
+{
+	"title": "yCAPTCHA",
+	"pages": [
+		"index",
+		"concepts",
+		"get-started",
+		"api-reference",
+		"---LLM Resources---",
+		"external:[llms.txt](/llms.txt)",
+		"external:[llms-full.txt](/llms-full.txt)"
+	]
+}

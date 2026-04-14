@@ -1,0 +1,303 @@
+{
+	"common": {
+		"save": "保存",
+		"saveChanges": "変更を保存",
+		"cancel": "キャンセル",
+		"delete": "削除",
+		"deleting": "削除中...",
+		"creating": "作成中...",
+		"saving": "保存中...",
+		"loading": "読み込み中...",
+		"close": "閉じる",
+		"clear": "クリア",
+		"or": "または",
+		"name": "名前",
+		"email": "メールアドレス",
+		"password": "パスワード",
+		"domain": "ドメイン",
+		"manage": "管理",
+		"import": "インポート",
+		"importing": "インポート中...",
+		"copiedToClipboard": "クリップボードにコピーしました",
+		"failedToCopy": "コピーに失敗しました"
+	},
+	"metadata": {
+		"title": "yCAPTCHA",
+		"description": "オリジナルのCAPTCHAをカスタマイズ"
+	},
+	"landing": {
+		"heroHeadline": "信号機を選ぶのはもうやめよう",
+		"tagline": "あなたのサイトのためのカスタマイズ可能な画像CAPTCHA。",
+		"tryItOut": "Try it out",
+		"getStarted": "はじめる",
+		"readDocs": "ドキュメントを読む",
+		"verificationPassed": "認証に成功しました！",
+		"pleaseRetry": "もう一度お試しください。",
+		"previousDemo": "前のデモ",
+		"nextDemo": "次のデモ",
+		"showDemo": "デモ {number} を表示"
+	},
+	"auth": {
+		"login": {
+			"title": "おかえりなさい",
+			"description": "アカウントにサインインしてください",
+			"emailPlaceholder": "you@example.com",
+			"passwordPlaceholder": "••••••••",
+			"signingIn": "サインイン中...",
+			"signIn": "サインイン",
+			"signInWithPasskey": "パスキーでサインイン",
+			"continueWithGitHub": "GitHubで続行",
+			"noAccount": "アカウントをお持ちでない方",
+			"signUp": "新規登録",
+			"passkeyFailed": "パスキーでのサインインに失敗しました"
+		},
+		"signup": {
+			"title": "アカウントを作成",
+			"description": "yCAPTCHAを始めましょう",
+			"namePlaceholder": "お名前",
+			"emailPlaceholder": "you@example.com",
+			"passwordPlaceholder": "••••••••",
+			"confirmPassword": "パスワードの確認",
+			"creatingAccount": "アカウント作成中...",
+			"signUp": "新規登録",
+			"continueWithGitHub": "GitHubで続行",
+			"hasAccount": "すでにアカウントをお持ちの方",
+			"signIn": "サインイン",
+			"passwordsMismatch": "パスワードが一致しません"
+		}
+	},
+	"sidebar": {
+		"manage": "管理",
+		"sites": "サイト",
+		"puzzles": "パズル",
+		"imageSets": "画像セット",
+		"homePage": "ホームページ",
+		"docs": "ドキュメント",
+		"settings": "設定"
+	},
+	"dashboard": {
+		"errorTitle": "問題が発生しました",
+		"genericError": "予期しないエラーが発生しました。",
+		"tryAgain": "もう一度試す"
+	},
+	"sites": {
+		"title": "サイト",
+		"addSite": "サイトを追加",
+		"noSitesYet": "サイトがまだありません",
+		"noSitesDescription": "最初のサイトを作成してyCAPTCHAを始めましょう。",
+		"createSheet": {
+			"title": "新しいサイトを作成",
+			"description": "サイトを追加してCAPTCHAウィジェット埋め込み用のAPIキーを取得します。",
+			"namePlaceholder": "マイウェブサイト",
+			"domainPlaceholder": "example.com",
+			"createSite": "サイトを作成"
+		},
+		"deleteSite": "サイトを削除",
+		"deleteSiteDescription": "このサイトとすべてのパズルを完全に削除します。この操作は取り消せません。",
+		"detail": {
+			"apiKeys": "APIキー",
+			"apiKeysDescription": "これらのキーを使ってyCAPTCHAをサイトに統合します。",
+			"siteKeyPublic": "サイトキー（公開）",
+			"secretKeyPrivate": "シークレットキー（非公開）",
+			"regenerating": "再生成中...",
+			"regenerateKeys": "キーを再生成",
+			"regenerateConfirmTitle": "APIキーを再生成",
+			"regenerateConfirmDescription": "現在のキーが無効になります。古いサイトキーを使用している既存のウィジェット埋め込みは、更新するまで動作しなくなります。",
+			"regenerate": "再生成",
+			"siteSettings": "サイト設定",
+			"domainPlaceholder": "example.com",
+			"saveChanges": "変更を保存",
+			"puzzles": "パズル",
+			"noPuzzlesYet": "パズルがまだありません。このサイトでyCAPTCHAを使い始めるには作成してください。",
+			"puzzleCount": "{count, plural, one {# 個のパズル} other {# 個のパズル}}",
+			"difficulty": "難易度: {value}",
+			"createPuzzle": "パズルを作成",
+			"deletePuzzle": "パズルを削除",
+			"deletePuzzleDescription": "このパズルを完全に削除します。使用中のCAPTCHAセッションは動作しなくなります。",
+			"embedWidget": "ウィジェットを埋め込む",
+			"embedDescription": "以下のコードをコピーしてウェブサイトに貼り付けてください。",
+			"previewLabel": "プレビュー",
+			"widgetPreviewTitle": "CAPTCHAウィジェットのプレビュー",
+			"dangerZone": "危険ゾーン",
+			"dangerDescription": "このサイトを削除すると、すべてのパズルが完全に削除され、アクティブなCAPTCHAウィジェットは動作しなくなります。",
+			"deleteSiteConfirmDescription": "このサイトとすべてのパズルを完全に削除します。アクティブなCAPTCHAウィジェットは動作しなくなります。"
+		}
+	},
+	"puzzles": {
+		"title": "パズル",
+		"createPuzzle": "パズルを作成",
+		"noPuzzlesYet": "パズルがまだありません",
+		"createSiteFirst": "サイトを作成",
+		"createSiteFirstSuffix": "してから、パズルを追加してください。",
+		"noPuzzlesDescription": "パズルを作成してyCAPTCHAを使い始めましょう。",
+		"disabled": "（無効）",
+		"difficulty": "難易度 {value}",
+		"imageSet": "画像セット: {name}",
+		"correctPerChallenge": "1回の課題につき正解 {count} 個",
+		"deletePuzzle": "パズルを削除",
+		"deletePuzzleDescription": "このパズルを完全に削除します。使用中のCAPTCHAセッションは動作しなくなります。",
+		"create": {
+			"title": "パズルを作成",
+			"site": "サイト",
+			"siteDescription": "このパズルをどのサイトで使用しますか？",
+			"selectSite": "サイトを選択...",
+			"noSitesYet": "サイトがまだありません。",
+			"createOneFirst": "先にサイトを作成してください",
+			"imageSet": "画像セット",
+			"imageSetDescription": "このパズルで使用する画像プールを選択してください。",
+			"selectImageSet": "画像セットを選択...",
+			"imageSetOption": "{name}（{count} 枚の画像）",
+			"noImageSetsYet": "画像セットがまだありません。",
+			"prompt": "プロンプト",
+			"promptDescription": "「以下のものを含む画像をすべて選択」の後に表示される単語です。",
+			"promptPlaceholder": "例: 電車、バス、横断歩道",
+			"selectCorrectImages": "正解の画像を選択",
+			"tagged": "（{count} 枚タグ付け済み）",
+			"tagDescription": "正解となる画像をすべてタグ付けしてください。各課題ではその中からランダムに {count} 枚が表示されます。",
+			"advancedSettings": "詳細設定",
+			"correctPerChallenge": "1回の課題あたりの正解画像数",
+			"correctPerChallengeHelp": "3×3グリッドに表示する正解画像の数です。",
+			"exactNumber": "固定数",
+			"randomRange": "ランダム範囲",
+			"min": "最小",
+			"max": "最大",
+			"difficultyLabel": "難易度",
+			"difficultyHelp": "合格するには {total} 枚の正解{count, plural, one {画像} other {画像}}のうち少なくとも {required} 枚を選択する必要があります。",
+			"handPickIncorrect": "不正解画像を手動選択",
+			"handPickIncorrectHelp": "オフにすると、不正解は残りの画像からランダムに選ばれます。",
+			"incorrectSelected": "{count} 枚の不正解{count, plural, one {画像} other {画像}}が選択されました"
+		},
+		"edit": {
+			"title": "パズルを編集",
+			"prompt": "プロンプト",
+			"promptDescription": "「以下のものを含む画像をすべて選択」の後に表示される単語です。",
+			"correctImages": "正解の画像",
+			"handPickIncorrectHelp": "オフにすると、不正解はランダムに選ばれます。",
+			"dangerZone": "危険ゾーン",
+			"dangerDescription": "このパズルを削除するとサイトから除外されます。このパズルを使用中のCAPTCHAセッションは動作しなくなります。"
+		}
+	},
+	"imageSets": {
+		"title": "画像セット",
+		"createImageSet": "画像セットを作成",
+		"noImageSetsYet": "画像セットがまだありません",
+		"noImageSetsDescription": "画像セットを作成し、画像をアップロードしてパズルで使用しましょう。",
+		"imageCount": "{count} {count, plural, one {枚の画像} other {枚の画像}}",
+		"deleteImageSet": "画像セットを削除",
+		"deleteImageSetDescription": "この画像セットとすべての画像を完全に削除します。先にこのセットを使用しているパズルを削除してください。",
+		"cannotDeleteTitle": "画像セットを削除できません",
+		"cannotDeleteDescription": "この画像セットは以下のパズルから参照されています。先にそれらを削除してください。",
+		"sampleSets": "サンプル画像セット",
+		"sampleSetsDescription": "用意された画像セットをインポートして素早く始めましょう。",
+		"sampleImageCount": "{count} 枚の画像",
+		"create": {
+			"title": "画像セットを作成",
+			"description": "画像セットに名前を付けてください。作成後に画像をアップロードできます。",
+			"namePlaceholder": "例: NYCの地下鉄標識"
+		},
+		"detail": {
+			"uploadImages": "画像をアップロード",
+			"uploadDescription": "ドラッグ＆ドロップするか、クリックして選択してください。非標準形式（HEIC、TIFF）は自動変換されます。",
+			"uploading": "アップロード中...",
+			"dropOrBrowse": "ここに画像をドロップするか、クリックして選択",
+			"images": "画像",
+			"noImagesYet": "画像がまだありません。上からアップロードしてください。",
+			"dangerZone": "危険ゾーン",
+			"dangerDescription": "この画像セットを削除すると、ストレージからすべての画像も削除されます。先にこのセットを使用しているパズルを削除してください。",
+			"deleteConfirmDescription": "この画像セットとストレージ内のすべての画像を完全に削除します。先にこのセットを使用しているパズルを削除してください。",
+			"statusWaiting": "待機中...",
+			"statusCompressing": "圧縮中...",
+			"statusUploading": "アップロード中...",
+			"statusDone": "完了",
+			"statusDuplicate": "重複",
+			"errorExceedsSize": "20MBを超えています",
+			"errorHeicUnsupported": "このブラウザはHEICをサポートしていません。Safariをご使用ください",
+			"errorUnsupportedFormat": "サポートされていない形式です",
+			"errorUploadFailed": "アップロードに失敗しました",
+			"errorNotAnImage": "画像ではありません",
+			"errorMaxFiles": "一度にアップロードできるのは最大 {count} ファイルです。"
+		}
+	},
+	"settings": {
+		"title": "設定",
+		"profile": {
+			"title": "プロフィール",
+			"description": "表示名を更新します。",
+			"saveChanges": "変更を保存",
+			"nameUpdated": "名前を更新しました",
+			"failedToUpdate": "更新に失敗しました"
+		},
+		"appearance": {
+			"title": "外観",
+			"description": "お好みのカラーテーマを選択してください。",
+			"systemTheme": "システムテーマ",
+			"lightTheme": "ライトテーマ",
+			"darkTheme": "ダークテーマ"
+		},
+		"language": {
+			"title": "言語",
+			"description": "お好みの言語を選択してください。"
+		},
+		"passkeys": {
+			"title": "パスキー",
+			"description": "生体認証、セキュリティキー、またはお使いのデバイスを使って、パスワードなしでサインインできます。",
+			"noPasskeys": "登録されているパスキーはありません。",
+			"unnamedPasskey": "名前のないパスキー",
+			"added": "{date} に追加",
+			"registering": "登録中...",
+			"addPasskey": "パスキーを追加",
+			"failedToRename": "パスキーの名前変更に失敗しました",
+			"failedToAdd": "パスキーの追加に失敗しました",
+			"failedToDelete": "パスキーの削除に失敗しました"
+		},
+		"deleteAccount": {
+			"title": "アカウントを削除",
+			"description": "サイト、パズル、画像セット、アップロードした画像を含む、あなたのアカウントとすべての関連データを完全に削除します。",
+			"deleteButton": "アカウントを削除",
+			"step2Title": "本当に実行してもよろしいですか？",
+			"step2Body": "この操作は永続的で取り消せません。あなたのすべてのサイト、パズル、画像セット、アップロードした画像が完全に破棄されます。サイト上でアクティブなCAPTCHAウィジェットは直ちに動作しなくなります。",
+			"step2Continue": "理解しました、続行します",
+			"step3Instruction": "確認のため、メールアドレス {email} とフレーズ {phrase} を以下に入力してください。",
+			"step3Email": "メールアドレス",
+			"step3Phrase": "\"{phrase}\" と入力",
+			"step3Continue": "続行",
+			"step4Title": "最終警告",
+			"step4Body": "これが最後のチャンスです。この後は元に戻せません。",
+			"step4Label": "アカウントを完全に削除するにはパスワードを入力してください",
+			"step4Placeholder": "パスワード",
+			"step4Deleting": "すべてを削除しています...",
+			"step4Confirm": "アカウントを完全に削除する",
+			"failedToDelete": "アカウントの削除に失敗しました"
+		}
+	},
+	"puzzlePreview": {
+		"title": "プレビュー",
+		"description": "このパズルがユーザーにどう見えるかテストします。",
+		"refreshPreview": "プレビューを更新",
+		"selectCorrectImages": "正解の画像を選択するとプレビューが表示されます"
+	},
+	"confirmDelete": {
+		"typeToConfirm": "確認のため <bold>{text}</bold> と入力してください。"
+	},
+	"difficulty": {
+		"easy": "簡単",
+		"medium": "普通",
+		"hard": "難しい"
+	},
+	"languageSwitcher": {
+		"label": "言語",
+		"en": "English",
+		"zh-CN": "简体中文",
+		"ja": "日本語"
+	},
+	"pageActions": {
+		"copyMarkdown": "Markdownをコピー",
+		"open": "開く",
+		"openInGitHub": "GitHubで開く",
+		"viewAsMarkdown": "Markdownとして表示",
+		"openInSciraAI": "Scira AIで開く",
+		"openInChatGPT": "ChatGPTで開く",
+		"openInClaude": "Claudeで開く",
+		"openInCursor": "Cursorで開く"
+	}
+}

@@ -77,7 +77,7 @@ export function PuzzlePreview({
 		if (passed) {
 			setPhase("verified");
 		} else {
-			setErrorMessage(t("pleaseRetry"));
+			setErrorMessage("Please try again.");
 			setPreview(buildGrid());
 		}
 	};

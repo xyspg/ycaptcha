@@ -10,7 +10,7 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { setLocale } from "@/i18n/actions";
-import { locales } from "@/i18n/config";
+import { type Locale, locales } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 
 export function LanguageSwitcher() {
@@ -38,7 +38,7 @@ export function LanguageSwitcher() {
 					className="gap-1.5"
 				>
 					<Languages className="size-4" />
-					<span>{t(locale as "en" | "zh-CN")}</span>
+					<span>{t(locale as Locale)}</span>
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent align="end" className="flex w-48 flex-col gap-0.5 p-1">
@@ -57,7 +57,7 @@ export function LanguageSwitcher() {
 								: "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
 						)}
 					>
-						{t(l as "en" | "zh-CN")}
+						{t(l as Locale)}
 					</button>
 				))}
 			</PopoverContent>

@@ -270,24 +270,11 @@
 			"failedToDelete": "删除账户失败"
 		}
 	},
-	"captcha": {
-		"notARobot": "我不是机器人",
-		"error": "错误：",
-		"somethingWentWrong": "出了点问题",
-		"privacyTerms": "隐私 - 条款",
-		"selectAllImagesWith": "选择所有包含以下内容的图片",
-		"newChallenge": "获取新挑战",
-		"verify": "验证"
-	},
-	"widget": {
-		"pleaseRetry": "请重试。"
-	},
 	"puzzlePreview": {
 		"title": "预览",
 		"description": "测试此题目对用户的呈现效果。",
 		"refreshPreview": "刷新预览",
-		"selectCorrectImages": "选择正确图片以查看预览",
-		"pleaseRetry": "请重试。"
+		"selectCorrectImages": "选择正确图片以查看预览"
 	},
 	"confirmDelete": {
 		"typeToConfirm": "输入 <bold>{text}</bold> 以确认。"
@@ -300,7 +287,8 @@
 	"languageSwitcher": {
 		"label": "语言",
 		"en": "English",
-		"zh-CN": "简体中文"
+		"zh-CN": "简体中文",
+		"ja": "日本語"
 	},
 	"pageActions": {
 		"copyMarkdown": "复制 Markdown",

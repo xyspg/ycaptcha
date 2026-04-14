@@ -18,4 +18,17 @@ export const i18nUI = defineI18nUI(i18n, {
 		chooseTheme: "选择主题",
 		editOnGithub: "在 GitHub 上编辑",
 	},
+	ja: {
+		displayName: "日本語",
+		search: "ドキュメントを検索",
+		searchNoResult: "結果が見つかりませんでした",
+		toc: "目次",
+		tocNoHeadings: "見出しがありません",
+		lastUpdate: "最終更新",
+		chooseLanguage: "言語を選択",
+		nextPage: "次のページ",
+		previousPage: "前のページ",
+		chooseTheme: "テーマを選択",
+		editOnGithub: "GitHub で編集",
+	},
 });
