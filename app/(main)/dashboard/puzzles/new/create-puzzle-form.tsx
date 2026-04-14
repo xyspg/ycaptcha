@@ -21,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { NativeSelect } from "@/components/ui/native-select";
 import { createPuzzle } from "./actions";
 
 interface ImageSetData {
@@ -83,10 +84,9 @@ export function CreatePuzzleForm({
                 <CardDescription>{t("siteDescription")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <select
+                <NativeSelect
                   value={selectedSiteId}
                   onChange={(e) => setSelectedSiteId(e.target.value)}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
                   <option value="">{t("selectSite")}</option>
                   {sites.map((s) => (
@@ -94,7 +94,7 @@ export function CreatePuzzleForm({
                       {s.name}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
                 {sites.length === 0 && (
                   <p className="mt-2 text-sm text-muted-foreground">
                     {t("noSitesYet")}{" "}
@@ -130,11 +130,10 @@ export function CreatePuzzleForm({
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <select
+                <NativeSelect
                   name="imageSetId"
                   value={selectedSetId}
                   onChange={(e) => handleSetChange(e.target.value)}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
                   <option value="">{t("selectImageSet")}</option>
                   {imageSets.map((is) => (
@@ -145,7 +144,7 @@ export function CreatePuzzleForm({
                       })}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
                 {imageSets.length === 0 && (
                   <p className="mt-2 text-sm text-muted-foreground">
                     {t("noImageSetsYet")}{" "}

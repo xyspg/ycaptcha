@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -385,7 +386,7 @@ function CorrectCountSection({
           {t("correctPerChallengeHelp")}
         </p>
       </div>
-      <select
+      <NativeSelect
         value={config.correctCountMode}
         onChange={(e) => {
           const mode = e.target.value as CorrectCountMode;
@@ -401,11 +402,10 @@ function CorrectCountSection({
             );
           }
         }}
-        className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
       >
         <option value="exact">{t("exactNumber")}</option>
         <option value="range">{t("randomRange")}</option>
-      </select>
+      </NativeSelect>
 
       {config.correctCountMode === "exact" ? (
         <div className="flex items-center gap-4">
