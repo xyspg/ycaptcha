@@ -26,7 +26,7 @@ export async function createSite(
   const session = await requireSession();
 
   const values = {
-    name: (formData.get("name") as string) ?? "",
+    name: (formData.get("resource-name") as string) ?? "",
     domain: (formData.get("domain") as string) ?? "",
   };
 
@@ -83,7 +83,7 @@ export async function updateSite(
 
   const values = {
     siteId: (formData.get("siteId") as string) ?? "",
-    name: (formData.get("name") as string) ?? "",
+    name: (formData.get("resource-name") as string) ?? "",
     domain: (formData.get("domain") as string) ?? "",
   };
 

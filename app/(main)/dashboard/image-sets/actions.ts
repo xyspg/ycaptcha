@@ -44,7 +44,7 @@ export async function createImageSet(
   const session = await requireSession();
 
   const parsed = createSetSchema.safeParse({
-    name: formData.get("name"),
+    name: formData.get("resource-name"),
   });
 
   if (!parsed.success) {
@@ -75,7 +75,7 @@ export async function updateImageSetName(
 
   const parsed = updateSetSchema.safeParse({
     setId: formData.get("setId"),
-    name: formData.get("name"),
+    name: formData.get("resource-name"),
   });
 
   if (!parsed.success) {

@@ -86,6 +86,10 @@ function ProfileSection() {
                 setMessage(null);
               }}
               required
+              autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
+              data-form-type="other"
             />
           </div>
           <div className="flex items-center gap-3">
@@ -184,6 +188,10 @@ function PasskeySection() {
                         onChange={(e) => setEditName(e.target.value)}
                         className="h-7 text-sm mb-1"
                         autoFocus
+                        autoComplete="off"
+                        data-1p-ignore
+                        data-lpignore="true"
+                        data-form-type="other"
                         onKeyDown={(e) => {
                           if (e.key === "Escape") setEditingId(null);
                         }}
@@ -381,6 +389,10 @@ function DeleteAccountSection() {
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
                 placeholder={userEmail}
+                autoComplete="off"
+                data-1p-ignore
+                data-lpignore="true"
+                data-form-type="other"
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -437,6 +449,7 @@ function DeleteAccountSection() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t("step4Placeholder")}
+                autoComplete="current-password"
               />
             </div>
             <div className="flex gap-2">

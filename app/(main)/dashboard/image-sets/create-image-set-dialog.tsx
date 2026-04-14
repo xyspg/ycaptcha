@@ -53,12 +53,16 @@ export function CreateImageSetDialog() {
         </DialogHeader>
         <form action={formAction} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">{tc("name")}</Label>
+            <Label htmlFor="resource-name">{tc("name")}</Label>
             <Input
-              id="name"
-              name="name"
+              id="resource-name"
+              name="resource-name"
               placeholder={tCreate("namePlaceholder")}
               required
+              autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
+              data-form-type="other"
             />
             {state?.errors?.name && (
               <p className="text-xs text-destructive">{state.errors.name[0]}</p>

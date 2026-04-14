@@ -143,8 +143,17 @@ function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
         <form action={formAction} className="flex flex-col gap-4">
           <input type="hidden" name="siteId" value={s.id} />
           <div className="flex flex-col gap-2">
-            <Label htmlFor="name">{tc("name")}</Label>
-            <Input id="name" name="name" defaultValue={s.name} required />
+            <Label htmlFor="resource-name">{tc("name")}</Label>
+            <Input
+              id="resource-name"
+              name="resource-name"
+              defaultValue={s.name}
+              required
+              autoComplete="off"
+              data-1p-ignore
+              data-lpignore="true"
+              data-form-type="other"
+            />
             {state?.errors?.name && (
               <p className="text-xs text-destructive">{state.errors.name[0]}</p>
             )}

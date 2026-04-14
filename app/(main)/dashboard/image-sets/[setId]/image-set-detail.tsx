@@ -66,11 +66,15 @@ function NameEditor({ set }: { set: { id: string; name: string } }) {
     <form action={formAction} className="flex items-center gap-2">
       <input type="hidden" name="setId" value={set.id} />
       <Input
-        name="name"
+        name="resource-name"
         defaultValue={set.name}
         className="h-9 w-60"
         autoFocus
         required
+        autoComplete="off"
+        data-1p-ignore
+        data-lpignore="true"
+        data-form-type="other"
       />
       <Button variant="outline" type="submit" size="sm" disabled={isPending}>
         {tc("save")}
