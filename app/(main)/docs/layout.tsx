@@ -1,8 +1,8 @@
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
-import { RootProvider } from "fumadocs-ui/provider/next";
 import Image from "next/image";
 import { getLocale } from "next-intl/server";
 import type { ReactNode } from "react";
+import { DocsProviders } from "@/components/docs-providers";
 import { i18nUI } from "@/lib/layout.shared";
 import { source } from "@/lib/source";
 
@@ -10,7 +10,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
 	const locale = await getLocale();
 
 	return (
-		<RootProvider i18n={i18nUI.provider(locale)}>
+		<DocsProviders i18n={i18nUI.provider(locale)}>
 			<DocsLayout
 				tree={source.getPageTree(locale)}
 				nav={{
@@ -30,6 +30,6 @@ export default async function Layout({ children }: { children: ReactNode }) {
 			>
 				{children}
 			</DocsLayout>
-		</RootProvider>
+		</DocsProviders>
 	);
 }
