@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { PuzzlePreviewPanel } from "@/app/(main)/dashboard/puzzles/puzzle-preview";
 import { Button } from "@/components/ui/button";
@@ -190,20 +191,19 @@ export function PromptField({
 	config: ReturnType<typeof usePuzzleConfig>;
 	errors?: string[];
 }) {
+	const t = useTranslations("puzzles.create");
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Prompt</CardTitle>
-				<CardDescription>
-					The word shown after &quot;Select all images with&quot;.
-				</CardDescription>
+				<CardTitle>{t("prompt")}</CardTitle>
+				<CardDescription>{t("promptDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Input
 					name="prompt"
 					value={config.prompt}
 					onChange={(e) => config.setPrompt(e.target.value)}
-					placeholder="e.g. trains, buses, crosswalks"
+					placeholder={t("promptPlaceholder")}
 					required
 				/>
 				{errors && <p className="mt-1 text-xs text-destructive">{errors[0]}</p>}
@@ -221,18 +221,19 @@ export function CorrectImageGrid({
 	config: ReturnType<typeof usePuzzleConfig>;
 	errors?: string[];
 }) {
+	const t = useTranslations("puzzles.create");
+	const te = useTranslations("puzzles.edit");
 	return (
 		<Card>
 			<CardHeader>
 				<CardTitle>
-					Correct Images{" "}
+					{te("correctImages")}{" "}
 					<span className="text-sm font-normal text-muted-foreground">
-						({config.correctIds.size} tagged)
+						{t("tagged", { count: config.correctIds.size })}
 					</span>
 				</CardTitle>
 				<CardDescription>
-					Tag all images that are correct answers. Each challenge will randomly
-					show {config.displayCount} of them.
+					{t("tagDescription", { count: config.displayCount })}
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
@@ -257,6 +258,7 @@ export function AdvancedSettings({
 	config: ReturnType<typeof usePuzzleConfig>;
 	errors?: Record<string, string[] | undefined>;
 }) {
+	const t = useTranslations("puzzles.create");
 	if (config.correctIds.size === 0) return null;
 
 	return (
@@ -267,7 +269,7 @@ export function AdvancedSettings({
 					onClick={() => config.setAdvancedOpen(!config.advancedOpen)}
 					className="flex w-full items-center justify-between"
 				>
-					<CardTitle>Advanced Settings</CardTitle>
+					<CardTitle>{t("advancedSettings")}</CardTitle>
 					<ChevronDown
 						className={cn(
 							"size-5 text-muted-foreground transition-transform",
@@ -374,12 +376,13 @@ function CorrectCountSection({
 	config: ReturnType<typeof usePuzzleConfig>;
 	errors?: Record<string, string[] | undefined>;
 }) {
+	const t = useTranslations("puzzles.create");
 	return (
 		<div className="flex flex-col gap-3">
 			<div>
-				<p className="text-sm font-medium">Correct Images per Challenge</p>
+				<p className="text-sm font-medium">{t("correctPerChallenge")}</p>
 				<p className="text-xs text-muted-foreground">
-					How many correct images to show in each 3×3 grid.
+					{t("correctPerChallengeHelp")}
 				</p>
 			</div>
 			<select
@@ -400,8 +403,8 @@ function CorrectCountSection({
 				}}
 				className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 			>
-				<option value="exact">Exact number</option>
-				<option value="range">Random range</option>
+				<option value="exact">{t("exactNumber")}</option>
+				<option value="range">{t("randomRange")}</option>
 			</select>
 
 			{config.correctCountMode === "exact" ? (
@@ -421,7 +424,9 @@ function CorrectCountSection({
 			) : (
 				<div className="flex flex-col gap-2">
 					<div className="flex items-center gap-4">
-						<span className="w-8 text-xs text-muted-foreground">Min</span>
+						<span className="w-8 text-xs text-muted-foreground">
+							{t("min")}
+						</span>
 						<Slider
 							value={[config.effectiveCorrectCount]}
 							onValueChange={([v]) => {
@@ -440,7 +445,9 @@ function CorrectCountSection({
 						</span>
 					</div>
 					<div className="flex items-center gap-4">
-						<span className="w-8 text-xs text-muted-foreground">Max</span>
+						<span className="w-8 text-xs text-muted-foreground">
+							{t("max")}
+						</span>
 						<Slider
 							value={[
 								config.effectiveCorrectCountMax ?? config.effectiveCorrectCount,
@@ -472,21 +479,34 @@ function DifficultySection({
 }: {
 	config: ReturnType<typeof usePuzzleConfig>;
 }) {
+	const t = useTranslations("puzzles.create");
+	const td = useTranslations("difficulty");
+	const pluralCount =
+		config.effectiveCorrectCount === 1 && !config.effectiveCorrectCountMax
+			? 1
+			: 2;
+	const difficultyLabelFor = (label: string) => {
+		switch (label) {
+			case "Easy":
+				return td("easy");
+			case "Medium":
+				return td("medium");
+			case "Hard":
+				return td("hard");
+			default:
+				return label;
+		}
+	};
 	return (
 		<div className="flex flex-col gap-3">
 			<div>
-				<p className="text-sm font-medium">Difficulty</p>
+				<p className="text-sm font-medium">{t("difficultyLabel")}</p>
 				<p className="text-xs text-muted-foreground">
-					User must select at least{" "}
-					<span className="font-medium text-foreground">
-						{config.requiredCorrect}
-					</span>{" "}
-					of {config.displayCount} correct image
-					{config.effectiveCorrectCount === 1 &&
-					!config.effectiveCorrectCountMax
-						? ""
-						: "s"}{" "}
-					to pass.
+					{t("difficultyHelp", {
+						required: config.requiredCorrect,
+						total: config.displayCount,
+						count: pluralCount,
+					})}
 				</p>
 			</div>
 			<div className="flex gap-2">
@@ -498,7 +518,7 @@ function DifficultySection({
 						size="sm"
 						onClick={() => config.setDifficulty(preset.value)}
 					>
-						{preset.label}
+						{difficultyLabelFor(preset.label)}
 					</Button>
 				))}
 			</div>
@@ -526,13 +546,14 @@ function IncorrectImageSection({
 	images: ImageData[];
 	config: ReturnType<typeof usePuzzleConfig>;
 }) {
+	const t = useTranslations("puzzles.create");
 	return (
 		<div className="flex flex-col gap-3">
 			<div className="flex items-center justify-between">
 				<div>
-					<p className="text-sm font-medium">Hand-pick Incorrect Images</p>
+					<p className="text-sm font-medium">{t("handPickIncorrect")}</p>
 					<p className="text-xs text-muted-foreground">
-						If off, wrong answers are randomly drawn from remaining images.
+						{t("handPickIncorrectHelp")}
 					</p>
 				</div>
 				<Switch
@@ -552,8 +573,7 @@ function IncorrectImageSection({
 						color="red"
 					/>
 					<p className="text-xs text-muted-foreground">
-						{config.incorrectIds.size} incorrect image
-						{config.incorrectIds.size === 1 ? "" : "s"} selected
+						{t("incorrectSelected", { count: config.incorrectIds.size })}
 					</p>
 				</>
 			)}

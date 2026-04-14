@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, RotateCw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ export function CaptchaWidget({
 	loading,
 	errorMessage,
 }: CaptchaWidgetProps) {
+	const t = useTranslations("captcha");
 	const [selected, setSelected] = useState<Set<number>>(new Set());
 
 	const toggleSelect = useCallback((index: number) => {
@@ -50,7 +52,7 @@ export function CaptchaWidget({
 		onRefresh();
 	};
 
-	const instruction = "Select all images with";
+	const instruction = t("selectAllImagesWith");
 	const keyword = prompt;
 
 	return (
@@ -117,7 +119,7 @@ export function CaptchaWidget({
 					onClick={handleRefresh}
 					disabled={loading}
 					className="rounded p-2 text-[#9b9b9b] transition-colors hover:text-[#4285f4] disabled:opacity-40"
-					aria-label="Get a new challenge"
+					aria-label={t("newChallenge")}
 				>
 					<RotateCw className="size-[18px]" />
 				</button>
@@ -132,7 +134,7 @@ export function CaptchaWidget({
 							: "bg-[#4285f4] shadow-sm hover:bg-[#3367d6] active:bg-[#2a56c6]",
 					)}
 				>
-					Verify
+					{t("verify")}
 				</button>
 			</div>
 		</div>

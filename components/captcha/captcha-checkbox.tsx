@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 type CheckboxState =
 	| "idle"
 	| "loading"
@@ -105,6 +107,8 @@ export function CaptchaCheckbox({
 	brandName = "yCAPTCHA",
 	errorText,
 }: CaptchaCheckboxProps) {
+	const t = useTranslations("captcha");
+
 	const handleClick = () => {
 		if (state !== "idle") return;
 		onRequestChallenge();
@@ -120,7 +124,7 @@ export function CaptchaCheckbox({
 				type="button"
 				onClick={handleClick}
 				className="flex size-7 items-center justify-center rounded-sm border-2 border-[#c1c1c1] bg-white transition-colors hover:border-[#b0b0b0]"
-				aria-label="I'm not a robot"
+				aria-label={t("notARobot")}
 			/>
 		);
 	};
@@ -134,10 +138,11 @@ export function CaptchaCheckbox({
 				{renderCheckbox()}
 				{state === "error" ? (
 					<span className="text-[12px] font-medium text-[#e53935]">
-						ERROR: {errorText ?? "Something went wrong"}
+						{t("error")}
+						{errorText ?? t("somethingWentWrong")}
 					</span>
 				) : (
-					<span className="text-[14px] text-[#555]">I&apos;m not a robot</span>
+					<span className="text-[14px] text-[#555]">{t("notARobot")}</span>
 				)}
 			</div>
 			<div className="flex flex-col items-center gap-0.5">
@@ -146,7 +151,7 @@ export function CaptchaCheckbox({
 					{brandName}
 				</span>
 				<span className="mt-px pt-0.5 text-[7px] leading-none text-[#999]">
-					Privacy - Terms
+					{t("privacyTerms")}
 				</span>
 			</div>
 		</div>

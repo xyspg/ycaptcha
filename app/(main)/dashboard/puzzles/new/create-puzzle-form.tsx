@@ -2,6 +2,7 @@
 
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import {
 	AdvancedSettings,
@@ -39,6 +40,9 @@ export function CreatePuzzleForm({
 	defaultSiteId,
 	imageSets,
 }: CreatePuzzleFormProps) {
+	const t = useTranslations("puzzles.create");
+	const tp = useTranslations("puzzles");
+	const tc = useTranslations("common");
 	const [selectedSiteId, setSelectedSiteId] = useState(defaultSiteId ?? "");
 	const [selectedSetId, setSelectedSetId] = useState("");
 	const config = usePuzzleConfig();
@@ -61,7 +65,7 @@ export function CreatePuzzleForm({
 						<ArrowLeft className="size-4" />
 					</Link>
 				</Button>
-				<h1 className="text-2xl font-semibold">Create Puzzle</h1>
+				<h1 className="text-2xl font-semibold">{t("title")}</h1>
 			</div>
 
 			<div className="flex flex-col gap-6 lg:flex-row">
@@ -75,10 +79,8 @@ export function CreatePuzzleForm({
 						{/* Site Selection */}
 						<Card>
 							<CardHeader>
-								<CardTitle>Site</CardTitle>
-								<CardDescription>
-									Which site will this puzzle be used on?
-								</CardDescription>
+								<CardTitle>{t("site")}</CardTitle>
+								<CardDescription>{t("siteDescription")}</CardDescription>
 							</CardHeader>
 							<CardContent>
 								<select
@@ -86,7 +88,7 @@ export function CreatePuzzleForm({
 									onChange={(e) => setSelectedSiteId(e.target.value)}
 									className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 								>
-									<option value="">Select a site...</option>
+									<option value="">{t("selectSite")}</option>
 									{sites.map((s) => (
 										<option key={s.id} value={s.id}>
 											{s.name}
@@ -95,12 +97,12 @@ export function CreatePuzzleForm({
 								</select>
 								{sites.length === 0 && (
 									<p className="mt-2 text-sm text-muted-foreground">
-										No sites yet.{" "}
+										{t("noSitesYet")}{" "}
 										<Link
 											href="/dashboard/sites"
 											className="underline hover:text-foreground"
 										>
-											Create one first
+											{t("createOneFirst")}
 										</Link>
 										.
 									</p>
@@ -116,14 +118,14 @@ export function CreatePuzzleForm({
 						{/* Image Set Selection */}
 						<Card>
 							<CardHeader>
-								<CardTitle>Image Set</CardTitle>
+								<CardTitle>{t("imageSet")}</CardTitle>
 								<CardDescription>
-									Choose the image pool for this puzzle.{" "}
+									{t("imageSetDescription")}{" "}
 									<Link
 										href="/dashboard/image-sets"
 										className="underline hover:text-foreground"
 									>
-										Manage
+										{tc("manage")}
 									</Link>
 								</CardDescription>
 							</CardHeader>
@@ -134,21 +136,24 @@ export function CreatePuzzleForm({
 									onChange={(e) => handleSetChange(e.target.value)}
 									className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
 								>
-									<option value="">Select an image set...</option>
+									<option value="">{t("selectImageSet")}</option>
 									{imageSets.map((is) => (
 										<option key={is.id} value={is.id}>
-											{is.name} ({is.images.length} images)
+											{t("imageSetOption", {
+												name: is.name,
+												count: is.images.length,
+											})}
 										</option>
 									))}
 								</select>
 								{imageSets.length === 0 && (
 									<p className="mt-2 text-sm text-muted-foreground">
-										No image sets yet.{" "}
+										{t("noImageSetsYet")}{" "}
 										<Link
 											href="/dashboard/image-sets"
 											className="underline hover:text-foreground"
 										>
-											Create one first
+											{t("createOneFirst")}
 										</Link>
 										.
 									</p>
@@ -188,10 +193,10 @@ export function CreatePuzzleForm({
 									!selectedSiteId
 								}
 							>
-								{isPending ? "Creating..." : "Create Puzzle"}
+								{isPending ? tc("creating") : tp("createPuzzle")}
 							</Button>
 							<Button variant="ghost" asChild>
-								<Link href="/dashboard/puzzles">Cancel</Link>
+								<Link href="/dashboard/puzzles">{tc("cancel")}</Link>
 							</Button>
 						</div>
 					</form>

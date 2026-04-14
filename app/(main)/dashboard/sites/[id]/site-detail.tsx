@@ -3,6 +3,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 import { ArrowLeft, Eye, EyeOff, Plus, RefreshCw, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
 import { CopyButton } from "@/components/copy-button";
@@ -46,6 +47,8 @@ import {
 } from "../actions";
 
 function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
+	const t = useTranslations("sites.detail");
+	const tc = useTranslations("common");
 	const [showSecret, setShowSecret] = useState(false);
 	const [regenState, regenAction, isRegenerating] = useActionState(
 		regenerateKeys,
@@ -55,15 +58,13 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>API Keys</CardTitle>
-				<CardDescription>
-					Use these keys to integrate yCAPTCHA with your site.
-				</CardDescription>
+				<CardTitle>{t("apiKeys")}</CardTitle>
+				<CardDescription>{t("apiKeysDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4">
 				<div className="flex flex-col gap-1.5">
 					<Label className="text-xs text-muted-foreground">
-						Site Key (public)
+						{t("siteKeyPublic")}
 					</Label>
 					<div className="flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm">
 						<span className="flex-1 truncate">{s.siteKey}</span>
@@ -72,7 +73,7 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
 				</div>
 				<div className="flex flex-col gap-1.5">
 					<Label className="text-xs text-muted-foreground">
-						Secret Key (private)
+						{t("secretKeyPrivate")}
 					</Label>
 					<div className="flex items-center gap-2 rounded-md border px-3 py-2 font-mono text-sm">
 						<span className="flex-1 truncate">
@@ -96,20 +97,18 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
 					<AlertDialogTrigger asChild>
 						<Button variant="outline" size="sm" disabled={isRegenerating}>
 							<RefreshCw className="size-3" />
-							{isRegenerating ? "Regenerating..." : "Regenerate Keys"}
+							{isRegenerating ? t("regenerating") : t("regenerateKeys")}
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Regenerate API Keys</AlertDialogTitle>
+							<AlertDialogTitle>{t("regenerateConfirmTitle")}</AlertDialogTitle>
 							<AlertDialogDescription>
-								This will invalidate your current keys. Any existing widget
-								embeds using the old site key will stop working until you update
-								them.
+								{t("regenerateConfirmDescription")}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogCancel>{tc("cancel")}</AlertDialogCancel>
 							<AlertDialogAction
 								onClick={() => {
 									const fd = new FormData();
@@ -117,7 +116,7 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
 									regenAction(fd);
 								}}
 							>
-								Regenerate
+								{t("regenerate")}
 							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>
@@ -131,30 +130,32 @@ function ApiKeysSection({ s }: { s: InferSelectModel<typeof site> }) {
 }
 
 function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
+	const t = useTranslations("sites.detail");
+	const tc = useTranslations("common");
 	const [state, formAction, isPending] = useActionState(updateSite, null);
 
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Site Settings</CardTitle>
+				<CardTitle>{t("siteSettings")}</CardTitle>
 			</CardHeader>
 			<CardContent>
 				<form action={formAction} className="flex flex-col gap-4">
 					<input type="hidden" name="siteId" value={s.id} />
 					<div className="flex flex-col gap-2">
-						<Label htmlFor="name">Name</Label>
+						<Label htmlFor="name">{tc("name")}</Label>
 						<Input id="name" name="name" defaultValue={s.name} required />
 						{state?.errors?.name && (
 							<p className="text-xs text-destructive">{state.errors.name[0]}</p>
 						)}
 					</div>
 					<div className="flex flex-col gap-2">
-						<Label htmlFor="domain">Domain</Label>
+						<Label htmlFor="domain">{tc("domain")}</Label>
 						<Input
 							id="domain"
 							name="domain"
 							defaultValue={s.domain ?? ""}
-							placeholder="example.com"
+							placeholder={t("domainPlaceholder")}
 							required
 						/>
 						{state?.errors?.domain && (
@@ -169,7 +170,7 @@ function SettingsSection({ s }: { s: InferSelectModel<typeof site> }) {
 						size="sm"
 						disabled={isPending}
 					>
-						{isPending ? "Saving..." : "Save Changes"}
+						{isPending ? tc("saving") : t("saveChanges")}
 					</Button>
 					{state?.success && (
 						<p className="text-xs text-muted-foreground">{state.message}</p>
@@ -187,6 +188,7 @@ function PuzzleRow({
 	p: InferSelectModel<typeof puzzle>;
 	siteId: string;
 }) {
+	const t = useTranslations("sites.detail");
 	const [deleteOpen, setDeleteOpen] = useState(false);
 	const [enabled, setEnabled] = useState(p.enabled);
 
@@ -203,7 +205,7 @@ function PuzzleRow({
 						>
 							<span className="text-sm">{p.prompt}</span>
 							<span className="text-xs text-muted-foreground">
-								difficulty: {p.difficulty}
+								{t("difficulty", { value: p.difficulty })}
 							</span>
 						</Link>
 						<Switch
@@ -222,7 +224,7 @@ function PuzzleRow({
 						onSelect={() => setDeleteOpen(true)}
 					>
 						<Trash2 className="size-3.5" />
-						Delete Puzzle
+						{t("deletePuzzle")}
 					</ContextMenuItem>
 				</ContextMenuContent>
 			</ContextMenu>
@@ -230,8 +232,8 @@ function PuzzleRow({
 			<ConfirmDeleteDialog
 				open={deleteOpen}
 				onOpenChange={setDeleteOpen}
-				title="Delete Puzzle"
-				description="This will permanently delete this puzzle. Existing captcha sessions using it will stop working."
+				title={t("deletePuzzle")}
+				description={t("deletePuzzleDescription")}
 				onConfirm={() => deletePuzzleFromSite(p.id, siteId)}
 			/>
 		</>
@@ -245,14 +247,15 @@ function PuzzlesSection({
 	s: InferSelectModel<typeof site>;
 	puzzles: InferSelectModel<typeof puzzle>[];
 }) {
+	const t = useTranslations("sites.detail");
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Puzzles</CardTitle>
+				<CardTitle>{t("puzzles")}</CardTitle>
 				<CardDescription>
 					{puzzles.length === 0
-						? "No puzzles yet. Create one to start using yCAPTCHA on this site."
-						: `${puzzles.length} puzzle${puzzles.length === 1 ? "" : "s"}`}
+						? t("noPuzzlesYet")
+						: t("puzzleCount", { count: puzzles.length })}
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="flex flex-col gap-3">
@@ -261,7 +264,7 @@ function PuzzlesSection({
 				))}
 				<Button variant="outline" size="sm" asChild>
 					<Link href={`/dashboard/puzzles/new?siteId=${s.id}`}>
-						<Plus className="size-3" /> Create Puzzle
+						<Plus className="size-3" /> {t("createPuzzle")}
 					</Link>
 				</Button>
 			</CardContent>
@@ -270,6 +273,7 @@ function PuzzlesSection({
 }
 
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
+	const t = useTranslations("sites.detail");
 	const siteUrl = env.NEXT_PUBLIC_SITE_URL;
 	const widgetUrl = `${siteUrl}/widget/${s.siteKey}`;
 	const snippet = `<div class="y-captcha" data-sitekey="${s.siteKey}"></div>
@@ -278,10 +282,8 @@ function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Embed Widget</CardTitle>
-				<CardDescription>
-					Copy the code below and paste it into your website.
-				</CardDescription>
+				<CardTitle>{t("embedWidget")}</CardTitle>
+				<CardDescription>{t("embedDescription")}</CardDescription>
 			</CardHeader>
 			<CardContent className="flex flex-col gap-4">
 				<div className="relative">
@@ -294,10 +296,10 @@ function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
 				</div>
 				<Separator />
 				<div>
-					<p className="mb-3 text-sm font-medium">Preview</p>
+					<p className="mb-3 text-sm font-medium">{t("previewLabel")}</p>
 					<iframe
 						src={widgetUrl}
-						title="CAPTCHA widget preview"
+						title={t("widgetPreviewTitle")}
 						className="h-[600px] w-full max-w-[400px] rounded-md border"
 					/>
 				</div>
@@ -340,6 +342,8 @@ export function SiteDetail({
 }
 
 function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
+	const t = useTranslations("sites.detail");
+	const ts = useTranslations("sites");
 	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	const handleDelete = async () => {
@@ -352,11 +356,8 @@ function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
 		<>
 			<Card className="border-destructive/50">
 				<CardHeader>
-					<CardTitle className="text-destructive">Danger Zone</CardTitle>
-					<CardDescription>
-						Deleting this site will permanently remove all its puzzles and
-						active CAPTCHA widgets will stop working.
-					</CardDescription>
+					<CardTitle className="text-destructive">{t("dangerZone")}</CardTitle>
+					<CardDescription>{t("dangerDescription")}</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<Button
@@ -364,7 +365,7 @@ function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
 						size="sm"
 						onClick={() => setDeleteOpen(true)}
 					>
-						<Trash2 className="size-3" /> Delete Site
+						<Trash2 className="size-3" /> {ts("deleteSite")}
 					</Button>
 				</CardContent>
 			</Card>
@@ -372,8 +373,8 @@ function DangerZone({ s }: { s: InferSelectModel<typeof site> }) {
 			<ConfirmDeleteDialog
 				open={deleteOpen}
 				onOpenChange={setDeleteOpen}
-				title="Delete Site"
-				description="This will permanently delete this site and all its puzzles. Active CAPTCHA widgets will stop working."
+				title={ts("deleteSite")}
+				description={t("deleteSiteConfirmDescription")}
 				confirmText={s.name}
 				onConfirm={handleDelete}
 			/>

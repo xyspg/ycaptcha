@@ -1,0 +1,54 @@
+---
+title: POST /siteverify
+description: 在你的服务器上验证验证码令牌。
+---
+
+```
+POST /api/v0/captcha/siteverify
+```
+
+在用户完成验证码后验证令牌。**这是你的后端唯一需要调用的接口。**
+
+> **需要你的私有密钥——永远不要从浏览器调用此接口。**
+
+## 请求体
+
+| 字段       | 类型     | 必填 | 描述                                     |
+| ---------- | -------- | ---- | ---------------------------------------- |
+| `token`    | `string` | 是   | 来自组件 `postMessage` 的令牌。          |
+| `secretKey`| `string` | 是   | 你站点的私有密钥（`sk_...`）。           |
+
+```json
+{
+  "token": "aB3dEfGh...64chars",
+  "secretKey": "sk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+}
+```
+
+## 响应 — 成功 (200 OK)
+
+```json
+{ "success": true }
+```
+
+## 响应 — 失败 (200 OK)
+
+所有失败都返回 HTTP 200，`success: false` 以及一个 `error` 字段：
+
+| 错误                           | 含义                                                         |
+| ------------------------------ | ------------------------------------------------------------ |
+| `"Missing token or secretKey"` | 请求体缺少必填字段。                                        |
+| `"Invalid token"`             | 未找到令牌——从未签发、已被消费或已过期。                     |
+| `"Invalid secretKey"`         | 私有密钥与拥有此谜题的站点不匹配。                           |
+
+## 错误 (400 Bad Request)
+
+```json
+{ "success": false, "error": "Missing token or secretKey" }
+```
+
+## 重要说明
+
+- **令牌是一次性的。** 成功后，会话从 Redis 中被原子性地消费。再次调用 siteverify 将返回 `"Invalid token"`。
+- `secretKey` 通过谜题关联到其站点进行验证——一个站点的令牌不能用另一个站点的密钥验证。
+- 始终显式检查 `result.success === true`。仅有 200 状态码并不意味着成功。

@@ -1,0 +1,146 @@
+---
+title: 嵌入组件
+description: 通过一个 script 标签将 yCAPTCHA 组件添加到你的网页。
+---
+
+只需两行 HTML 即可将 yCAPTCHA 添加到你的站点。脚本会处理一切——创建组件、管理挑战流程、调整大小，以及注入带有验证令牌的隐藏表单输入。
+
+## 前提条件
+
+- 一个至少配置了一个[谜题](/docs/get-started/create-site)的 yCAPTCHA 站点
+- 你的站点密钥（`pk_...`）
+
+---
+
+## 快速开始
+
+```html
+<div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+<script src="https://ycaptcha.xyspg.moe/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+```
+
+就这样。脚本会自动查找页面上所有的 `.y-captcha` 元素，创建组件，并在旁边插入一个隐藏的 `<input name="ycaptcha-response">`。当用户通过挑战时，输入框会填入验证令牌——可以随时与你的表单一起提交。
+
+---
+
+## 表单集成
+
+```html
+<form action="/submit" method="POST">
+  <input type="text" name="email" placeholder="邮箱" required />
+
+  <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+
+  <button type="submit">提交</button>
+</form>
+<script src="https://ycaptcha.xyspg.moe/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+```
+
+提交表单时，令牌以 `ycaptcha-response` 的形式包含在表单主体中。在你的服务器上[验证它](/docs/get-started/server-validation)。
+
+---
+
+## 手动渲染
+
+如果你需要更多控制，可以使用 JavaScript API 代替自动渲染：
+
+```html
+<div id="captcha-container"></div>
+
+<script src="https://ycaptcha.xyspg.moe/captcha.js?onload=onCaptchaLoad&render=explicit" async defer></script>
+
+<script>
+function onCaptchaLoad() {
+  ycaptcha.render("#captcha-container", {
+    sitekey: "YOUR_SITE_KEY",
+    callback: function (token) {
+      console.log("已验证:", token);
+    },
+    "expired-callback": function () {
+      console.log("令牌已过期");
+    },
+    "error-callback": function (message) {
+      console.error("错误:", message);
+    },
+  });
+}
+</script>
+```
+
+---
+
+## JavaScript API
+
+脚本暴露了 `window.ycaptcha`，包含以下方法：
+
+### `ycaptcha.render(container, params)`
+
+将组件渲染到容器元素中。
+
+| 参数 | 类型 | 描述 |
+|---|---|---|
+| `container` | `string \| HTMLElement` | CSS 选择器或 DOM 元素 |
+| `params.sitekey` | `string` | 你的站点密钥（覆盖 `data-sitekey`） |
+| `params.callback` | `function` | 成功时携带令牌调用 |
+| `params["expired-callback"]` | `function` | 令牌过期时调用 |
+| `params["error-callback"]` | `function` | 失败时携带错误信息调用 |
+| `params["response-field-name"]` | `string` | 自定义隐藏输入名称（默认：`ycaptcha-response`） |
+
+返回组件 ID 字符串。
+
+### `ycaptcha.getResponse(widgetId?)`
+
+返回当前验证令牌，如果尚未验证则返回 `null`。
+
+### `ycaptcha.reset(widgetId?)`
+
+将组件重置为初始状态。在表单提交后使用此方法，允许用户重新解题。
+
+### `ycaptcha.remove(widgetId?)`
+
+从 DOM 中移除组件并清理资源。
+
+### `ycaptcha.isExpired(widgetId?)`
+
+如果令牌已过期则返回 `true`。
+
+> 如果省略 `widgetId`，所有方法都作用于最近创建的组件。
+
+---
+
+## Data 属性
+
+作为 JavaScript API 的替代方案，你可以使用 `data-*` 属性配置组件：
+
+```html
+<div
+  class="y-captcha"
+  data-sitekey="YOUR_SITE_KEY"
+  data-callback="onSuccess"
+  data-expired-callback="onExpired"
+  data-error-callback="onError"
+></div>
+```
+
+属性值是全局函数名称，当相应事件触发时会被调用。
+
+---
+
+## 事件
+
+组件在内部通过 `postMessage` 通信。如果你需要底层访问（例如框架集成），以下是事件列表：
+
+| 事件 | 负载 | 描述 |
+|---|---|---|
+| `success` | `{ token: string }` | 用户通过了验证码 |
+| `expired` | — | 5 分钟会话已过期 |
+| `error` | `{ code, message }` | 致命错误（无效 siteKey、网络故障） |
+| `resize` | `{ width, height }` | 组件尺寸发生变化 |
+
+所有消息包含 `source: "ycaptcha"` 用于过滤。
+
+---
+
+## 下一步
+
+嵌入组件后，在你的服务器上[验证令牌](/docs/get-started/server-validation)。

@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Caveat, Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 import "../globals.css";
@@ -38,13 +40,16 @@ export const metadata: Metadata = {
 	description: "Customize your own CAPTCHA",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const locale = await getLocale();
+	const messages = await getMessages();
+
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang={locale} suppressHydrationWarning>
 			<body
 				className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} ${caveat.variable} flex min-h-screen flex-col font-sans antialiased`}
 			>
@@ -55,12 +60,14 @@ export default function RootLayout({
 					data-domains="ycaptcha.xyspg.moe"
 					strategy="afterInteractive"
 				/>
-				<Providers>
-					{children}
-					<Toaster />
-					<Analytics />
-					<SpeedInsights />
-				</Providers>
+				<NextIntlClientProvider messages={messages} locale={locale}>
+					<Providers>
+						{children}
+						<Toaster />
+						<Analytics />
+						<SpeedInsights />
+					</Providers>
+				</NextIntlClientProvider>
 			</body>
 		</html>
 	);

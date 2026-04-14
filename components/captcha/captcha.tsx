@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { CaptchaCheckbox } from "./captcha-checkbox";
 import { type CaptchaImage, CaptchaWidget } from "./captcha-widget";
@@ -28,6 +29,7 @@ export function CaptchaContainer({
 	error,
 	onPhaseChange,
 }: CaptchaContainerProps) {
+	const tw = useTranslations("widget");
 	const [phase, setPhase] = useState<Phase>("idle");
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -57,7 +59,7 @@ export function CaptchaContainer({
 			updatePhase("verified");
 			onCompleted?.();
 		} else {
-			setErrorMessage("Please try again.");
+			setErrorMessage(tw("pleaseRetry"));
 			onRefresh();
 		}
 	};

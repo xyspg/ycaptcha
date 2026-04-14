@@ -5,6 +5,7 @@ import {
 	DocsTitle,
 } from "fumadocs-ui/layouts/docs/page";
 import { notFound } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import {
 	MarkdownCopyButton,
 	ViewOptionsPopover,
@@ -18,7 +19,8 @@ export default async function Page({
 	params: Promise<{ slug?: string[] }>;
 }) {
 	const { slug } = await params;
-	const page = source.getPage(slug);
+	const locale = await getLocale();
+	const page = source.getPage(slug, locale);
 
 	if (!page) notFound();
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { CaptchaCheckbox } from "@/components/captcha/captcha-checkbox";
 import { CaptchaWidget } from "@/components/captcha/captcha-widget";
@@ -26,6 +27,7 @@ export function PuzzlePreview({
 	correctCount,
 	difficulty,
 }: PuzzlePreviewProps) {
+	const t = useTranslations("puzzlePreview");
 	const [phase, setPhase] = useState<
 		"idle" | "loading" | "challenge" | "verified"
 	>("idle");
@@ -75,17 +77,15 @@ export function PuzzlePreview({
 		if (passed) {
 			setPhase("verified");
 		} else {
-			setErrorMessage("Please try again.");
+			setErrorMessage(t("pleaseRetry"));
 			setPreview(buildGrid());
 		}
 	};
 
 	return (
 		<div className="flex flex-col gap-2">
-			<p className="text-sm font-medium">Preview</p>
-			<p className="text-xs text-muted-foreground">
-				Test how this puzzle works for users.
-			</p>
+			<p className="text-sm font-medium">{t("title")}</p>
+			<p className="text-xs text-muted-foreground">{t("description")}</p>
 
 			{phase === "idle" || phase === "loading" ? (
 				<CaptchaCheckbox
@@ -112,7 +112,7 @@ export function PuzzlePreview({
 						}}
 						className="text-xs text-muted-foreground hover:text-foreground"
 					>
-						Refresh preview
+						{t("refreshPreview")}
 					</button>
 				</div>
 			)}
@@ -137,6 +137,7 @@ export function PuzzlePreviewPanel({
 	correctCount: number;
 	difficulty: number;
 }) {
+	const t = useTranslations("puzzlePreview");
 	const previewKey = useMemo(
 		() =>
 			`${[...correctIds].sort().join()}-${[...incorrectIds].sort().join()}-${handPickIncorrect}-${correctCount}-${difficulty}`,
@@ -161,7 +162,7 @@ export function PuzzlePreviewPanel({
 					<Card>
 						<CardContent className="flex items-center justify-center py-20">
 							<p className="text-sm text-muted-foreground">
-								Select correct images to see preview
+								{t("selectCorrectImages")}
 							</p>
 						</CardContent>
 					</Card>

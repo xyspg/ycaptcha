@@ -12,7 +12,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	Sidebar,
@@ -29,15 +31,16 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth/client";
 
-const navItems = [
-	{ title: "Sites", href: "/dashboard/sites", icon: Globe },
-	{ title: "Puzzles", href: "/dashboard/puzzles", icon: KeyRound },
-	{ title: "Image Sets", href: "/dashboard/image-sets", icon: Images },
-];
-
 export function AppSidebar() {
 	const pathname = usePathname();
+	const t = useTranslations("sidebar");
 	const { data: session, isPending } = authClient.useSession();
+
+	const navItems = [
+		{ title: t("sites"), href: "/dashboard/sites", icon: Globe },
+		{ title: t("puzzles"), href: "/dashboard/puzzles", icon: KeyRound },
+		{ title: t("imageSets"), href: "/dashboard/image-sets", icon: Images },
+	];
 
 	return (
 		<Sidebar>
@@ -55,7 +58,7 @@ export function AppSidebar() {
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>Manage</SidebarGroupLabel>
+					<SidebarGroupLabel>{t("manage")}</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu className="gap-1">
 							{navItems.map((item) => (
@@ -81,7 +84,7 @@ export function AppSidebar() {
 						<SidebarMenuButton asChild>
 							<Link href="/home">
 								<Home />
-								<span>Home Page</span>
+								<span>{t("homePage")}</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
@@ -89,7 +92,7 @@ export function AppSidebar() {
 						<SidebarMenuButton asChild>
 							<Link href="/docs" target="_blank">
 								<BookOpen />
-								<span>Docs</span>
+								<span>{t("docs")}</span>
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
@@ -100,9 +103,12 @@ export function AppSidebar() {
 						>
 							<Link href="/dashboard/settings">
 								<Settings />
-								<span>Settings</span>
+								<span>{t("settings")}</span>
 							</Link>
 						</SidebarMenuButton>
+					</SidebarMenuItem>
+					<SidebarMenuItem>
+						<LanguageSwitcher />
 					</SidebarMenuItem>
 					<SidebarMenuItem>
 						<div className="flex items-center gap-3 px-2 py-1.5">
