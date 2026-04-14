@@ -4,6 +4,7 @@ import { FingerprintPattern, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import {
@@ -475,6 +476,21 @@ function ThemeSection() {
 	);
 }
 
+function LanguageSection() {
+	const t = useTranslations("settings.language");
+	return (
+		<Card>
+			<CardHeader>
+				<CardTitle>{t("title")}</CardTitle>
+				<CardDescription>{t("description")}</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<LanguageSwitcher />
+			</CardContent>
+		</Card>
+	);
+}
+
 export default function Page() {
 	const t = useTranslations("settings");
 	return (
@@ -483,6 +499,7 @@ export default function Page() {
 			<div className="flex flex-col gap-6 max-w-lg">
 				<ProfileSection />
 				<ThemeSection />
+				<LanguageSection />
 				<PasskeySection />
 				<DeleteAccountSection />
 			</div>

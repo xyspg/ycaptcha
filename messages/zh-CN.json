@@ -239,6 +239,10 @@
 			"lightTheme": "浅色主题",
 			"darkTheme": "深色主题"
 		},
+		"language": {
+			"title": "语言",
+			"description": "选择你偏好的界面语言。"
+		},
 		"passkeys": {
 			"title": "通行密钥",
 			"description": "使用生物识别、安全密钥或你的设备进行无密码登录。",

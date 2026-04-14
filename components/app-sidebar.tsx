@@ -14,7 +14,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	Sidebar,
@@ -106,9 +105,6 @@ export function AppSidebar() {
 								<span>{t("settings")}</span>
 							</Link>
 						</SidebarMenuButton>
-					</SidebarMenuItem>
-					<SidebarMenuItem>
-						<LanguageSwitcher />
 					</SidebarMenuItem>
 					<SidebarMenuItem>
 						<div className="flex items-center gap-3 px-2 py-1.5">

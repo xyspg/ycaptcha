@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/session";
@@ -19,7 +20,8 @@ export async function HomePage() {
 
 	return (
 		<>
-			<div className="absolute right-6 top-6 z-20">
+			<div className="absolute right-6 top-6 z-20 flex items-center gap-2">
+				<LanguageSwitcher />
 				<ThemeSwitcher />
 			</div>
 			<section className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center justify-center px-8 py-12 lg:flex-row lg:gap-16">

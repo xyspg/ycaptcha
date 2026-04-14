@@ -2,23 +2,25 @@
 
 import { Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { setLocale } from "@/i18n/actions";
 import { locales } from "@/i18n/config";
+import { cn } from "@/lib/utils";
 
 export function LanguageSwitcher() {
 	const locale = useLocale();
 	const t = useTranslations("languageSwitcher");
 	const [isPending, startTransition] = useTransition();
+	const [open, setOpen] = useState(false);
 
 	const handleChange = (newLocale: string) => {
+		setOpen(false);
 		startTransition(async () => {
 			await setLocale(newLocale);
 			window.location.reload();
@@ -26,29 +28,39 @@ export function LanguageSwitcher() {
 	};
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
 				<Button
 					variant="ghost"
 					size="sm"
 					disabled={isPending}
-					className="w-full justify-start gap-2"
+					aria-label={t("label")}
+					className="gap-1.5"
 				>
 					<Languages className="size-4" />
 					<span>{t(locale as "en" | "zh-CN")}</span>
 				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
+			</PopoverTrigger>
+			<PopoverContent align="end" className="flex w-48 flex-col gap-0.5 p-1">
+				<p className="p-2 text-xs font-medium text-muted-foreground">
+					{t("label")}
+				</p>
 				{locales.map((l) => (
-					<DropdownMenuItem
+					<button
 						key={l}
+						type="button"
 						onClick={() => handleChange(l)}
-						className={locale === l ? "font-medium" : ""}
+						className={cn(
+							"rounded-md px-2 py-1.5 text-start text-sm transition-colors",
+							locale === l
+								? "bg-primary/10 text-primary"
+								: "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+						)}
 					>
 						{t(l as "en" | "zh-CN")}
-					</DropdownMenuItem>
+					</button>
 				))}
-			</DropdownMenuContent>
-		</DropdownMenu>
+			</PopoverContent>
+		</Popover>
 	);
 }

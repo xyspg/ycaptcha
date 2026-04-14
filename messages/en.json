@@ -239,6 +239,10 @@
 			"lightTheme": "Light theme",
 			"darkTheme": "Dark theme"
 		},
+		"language": {
+			"title": "Language",
+			"description": "Choose your preferred language."
+		},
 		"passkeys": {
 			"title": "Passkeys",
 			"description": "Sign in without a password using biometrics, security keys, or your device.",
