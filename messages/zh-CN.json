@@ -15,7 +15,6 @@
 		"email": "邮箱",
 		"password": "密码",
 		"domain": "域名",
-		"preview": "预览",
 		"manage": "管理",
 		"import": "导入",
 		"importing": "导入中...",
@@ -27,11 +26,9 @@
 		"description": "定制你的验证码"
 	},
 	"landing": {
-		"hero": "定制你的验证码",
-		"heroHeadline": "告别选红绿灯",
-		"subtitle": "创建和部署你自己的自定义图片验证码挑战。",
-		"tagline": "为你的网站打造可定制的图片验证码。",
-		"tryItOut": "试试看！",
+		"heroHeadline": "告别红绿灯",
+		"tagline": "自定义你的图片验证码",
+		"tryItOut": "Try it out",
 		"getStarted": "立即开始",
 		"readDocs": "阅读文档",
 		"verificationPassed": "验证通过！",
@@ -72,7 +69,7 @@
 	"sidebar": {
 		"manage": "管理",
 		"sites": "站点",
-		"puzzles": "验证谜题",
+		"puzzles": "验证题目",
 		"imageSets": "图片集",
 		"homePage": "首页",
 		"docs": "文档",
@@ -81,8 +78,7 @@
 	"dashboard": {
 		"errorTitle": "出错了",
 		"genericError": "发生了意外错误。",
-		"tryAgain": "重试",
-		"backToSites": "返回站点列表"
+		"tryAgain": "重试"
 	},
 	"sites": {
 		"title": "站点",
@@ -97,7 +93,7 @@
 			"createSite": "创建站点"
 		},
 		"deleteSite": "删除站点",
-		"deleteSiteDescription": "此操作将永久删除此站点及其所有验证谜题，且无法撤销。",
+		"deleteSiteDescription": "此操作将永久删除此站点及其所有验证题目，且无法撤销。",
 		"detail": {
 			"apiKeys": "API 密钥",
 			"apiKeysDescription": "使用这些密钥将 yCAPTCHA 集成到你的站点。",
@@ -111,44 +107,44 @@
 			"siteSettings": "站点设置",
 			"domainPlaceholder": "example.com",
 			"saveChanges": "保存更改",
-			"puzzles": "验证谜题",
-			"noPuzzlesYet": "还没有谜题。创建一个以开始在此站点上使用 yCAPTCHA。",
-			"puzzleCount": "{count, plural, other {# 个谜题}}",
+			"puzzles": "验证题目",
+			"noPuzzlesYet": "还没有题目。创建一个以开始在此站点上使用 yCAPTCHA。",
+			"puzzleCount": "{count, plural, other {# 个题目}}",
 			"difficulty": "难度：{value}",
-			"createPuzzle": "创建谜题",
-			"deletePuzzle": "删除谜题",
-			"deletePuzzleDescription": "此操作将永久删除此谜题。使用它的现有验证码会话将停止工作。",
+			"createPuzzle": "创建题目",
+			"deletePuzzle": "删除题目",
+			"deletePuzzleDescription": "此操作将永久删除此题目。使用它的现有验证码会话将停止工作。",
 			"embedWidget": "嵌入组件",
 			"embedDescription": "复制下面的代码并粘贴到你的网站中。",
 			"previewLabel": "预览",
 			"widgetPreviewTitle": "验证码组件预览",
 			"dangerZone": "危险区域",
-			"dangerDescription": "删除此站点将永久移除其所有谜题，活跃的验证码组件将停止工作。",
-			"deleteSiteConfirmDescription": "此操作将永久删除此站点及其所有谜题。活跃的验证码组件将停止工作。"
+			"dangerDescription": "删除此站点将永久移除其所有题目，活跃的验证码组件将停止工作。",
+			"deleteSiteConfirmDescription": "此操作将永久删除此站点及其所有题目。活跃的验证码组件将停止工作。"
 		}
 	},
 	"puzzles": {
-		"title": "验证谜题",
-		"createPuzzle": "创建谜题",
-		"noPuzzlesYet": "还没有谜题",
+		"title": "验证题目",
+		"createPuzzle": "创建题目",
+		"noPuzzlesYet": "还没有题目",
 		"createSiteFirst": "创建一个站点",
-		"createSiteFirstSuffix": "，然后再添加谜题。",
-		"noPuzzlesDescription": "创建一个谜题以开始使用 yCAPTCHA。",
+		"createSiteFirstSuffix": "，然后再添加题目。",
+		"noPuzzlesDescription": "创建一个题目以开始使用 yCAPTCHA。",
 		"disabled": "（已禁用）",
 		"difficulty": "难度 {value}",
 		"imageSet": "图片集：{name}",
 		"correctPerChallenge": "每次挑战 {count} 张正确图片",
-		"deletePuzzle": "删除谜题",
-		"deletePuzzleDescription": "此操作将永久删除此谜题。使用它的现有验证码会话将停止工作。",
+		"deletePuzzle": "删除题目",
+		"deletePuzzleDescription": "此操作将永久删除此题目。使用它的现有验证码会话将停止工作。",
 		"create": {
-			"title": "创建谜题",
+			"title": "创建题目",
 			"site": "站点",
-			"siteDescription": "此谜题将用于哪个站点？",
+			"siteDescription": "此题目将用于哪个站点？",
 			"selectSite": "选择一个站点...",
 			"noSitesYet": "还没有站点。",
 			"createOneFirst": "先创建一个",
 			"imageSet": "图片集",
-			"imageSetDescription": "选择此谜题的图片池。",
+			"imageSetDescription": "选择此题目的图片池。",
 			"selectImageSet": "选择一个图片集...",
 			"imageSetOption": "{name}（{count} 张图片）",
 			"noImageSetsYet": "还没有图片集。",
@@ -172,33 +168,32 @@
 			"incorrectSelected": "已选择 {count} 张错误图片"
 		},
 		"edit": {
-			"title": "编辑谜题",
+			"title": "编辑题目",
 			"prompt": "提示词",
 			"promptDescription": "在「选择所有包含以下内容的图片」之后显示的关键词。",
 			"correctImages": "正确图片",
 			"handPickIncorrectHelp": "关闭时，错误答案将随机抽取。",
 			"dangerZone": "危险区域",
-			"dangerDescription": "删除此谜题将把它从站点中移除。使用此谜题的现有验证码会话将停止工作。"
+			"dangerDescription": "删除此题目将把它从站点中移除。使用此题目的现有验证码会话将停止工作。"
 		}
 	},
 	"imageSets": {
 		"title": "图片集",
 		"createImageSet": "创建图片集",
 		"noImageSetsYet": "还没有图片集",
-		"noImageSetsDescription": "创建一个图片集并上传图片以用于谜题。",
+		"noImageSetsDescription": "创建一个图片集并上传图片以用于题目。",
 		"imageCount": "{count} 张图片",
 		"deleteImageSet": "删除图片集",
-		"deleteImageSetDescription": "此操作将永久删除此图片集及其所有图片。你必须先删除所有使用此图片集的谜题。",
+		"deleteImageSetDescription": "此操作将永久删除此图片集及其所有图片。你必须先删除所有使用此图片集的题目。",
 		"cannotDeleteTitle": "无法删除图片集",
-		"cannotDeleteDescription": "以下谜题正在引用此图片集，请先删除它们。",
+		"cannotDeleteDescription": "以下题目正在引用此图片集，请先删除它们。",
 		"sampleSets": "示例图片集",
 		"sampleSetsDescription": "导入预制的图片集以快速开始。",
 		"sampleImageCount": "{count} 张图片",
 		"create": {
 			"title": "创建图片集",
-			"newImageSet": "新建图片集",
 			"description": "为你的图片集命名。创建后可以上传图片。",
-			"namePlaceholder": "例如：纽约地铁标志"
+			"namePlaceholder": "例如：地铁标志"
 		},
 		"detail": {
 			"uploadImages": "上传图片",
@@ -208,8 +203,8 @@
 			"images": "图片",
 			"noImagesYet": "还没有图片。请在上方上传一些。",
 			"dangerZone": "危险区域",
-			"dangerDescription": "删除此图片集将同时从存储中移除所有图片。你必须先删除所有使用此图片集的谜题。",
-			"deleteConfirmDescription": "此操作将永久删除此图片集及其存储中的所有图片。你必须先删除所有使用此图片集的谜题。",
+			"dangerDescription": "删除此图片集将同时从存储中移除所有图片。你必须先删除所有使用此图片集的题目。",
+			"deleteConfirmDescription": "此操作将永久删除此图片集及其存储中的所有图片。你必须先删除所有使用此图片集的题目。",
 			"statusWaiting": "等待中...",
 			"statusCompressing": "压缩中...",
 			"statusUploading": "上传中...",
@@ -227,25 +222,25 @@
 		"title": "设置",
 		"profile": {
 			"title": "个人资料",
-			"description": "更新你的显示名称。",
+			"description": "更新你的显示名称",
 			"saveChanges": "保存更改",
 			"nameUpdated": "名称已更新",
 			"failedToUpdate": "更新失败"
 		},
 		"appearance": {
 			"title": "外观",
-			"description": "选择你偏好的颜色主题。",
+			"description": "选择你偏好的颜色主题",
 			"systemTheme": "跟随系统",
 			"lightTheme": "浅色主题",
 			"darkTheme": "深色主题"
 		},
 		"language": {
 			"title": "语言",
-			"description": "选择你偏好的界面语言。"
+			"description": "选择你偏好的界面语言"
 		},
 		"passkeys": {
 			"title": "通行密钥",
-			"description": "使用生物识别、安全密钥或你的设备进行无密码登录。",
+			"description": "使用生物识别、安全密钥或你的设备进行无密码登录",
 			"noPasskeys": "未注册通行密钥。",
 			"unnamedPasskey": "未命名通行密钥",
 			"added": "添加于 {date}",
@@ -257,14 +252,14 @@
 		},
 		"deleteAccount": {
 			"title": "删除账户",
-			"description": "永久删除你的账户及所有关联数据，包括站点、谜题、图片集和已上传的图片。",
+			"description": "永久删除你的账户及所有关联数据，包括站点、题目、图片集和已上传的图片",
 			"deleteButton": "删除账户",
 			"step2Title": "你确定要这样做吗？",
-			"step2Body": "此操作是永久且不可逆的。你的所有站点、谜题、图片集和已上传的图片将被永久销毁。你站点上活跃的验证码组件将立即停止工作。",
+			"step2Body": "此操作是永久且不可逆的。你的所有站点、题目、图片集和已上传的图片将被永久销毁。你站点上活跃的验证码组件将立即停止工作",
 			"step2Continue": "我已了解，继续",
-			"step3Instruction": "为进行验证，请在下方输入你的邮箱 {email} 和短语 {phrase}。",
+			"step3Instruction": "为进行验证，请在下方输入你的邮箱 {email} 和短语 {phrase}",
 			"step3Email": "你的邮箱",
-			"step3Phrase": "输入「{phrase}」",
+			"step3Phrase": "输入 {phrase}",
 			"step3Continue": "继续",
 			"step4Title": "最终警告",
 			"step4Body": "这是你最后的机会。此操作之后将无法撤销。",
@@ -285,14 +280,11 @@
 		"verify": "验证"
 	},
 	"widget": {
-		"sessionExpired": "会话已过期",
-		"failedToLoad": "加载挑战失败",
-		"networkError": "网络错误",
 		"pleaseRetry": "请重试。"
 	},
 	"puzzlePreview": {
 		"title": "预览",
-		"description": "测试此谜题对用户的呈现效果。",
+		"description": "测试此题目对用户的呈现效果。",
 		"refreshPreview": "刷新预览",
 		"selectCorrectImages": "选择正确图片以查看预览",
 		"pleaseRetry": "请重试。"

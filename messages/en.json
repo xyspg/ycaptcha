@@ -15,7 +15,6 @@
 		"email": "Email",
 		"password": "Password",
 		"domain": "Domain",
-		"preview": "Preview",
 		"manage": "Manage",
 		"import": "Import",
 		"importing": "Importing...",
@@ -27,9 +26,7 @@
 		"description": "Customize your own CAPTCHA"
 	},
 	"landing": {
-		"hero": "Customize your CAPTCHA",
 		"heroHeadline": "Stop Picking Traffic Lights",
-		"subtitle": "Create and deploy your own custom image-based CAPTCHA challenges.",
 		"tagline": "The customizable image CAPTCHA for your site.",
 		"tryItOut": "Try it out!",
 		"getStarted": "Get Started",
@@ -81,8 +78,7 @@
 	"dashboard": {
 		"errorTitle": "Something went wrong",
 		"genericError": "An unexpected error occurred.",
-		"tryAgain": "Try again",
-		"backToSites": "Back to sites"
+		"tryAgain": "Try again"
 	},
 	"sites": {
 		"title": "Sites",
@@ -196,7 +192,6 @@
 		"sampleImageCount": "{count} images",
 		"create": {
 			"title": "Create Image Set",
-			"newImageSet": "New Image Set",
 			"description": "Give your image set a name. You can upload images after creating it.",
 			"namePlaceholder": "e.g. NYC Subway Signs"
 		},
@@ -285,9 +280,6 @@
 		"verify": "Verify"
 	},
 	"widget": {
-		"sessionExpired": "Session expired",
-		"failedToLoad": "Failed to load challenge",
-		"networkError": "Network error",
 		"pleaseRetry": "Please try again."
 	},
 	"puzzlePreview": {

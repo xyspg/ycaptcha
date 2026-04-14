@@ -39,7 +39,7 @@ POST /api/v0/captcha/siteverify
 | ------------------------------ | ------------------------------------------------------------ |
 | `"Missing token or secretKey"` | 请求体缺少必填字段。                                        |
 | `"Invalid token"`             | 未找到令牌——从未签发、已被消费或已过期。                     |
-| `"Invalid secretKey"`         | 私有密钥与拥有此谜题的站点不匹配。                           |
+| `"Invalid secretKey"`         | 私有密钥与拥有此题目的站点不匹配。                           |
 
 ## 错误 (400 Bad Request)
 
@@ -50,5 +50,5 @@ POST /api/v0/captcha/siteverify
 ## 重要说明
 
 - **令牌是一次性的。** 成功后，会话从 Redis 中被原子性地消费。再次调用 siteverify 将返回 `"Invalid token"`。
-- `secretKey` 通过谜题关联到其站点进行验证——一个站点的令牌不能用另一个站点的密钥验证。
+- `secretKey` 通过题目关联到其站点进行验证——一个站点的令牌不能用另一个站点的密钥验证。
 - 始终显式检查 `result.success === true`。仅有 200 状态码并不意味着成功。

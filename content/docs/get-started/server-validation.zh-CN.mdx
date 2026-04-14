@@ -45,7 +45,7 @@ POST https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify
 | ------------------------------ | ------------------------------------------------------------ |
 | `"Missing token or secretKey"` | 请求体缺少必填字段。                                        |
 | `"Invalid token"`             | 未找到令牌——从未签发、已被消费或已过期。                     |
-| `"Invalid secretKey"`         | 私有密钥与拥有此谜题的站点不匹配。                           |
+| `"Invalid secretKey"`         | 私有密钥与拥有此题目的站点不匹配。                           |
 
 ## 示例
 
@@ -114,4 +114,4 @@ if (!$response['success']) {
 
 - **令牌是一次性的。** 验证成功后，会话会被永久删除。使用相同令牌再次调用 siteverify 将返回 `"Invalid token"`。
 - **始终显式检查 `success === true`。** 仅有 200 HTTP 状态码并不意味着成功。
-- `secretKey` 通过谜题关联到其站点进行验证——一个站点的令牌不能用另一个站点的密钥验证。
+- `secretKey` 通过题目关联到其站点进行验证——一个站点的令牌不能用另一个站点的密钥验证。
