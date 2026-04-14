@@ -496,12 +496,18 @@ export default function Page() {
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-semibold">{t("title")}</h1>
-      <div className="flex flex-col gap-6 max-w-lg">
-        <ProfileSection />
+      <div className="grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="md:col-span-2">
+          <ProfileSection />
+        </div>
         <ThemeSection />
         <LanguageSection />
-        <PasskeySection />
-        <DeleteAccountSection />
+        <div className="md:col-span-2">
+          <PasskeySection />
+        </div>
+        <div className="md:col-span-2">
+          <DeleteAccountSection />
+        </div>
       </div>
     </div>
   );
