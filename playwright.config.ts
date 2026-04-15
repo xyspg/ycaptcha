@@ -1,8 +1,4 @@
 import { defineConfig, devices } from "@playwright/test";
-import dotenv from "dotenv";
-
-// Load .env.test so DATABASE_URL is available for global teardown
-dotenv.config({ path: ".env.test" });
 
 const authFile = "e2e/.auth/user.json";
 
