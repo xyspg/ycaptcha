@@ -1,5 +1,5 @@
 import { passkey } from "@better-auth/passkey";
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { eq, inArray } from "drizzle-orm";
@@ -30,6 +30,13 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
       beforeDelete: async (user) => {
+        const DEMOUSER = "demo@example.com";
+        if (user.email === DEMOUSER) {
+          throw new APIError("BAD_REQUEST", {
+            message: "unable to delete demo user",
+          });
+        }
+
         // clean up R2
         const sets = await db
           .select({ id: imageSet.id })
