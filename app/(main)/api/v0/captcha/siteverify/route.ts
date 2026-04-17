@@ -1,5 +1,4 @@
 import { and, eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
 import {
   consumeVerifiedSession,
   createVerifiedSessionWithToken,
@@ -14,7 +13,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   if (!body?.token || !body?.secretKey) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: "Missing token or secretKey" },
       { status: 400 },
     );
@@ -25,7 +24,7 @@ export async function POST(request: Request) {
   const session = await consumeVerifiedSession(token);
 
   if (!session) {
-    return NextResponse.json({ success: false, error: "Invalid token" });
+    return Response.json({ success: false, error: "Invalid token" });
   }
 
   let owner: { siteId: string } | undefined;
@@ -41,15 +40,15 @@ export async function POST(request: Request) {
   } catch {
     // DB failure — restore the token so the caller can retry
     await createVerifiedSessionWithToken(token, session);
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: "Internal error, please retry" },
       { status: 500 },
     );
   }
 
   if (!owner) {
-    return NextResponse.json({ success: false, error: "Invalid secretKey" });
+    return Response.json({ success: false, error: "Invalid secretKey" });
   }
 
-  return NextResponse.json({ success: true });
+  return Response.json({ success: true });
 }

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import {
   consumeChallengeSession,
   createVerifiedSession,
@@ -12,7 +11,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   if (!body?.sessionToken || !Array.isArray(body?.selectedIndices)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Missing sessionToken or selectedIndices" },
       { status: 400 },
     );
@@ -24,7 +23,7 @@ export async function POST(request: Request) {
   };
 
   if (selectedIndices.length > CAPTCHA_GRID_SIZE) {
-    return NextResponse.json({ error: "Invalid indices" }, { status: 400 });
+    return Response.json({ error: "Invalid indices" }, { status: 400 });
   }
 
   const uniqueIndices = [...new Set(selectedIndices)];
@@ -34,22 +33,22 @@ export async function POST(request: Request) {
       (i) => !Number.isInteger(i) || i < 0 || i >= CAPTCHA_GRID_SIZE,
     )
   ) {
-    return NextResponse.json({ error: "Invalid indices" }, { status: 400 });
+    return Response.json({ error: "Invalid indices" }, { status: 400 });
   }
 
   if (uniqueIndices.length === 0) {
-    return NextResponse.json({ success: false });
+    return Response.json({ success: false });
   }
 
   // prevent brute force by selecting all
   if (uniqueIndices.length === CAPTCHA_GRID_SIZE) {
-    return NextResponse.json({ success: false });
+    return Response.json({ success: false });
   }
 
   const session = await consumeChallengeSession(sessionToken);
 
   if (!session) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: "Invalid or expired session" },
       { status: 400 },
     );
@@ -69,7 +68,7 @@ export async function POST(request: Request) {
   );
 
   if (score < requiredCount) {
-    return NextResponse.json({ success: false });
+    return Response.json({ success: false });
   }
 
   const verifyToken = await createVerifiedSession({
@@ -77,5 +76,5 @@ export async function POST(request: Request) {
     siteId: session.siteId,
   });
 
-  return NextResponse.json({ success: true, token: verifyToken });
+  return Response.json({ success: true, token: verifyToken });
 }

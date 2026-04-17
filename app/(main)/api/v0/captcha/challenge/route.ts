@@ -1,5 +1,4 @@
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
-import { NextResponse } from "next/server";
 import { createChallengeSession } from "@/lib/captcha-session";
 import { db } from "@/lib/db";
 import { image, puzzle, site } from "@/lib/db/app-schema";
@@ -14,7 +13,7 @@ export async function POST(request: Request) {
 
   const body = await request.json().catch(() => null);
   if (!body?.siteKey) {
-    return NextResponse.json({ error: "Missing siteKey" }, { status: 400 });
+    return Response.json({ error: "Missing siteKey" }, { status: 400 });
   }
 
   const [siteData] = await db
@@ -23,11 +22,11 @@ export async function POST(request: Request) {
     .where(eq(site.siteKey, body.siteKey));
 
   if (!siteData) {
-    return NextResponse.json({ error: "Invalid siteKey" }, { status: 404 });
+    return Response.json({ error: "Invalid siteKey" }, { status: 404 });
   }
 
   if (siteData.domain && !body.origin) {
-    return NextResponse.json({ error: "Missing origin" }, { status: 400 });
+    return Response.json({ error: "Missing origin" }, { status: 400 });
   }
   if (siteData.domain && body.origin) {
     try {
@@ -41,13 +40,13 @@ export async function POST(request: Request) {
         parentHost !== siteData.domain &&
         !parentHost.endsWith(`.${siteData.domain}`)
       ) {
-        return NextResponse.json(
+        return Response.json(
           { error: "Domain not allowed for this siteKey" },
           { status: 403 },
         );
       }
     } catch {
-      return NextResponse.json({ error: "Invalid origin" }, { status: 400 });
+      return Response.json({ error: "Invalid origin" }, { status: 400 });
     }
   }
 
@@ -59,7 +58,7 @@ export async function POST(request: Request) {
     .limit(1);
 
   if (!puzzleData) {
-    return NextResponse.json(
+    return Response.json(
       { error: "No puzzles configured for this site" },
       { status: 404 },
     );
@@ -124,7 +123,7 @@ export async function POST(request: Request) {
   const allImages = shuffle([...correctImages, ...incorrectImages]);
 
   if (allImages.length < CAPTCHA_GRID_SIZE) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Not enough images configured for this puzzle" },
       { status: 500 },
     );
@@ -141,7 +140,7 @@ export async function POST(request: Request) {
   });
 
   // proxy URLs only — no image IDs exposed to client
-  return NextResponse.json({
+  return Response.json({
     sessionToken: token,
     prompt: puzzleData.prompt,
     images: allImages.map((_, i) => ({
