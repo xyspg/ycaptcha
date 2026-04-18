@@ -30,45 +30,13 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
       beforeDelete: async (user) => {
-        // clean up R2 — images
-        const sets = await db
-          .select({ id: imageSet.id })
-          .from(imageSet)
-          .where(eq(imageSet.userId, user.id));
-
-        if (sets.length > 0) {
-          const images = await db
-            .select({ url: image.url })
-            .from(image)
-            .where(
-              inArray(
-                image.imageSetId,
-                sets.map((s) => s.id),
-              ),
-            );
-
-          await Promise.allSettled(
-            images
-              .filter((img) => !img.url.includes("/samples/"))
-              .map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
-          );
-        }
-
-        // clean up R2 — audio clips
-        const audioClips = await db
-          .select({ url: audio.url })
-          .from(audio)
-          .where(eq(audio.userId, user.id));
-
-        if (audioClips.length > 0) {
-          await Promise.allSettled(
-            audioClips.map((a) => deleteFromR2(r2KeyFromUrl(a.url))),
-          );
-        }
-
-        // Delete puzzles before better-auth cascades the user. puzzle.image_set_id
-        // is `onDelete: "restrict"`, so the user → imageSet cascade would
-        // otherwise fail with a FK violation while puzzles still reference it.
+        // Order matters: any DB step that can fail (FK, network) must run
+        // BEFORE R2 deletes. R2 deletes are unrecoverable — a thrown DB
+        // error after wiping R2 would leave the user row alive with dead
+        // image/audio URLs.
+        //
+        // 1) Pre-delete puzzles. puzzle.image_set_id is `onDelete: "restrict"`,
+        //    so the user → imageSet cascade would otherwise FK-violate.
         await db
           .delete(puzzle)
           .where(
@@ -80,6 +48,38 @@ export const auth = betterAuth({
                 .where(eq(site.userId, user.id)),
             ),
           );
+
+        // 2) Collect R2 URLs while DB rows still exist.
+        const [imageRows, audioRows] = await Promise.all([
+          db
+            .select({ url: image.url })
+            .from(image)
+            .innerJoin(imageSet, eq(imageSet.id, image.imageSetId))
+            .where(eq(imageSet.userId, user.id)),
+          db
+            .select({ url: audio.url })
+            .from(audio)
+            .where(eq(audio.userId, user.id)),
+        ]);
+
+        // 3) R2 delete last. Failures are unrecoverable orphans but the DB
+        //    cascade following this hook will still succeed.
+        const keys = [
+          ...imageRows
+            .map((r) => r.url)
+            .filter((u) => !u.includes("/samples/")),
+          ...audioRows.map((r) => r.url),
+        ].map(r2KeyFromUrl);
+
+        const results = await Promise.allSettled(keys.map(deleteFromR2));
+        for (let i = 0; i < results.length; i++) {
+          if (results[i].status === "rejected") {
+            console.warn(
+              `R2 cleanup failed for user ${user.id} key ${keys[i]}:`,
+              (results[i] as PromiseRejectedResult).reason,
+            );
+          }
+        }
       },
     },
   },

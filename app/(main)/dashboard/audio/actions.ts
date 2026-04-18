@@ -201,10 +201,16 @@ export async function deleteAudio(
     };
   }
 
-  await Promise.all([
-    db.delete(audio).where(eq(audio.id, audioId)),
-    deleteFromR2(r2KeyFromUrl(row.url)),
-  ]);
+  // DB first, R2 second. A concurrent Promise.all would either leak R2
+  // bytes (DB succeeded, R2 threw) or leave a dead-URL DB row (R2
+  // succeeded, DB threw). DB-first means the worst case is a benign
+  // byte orphan that gets logged.
+  await db.delete(audio).where(eq(audio.id, audioId));
+  try {
+    await deleteFromR2(r2KeyFromUrl(row.url));
+  } catch (err) {
+    console.warn(`R2 cleanup failed for audio ${audioId}:`, err);
+  }
 
   redirect("/dashboard/audio");
 }

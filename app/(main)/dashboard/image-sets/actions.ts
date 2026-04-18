@@ -407,21 +407,26 @@ export async function deleteImage(
 
   await db.delete(image).where(eq(image.id, imageId));
 
-  // only delete from R2 if no other rows share the same content hash
-  // ignore sample images
+  // R2 delete is post-DB so a transient R2 failure leaves a benign byte
+  // orphan instead of a dead-URL DB row. Sample images live in a shared
+  // bucket prefix and must never be touched.
   const isSample = img.url.includes("/samples/");
   if (!isSample) {
+    let shouldDelete = true;
     if (img.contentHash) {
       const [ref] = await db
         .select({ id: image.id })
         .from(image)
         .where(eq(image.contentHash, img.contentHash))
         .limit(1);
-      if (!ref) {
+      shouldDelete = !ref;
+    }
+    if (shouldDelete) {
+      try {
         await deleteFromR2(r2KeyFromUrl(img.url));
+      } catch (err) {
+        console.warn(`R2 cleanup failed for image ${imageId}:`, err);
       }
-    } else {
-      await deleteFromR2(r2KeyFromUrl(img.url));
     }
   }
 
@@ -489,13 +494,22 @@ export async function deleteImageSet(
         )
       : new Set<string>();
 
-  await Promise.allSettled(
-    imgs
-      .filter((img) => img.contentHash !== null)
-      .filter((img) => !stillReferenced.has(img.contentHash))
-      .filter((img) => !img.url.includes("/samples/"))
-      .map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
+  const toDelete = imgs
+    .filter((img) => img.contentHash !== null)
+    .filter((img) => !stillReferenced.has(img.contentHash))
+    .filter((img) => !img.url.includes("/samples/"));
+
+  const results = await Promise.allSettled(
+    toDelete.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
   );
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].status === "rejected") {
+      console.warn(
+        `R2 cleanup failed for image set ${setId} key ${toDelete[i].url}:`,
+        (results[i] as PromiseRejectedResult).reason,
+      );
+    }
+  }
 
   redirect("/dashboard/image-sets");
 }
@@ -521,17 +535,27 @@ export async function importSampleSet(slug: string): Promise<void> {
     })
     .returning({ id: imageSet.id });
 
-  await db
-    .insert(image)
-    .values(
-      sample.images.map((img) => ({
-        imageSetId: created.id,
-        url: img.url,
-        name: img.name,
-        contentHash: img.contentHash,
-      })),
-    )
-    .onConflictDoNothing({
-      target: [image.imageSetId, image.contentHash],
-    });
+  // Roll back the empty imageSet if image inserts fail — otherwise the
+  // user sees a phantom set with zero images in the dashboard.
+  try {
+    await db
+      .insert(image)
+      .values(
+        sample.images.map((img) => ({
+          imageSetId: created.id,
+          url: img.url,
+          name: img.name,
+          contentHash: img.contentHash,
+        })),
+      )
+      .onConflictDoNothing({
+        target: [image.imageSetId, image.contentHash],
+      });
+  } catch (err) {
+    await db
+      .delete(imageSet)
+      .where(eq(imageSet.id, created.id))
+      .catch(() => {});
+    throw err;
+  }
 }
