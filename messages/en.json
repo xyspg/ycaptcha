@@ -246,8 +246,7 @@
     "cannotDeleteDescription": "This audio is referenced by the following puzzles. Remove it first.",
     "upload": {
       "title": "Upload Audio Clip",
-      "description": "Upload an audio file, trim it, and set the correct answer.",
-      "dropOrBrowse": "Click to select an audio file",
+      "dropOrBrowse": "Drop an audio file here or click to browse",
       "preview": "Play",
       "pause": "Pause",
       "changeFile": "Change file",
@@ -286,7 +285,6 @@
     },
     "storage": {
       "title": "Storage",
-      "description": "{quota} free per account, shared across images and audio.",
       "used": "{used} of {quota} used ({percent}%)",
       "imageBytes": "Images",
       "audioBytes": "Audio"

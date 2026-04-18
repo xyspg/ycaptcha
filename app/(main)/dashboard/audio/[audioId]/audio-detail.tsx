@@ -1,5 +1,7 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
@@ -42,7 +44,14 @@ export function AudioDetail({ audio }: AudioDetailProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">{audio.name}</h1>
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon-sm" asChild>
+          <Link href="/dashboard/audio">
+            <ArrowLeft className="size-4" />
+          </Link>
+        </Button>
+        <h1 className="text-2xl font-semibold">{audio.name}</h1>
+      </div>
 
       {/* Audio player */}
       <Card>

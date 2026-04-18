@@ -1,11 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { StorageUsage } from "@/lib/storage-quota";
 import { cn, formatBytes } from "@/lib/utils";
 
@@ -27,9 +21,6 @@ export async function StorageUsageCard({ usage }: StorageUsageCardProps) {
     <Card>
       <CardHeader>
         <CardTitle>{t("title")}</CardTitle>
-        <CardDescription>
-          {t("description", { quota: formatBytes(usage.quotaBytes) })}
-        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">

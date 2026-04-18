@@ -246,8 +246,7 @@
     "cannotDeleteDescription": "このオーディオは以下のパズルで使用されています。先に削除してください。",
     "upload": {
       "title": "オーディオクリップをアップロード",
-      "description": "オーディオファイルをアップロードし、トリミングして正解を設定します。",
-      "dropOrBrowse": "クリックしてオーディオファイルを選択",
+      "dropOrBrowse": "ここにオーディオファイルをドロップするか、クリックして選択",
       "preview": "再生",
       "pause": "一時停止",
       "changeFile": "ファイルを変更",
@@ -286,7 +285,6 @@
     },
     "storage": {
       "title": "ストレージ",
-      "description": "アカウントごとに {quota} 無料、画像と音声で共有されます。",
       "used": "{used} / {quota} 使用中（{percent}%）",
       "imageBytes": "画像",
       "audioBytes": "音声"

@@ -154,7 +154,7 @@ function PuzzleEditForm({
   const [selectedAudioId, setSelectedAudioId] = useState(p.audioId ?? "");
   const [audioAnswer, setAudioAnswer] = useState(p.audioAnswer ?? "");
   const config = usePuzzleConfig({
-    prompt: p.prompt,
+    prompt: p.captchaMode === "audio" ? "" : p.prompt,
     correctImageIds: p.correctImageIds,
     incorrectImageIds: p.incorrectImageIds,
     correctCount: p.correctCount,
@@ -299,6 +299,17 @@ function PuzzleEditForm({
                       </option>
                     ))}
                   </NativeSelect>
+                  {audioClips.length === 0 && (
+                    <p className="text-sm text-muted-foreground">
+                      {tc("noAudioYet")}{" "}
+                      <Link
+                        href="/dashboard/audio"
+                        className="underline hover:text-foreground"
+                      >
+                        {tc("uploadFirst")}
+                      </Link>
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-2">
                   <Label htmlFor="audioAnswer">{tc("audioAnswerLabel")}</Label>

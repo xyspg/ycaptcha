@@ -246,8 +246,7 @@
     "cannotDeleteDescription": "以下验证题目引用了此音频，请先移除。",
     "upload": {
       "title": "上传音频片段",
-      "description": "上传音频文件，裁剪并设置正确答案。",
-      "dropOrBrowse": "点击选择音频文件",
+      "dropOrBrowse": "将音频文件拖放至此处或点击浏览",
       "preview": "播放",
       "pause": "暂停",
       "changeFile": "更换文件",
@@ -286,7 +285,6 @@
     },
     "storage": {
       "title": "存储",
-      "description": "每个账号免费 {quota}，图片和音频共享。",
       "used": "已使用 {used} / {quota}（{percent}%）",
       "imageBytes": "图片",
       "audioBytes": "音频"

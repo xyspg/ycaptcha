@@ -232,7 +232,7 @@ export async function updatePuzzle(
     .set({
       captchaMode: parsed.data.captchaMode,
       imageSetId: needsImages ? parsed.data.imageSetId : null,
-      prompt: parsed.data.prompt || "Verify",
+      prompt: parsed.data.prompt,
       correctImageIds: needsImages ? parsed.data.correctImageIds : [],
       incorrectImageIds: needsImages ? parsed.data.incorrectImageIds : null,
       correctCount: parsed.data.correctCount,

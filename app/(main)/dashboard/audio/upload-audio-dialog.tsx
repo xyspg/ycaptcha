@@ -4,6 +4,7 @@ import { Plus, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useActionState, useCallback, useRef, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import {
   AudioTrimmer,
   type AudioTrimmerHandle,
@@ -12,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,7 +23,10 @@ import { encodeWav } from "@/lib/wav";
 import { uploadAudio } from "./actions";
 
 const MAX_AUDIO_SEC = 10;
-const TARGET_SAMPLE_RATE = 22050;
+// 44.1kHz mono preserves the full audible spectrum (vs 22.05k cutting at
+// 11kHz Nyquist, which made consonants and music sound muffled). A 10s
+// clip is ~880KB.
+const TARGET_SAMPLE_RATE = 44100;
 const TARGET_CHANNELS = 1;
 
 export function UploadAudioDialog() {
@@ -51,29 +54,38 @@ export function UploadAudioDialog() {
     }
   }, []);
 
-  const handleFileChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const f = e.target.files?.[0];
-      if (!f) return;
-      trimmerRef.current?.stopPlayback();
-      setFile(f);
+  const loadFile = useCallback(async (f: File) => {
+    trimmerRef.current?.stopPlayback();
+    setFile(f);
 
-      const ctx = audioCtxRef.current ?? new AudioContext();
-      audioCtxRef.current = ctx;
-      const arrayBuf = await f.arrayBuffer();
-      const decoded = await ctx.decodeAudioData(arrayBuf);
-      setAudioBuffer(decoded);
-      setTrimStart(0);
-      // Default the selected region to ≤ MAX_AUDIO_SEC so long uploads don't
-      // start with an over-cap selection the user has to manually shrink.
-      const initialEnd =
-        decoded.duration > 0
-          ? Math.min(1, MAX_AUDIO_SEC / decoded.duration)
-          : 1;
-      setTrimEnd(initialEnd);
+    const ctx = audioCtxRef.current ?? new AudioContext();
+    audioCtxRef.current = ctx;
+    const arrayBuf = await f.arrayBuffer();
+    const decoded = await ctx.decodeAudioData(arrayBuf);
+    setAudioBuffer(decoded);
+    setTrimStart(0);
+    // Default the selected region to ≤ MAX_AUDIO_SEC so long uploads don't
+    // start with an over-cap selection the user has to manually shrink.
+    const initialEnd =
+      decoded.duration > 0 ? Math.min(1, MAX_AUDIO_SEC / decoded.duration) : 1;
+    setTrimEnd(initialEnd);
+  }, []);
+
+  const onDrop = useCallback(
+    (accepted: File[]) => {
+      const f = accepted[0];
+      if (f) loadFile(f);
     },
-    [],
+    [loadFile],
   );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "audio/*": [] },
+    multiple: false,
+    noClick: !!audioBuffer,
+    noKeyboard: !!audioBuffer,
+  });
 
   const handleTrimChange = useCallback((start: number, end: number) => {
     setTrimStart(start);
@@ -95,8 +107,8 @@ export function UploadAudioDialog() {
     const length = Math.floor(selectedSec * TARGET_SAMPLE_RATE);
     const durationMs = Math.round(selectedSec * 1000);
 
-    // Downsample to mono at TARGET_SAMPLE_RATE so a 10s clip is ~430KB
-    // instead of multi-MB at the source's 44.1kHz stereo.
+    // Render mono at TARGET_SAMPLE_RATE: a 10s clip is ~880KB vs the
+    // multi-MB source stereo, while keeping the full audible spectrum.
     const offline = new OfflineAudioContext(
       TARGET_CHANNELS,
       length,
@@ -156,26 +168,27 @@ export function UploadAudioDialog() {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t("upload.title")}</DialogTitle>
-          <DialogDescription>{t("upload.description")}</DialogDescription>
         </DialogHeader>
-        <form action={formAction} className="flex flex-col gap-4">
+        <form action={formAction} className="flex min-w-0 flex-col gap-4">
           {!audioBuffer && (
-            <label className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed p-8 text-muted-foreground transition-colors hover:border-primary hover:text-primary">
+            <div
+              {...getRootProps()}
+              className={`flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed p-8 transition-colors ${
+                isDragActive
+                  ? "border-primary bg-primary/5 text-primary"
+                  : "border-muted-foreground/25 text-muted-foreground hover:border-primary hover:text-primary"
+              }`}
+            >
+              <input {...getInputProps()} />
               <Upload className="size-8" />
               <span className="text-sm">{t("upload.dropOrBrowse")}</span>
-              <input
-                type="file"
-                accept="audio/*"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-            </label>
+            </div>
           )}
 
           {audioBuffer && audioCtxRef.current && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span className="truncate">{file?.name}</span>
+            <div className="flex min-w-0 flex-col gap-2">
+              <div className="flex min-w-0 items-center justify-between gap-2 text-sm text-muted-foreground">
+                <span className="min-w-0 truncate">{file?.name}</span>
                 <button
                   type="button"
                   className="shrink-0 text-xs underline"
