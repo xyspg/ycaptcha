@@ -82,7 +82,7 @@ export default async function Page() {
               prompt={p.prompt}
               siteName={p.site.name}
               difficulty={p.difficulty}
-              imageSetName={p.imageSet.name}
+              imageSetName={p.imageSet?.name ?? null}
               correctCount={p.correctCount}
               enabled={p.enabled}
             />

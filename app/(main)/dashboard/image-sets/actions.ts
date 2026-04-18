@@ -201,10 +201,15 @@ export async function uploadImages(
     newProcessed.map(async ({ file, buffer, contentHash }) => {
       const existingUrl = crossSetMap.get(contentHash);
       if (existingUrl) {
-        return { url: existingUrl, name: file.name, contentHash };
+        return {
+          url: existingUrl,
+          name: file.name,
+          contentHash,
+          uploadedKey: null as string | null,
+        };
       }
-      const { url } = await uploadBufferToR2(buffer);
-      return { url, name: file.name, contentHash };
+      const { key, url } = await uploadBufferToR2(buffer);
+      return { url, name: file.name, contentHash, uploadedKey: key };
     }),
   );
 
@@ -216,19 +221,28 @@ export async function uploadImages(
         url: string;
         name: string;
         contentHash: string;
+        uploadedKey: string | null;
       }> => r.status === "fulfilled",
     )
     .map((r) => r.value);
 
   if (uploaded.length > 0) {
-    await db.insert(image).values(
-      uploaded.map((u) => ({
-        imageSetId: setId,
-        url: u.url,
-        name: u.name,
-        contentHash: u.contentHash,
-      })),
-    );
+    try {
+      await db.insert(image).values(
+        uploaded.map((u) => ({
+          imageSetId: setId,
+          url: u.url,
+          name: u.name,
+          contentHash: u.contentHash,
+        })),
+      );
+    } catch (err) {
+      const newKeys = uploaded
+        .map((u) => u.uploadedKey)
+        .filter((k): k is string => !!k);
+      await Promise.allSettled(newKeys.map((k) => deleteFromR2(k)));
+      throw err;
+    }
   }
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
@@ -285,14 +299,29 @@ export async function uploadSingleImage(
     .where(eq(image.contentHash, contentHash))
     .limit(1);
 
-  const url = crossSet ? crossSet.url : (await uploadBufferToR2(buffer)).url;
+  let uploadedKey: string | null = null;
+  let url: string;
+  if (crossSet) {
+    url = crossSet.url;
+  } else {
+    const uploaded = await uploadBufferToR2(buffer);
+    url = uploaded.url;
+    uploadedKey = uploaded.key;
+  }
 
-  await db.insert(image).values({
-    imageSetId: setId,
-    url,
-    name,
-    contentHash,
-  });
+  try {
+    await db.insert(image).values({
+      imageSetId: setId,
+      url,
+      name,
+      contentHash,
+    });
+  } catch (err) {
+    if (uploadedKey) {
+      await deleteFromR2(uploadedKey).catch(() => {});
+    }
+    throw err;
+  }
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
   return { status: "ok", name };

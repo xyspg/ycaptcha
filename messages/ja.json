@@ -71,6 +71,7 @@
     "sites": "サイト",
     "puzzles": "パズル",
     "imageSets": "画像セット",
+    "audio": "オーディオ",
     "homePage": "ホームページ",
     "docs": "ドキュメント",
     "settings": "設定"
@@ -165,7 +166,21 @@
       "difficultyHelp": "合格するには {total} 枚の正解{count, plural, one {画像} other {画像}}のうち少なくとも {required} 枚を選択する必要があります。",
       "handPickIncorrect": "不正解画像を手動選択",
       "handPickIncorrectHelp": "オフにすると、不正解は残りの画像からランダムに選ばれます。",
-      "incorrectSelected": "{count} 枚の不正解{count, plural, one {画像} other {画像}}が選択されました"
+      "incorrectSelected": "{count} 枚の不正解{count, plural, one {画像} other {画像}}が選択されました",
+      "captchaMode": "認証モード",
+      "captchaModeDescription": "ユーザーの認証方法を選択：画像グリッド、オーディオクリップ、または両方。",
+      "modeImage": "画像のみ",
+      "modeAudio": "オーディオのみ",
+      "modeCombined": "コンビネーション（画像 + オーディオ切替）",
+      "audioCaptcha": "オーディオCAPTCHA",
+      "audioCaptchaDescription": "オーディオクリップを選択し、ユーザーが入力する正解を設定します。",
+      "selectAudio": "オーディオクリップ",
+      "selectAudioPlaceholder": "オーディオクリップを選択...",
+      "noAudioYet": "オーディオクリップがありません。",
+      "uploadFirst": "先にアップロードしてください",
+      "audioAnswerLabel": "正解",
+      "audioAnswerPlaceholder": "例: 7 3 9",
+      "audioAnswerHint": "ユーザーがオーディオを聞いた後に入力するテキスト回答。"
     },
     "edit": {
       "title": "パズルを編集",
@@ -216,6 +231,36 @@
       "errorUploadFailed": "アップロードに失敗しました",
       "errorNotAnImage": "画像ではありません",
       "errorMaxFiles": "一度にアップロードできるのは最大 {count} ファイルです。"
+    }
+  },
+  "audio": {
+    "title": "オーディオクリップ",
+    "uploadAudio": "オーディオをアップロード",
+    "noAudioYet": "オーディオクリップがありません",
+    "noAudioDescription": "CAPTCHA の代替認証としてオーディオクリップをアップロードしてください。",
+    "answer": "回答",
+    "deleteAudio": "オーディオを削除",
+    "deleteAudioDescription": "このオーディオクリップを完全に削除します。先にパズルから削除してください。",
+    "cannotDeleteTitle": "オーディオを削除できません",
+    "cannotDeleteDescription": "このオーディオは以下のパズルで使用されています。先に削除してください。",
+    "upload": {
+      "title": "オーディオクリップをアップロード",
+      "description": "オーディオファイルをアップロードし、トリミングして正解を設定します。",
+      "dropOrBrowse": "クリックしてオーディオファイルを選択",
+      "preview": "再生",
+      "pause": "一時停止",
+      "changeFile": "ファイルを変更",
+      "namePlaceholder": "例: 音声数字",
+      "answerLabel": "正解",
+      "answerPlaceholder": "例: 7 3 9",
+      "answerHint": "ユーザーがオーディオCAPTCHAに合格するために入力するテキスト回答。"
+    },
+    "detail": {
+      "playback": "再生",
+      "settings": "設定",
+      "settingsDescription": "このオーディオクリップの名前と正解を更新します。",
+      "dangerZone": "危険ゾーン",
+      "dangerDescription": "このオーディオクリップを削除するとストレージから削除されます。先にパズルから削除してください。"
     }
   },
   "settings": {

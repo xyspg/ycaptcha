@@ -71,6 +71,7 @@
     "sites": "Sites",
     "puzzles": "Puzzles",
     "imageSets": "Image Sets",
+    "audio": "Audio",
     "homePage": "Home Page",
     "docs": "Docs",
     "settings": "Settings"
@@ -165,7 +166,21 @@
       "difficultyHelp": "User must select at least {required} of {total} correct {count, plural, one {image} other {images}} to pass.",
       "handPickIncorrect": "Hand-pick Incorrect Images",
       "handPickIncorrectHelp": "If off, wrong answers are randomly drawn from remaining images.",
-      "incorrectSelected": "{count} incorrect {count, plural, one {image} other {images}} selected"
+      "incorrectSelected": "{count} incorrect {count, plural, one {image} other {images}} selected",
+      "captchaMode": "Verification Mode",
+      "captchaModeDescription": "Choose how users verify: image grid, audio clip, or both.",
+      "modeImage": "Image only",
+      "modeAudio": "Audio only",
+      "modeCombined": "Combined (image + audio toggle)",
+      "audioCaptcha": "Audio CAPTCHA",
+      "audioCaptchaDescription": "Select an audio clip and set the correct answer users must type.",
+      "selectAudio": "Audio Clip",
+      "selectAudioPlaceholder": "Select an audio clip...",
+      "noAudioYet": "No audio clips yet.",
+      "uploadFirst": "Upload one first",
+      "audioAnswerLabel": "Correct Answer",
+      "audioAnswerPlaceholder": "e.g. 7 3 9",
+      "audioAnswerHint": "The text users must type after hearing the audio to pass."
     },
     "edit": {
       "title": "Edit Puzzle",
@@ -216,6 +231,36 @@
       "errorUploadFailed": "Upload failed",
       "errorNotAnImage": "Not an image",
       "errorMaxFiles": "Maximum {count} files at a time."
+    }
+  },
+  "audio": {
+    "title": "Audio Clips",
+    "uploadAudio": "Upload Audio",
+    "noAudioYet": "No audio clips yet",
+    "noAudioDescription": "Upload audio clips to use as alternative CAPTCHA verification.",
+    "answer": "Answer",
+    "deleteAudio": "Delete Audio",
+    "deleteAudioDescription": "This will permanently delete this audio clip. You must remove it from any puzzles first.",
+    "cannotDeleteTitle": "Cannot delete audio",
+    "cannotDeleteDescription": "This audio is referenced by the following puzzles. Remove it first.",
+    "upload": {
+      "title": "Upload Audio Clip",
+      "description": "Upload an audio file, trim it, and set the correct answer.",
+      "dropOrBrowse": "Click to select an audio file",
+      "preview": "Play",
+      "pause": "Pause",
+      "changeFile": "Change file",
+      "namePlaceholder": "e.g. Spoken digits",
+      "answerLabel": "Correct Answer",
+      "answerPlaceholder": "e.g. 7 3 9",
+      "answerHint": "The text answer users must type to pass the audio CAPTCHA."
+    },
+    "detail": {
+      "playback": "Playback",
+      "settings": "Settings",
+      "settingsDescription": "Update the name and correct answer for this audio clip.",
+      "dangerZone": "Danger Zone",
+      "dangerDescription": "Deleting this audio clip will remove it from storage. You must remove it from any puzzles first."
     }
   },
   "settings": {

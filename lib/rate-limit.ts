@@ -23,6 +23,11 @@ export const rateLimiters = {
     limiter: Ratelimit.slidingWindow(60, "1 m"),
     prefix: "rl:image",
   }),
+  audio: new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(30, "1 m"),
+    prefix: "rl:audio",
+  }),
   auth: new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(10, "1 m"),

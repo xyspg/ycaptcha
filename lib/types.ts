@@ -23,3 +23,7 @@ export const DIFFICULTY_PRESETS = [
   { label: "Medium", value: 0.5 },
   { label: "Hard", value: 0.75 },
 ] as const;
+
+/** Verification modes available per puzzle */
+export const CAPTCHA_MODES = ["image", "audio", "combined"] as const;
+export type CaptchaMode = (typeof CAPTCHA_MODES)[number];

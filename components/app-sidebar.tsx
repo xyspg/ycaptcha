@@ -8,6 +8,7 @@ import {
   KeyRound,
   LogOut,
   Settings,
+  Volume2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -39,6 +40,7 @@ export function AppSidebar() {
     { title: t("sites"), href: "/dashboard/sites", icon: Globe },
     { title: t("puzzles"), href: "/dashboard/puzzles", icon: KeyRound },
     { title: t("imageSets"), href: "/dashboard/image-sets", icon: Images },
+    { title: t("audio"), href: "/dashboard/audio", icon: Volume2 },
   ];
 
   return (

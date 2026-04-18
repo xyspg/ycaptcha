@@ -4,7 +4,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { image, imageSet } from "@/lib/db/app-schema";
+import { audio, image, imageSet } from "@/lib/db/app-schema";
 import * as schema from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
@@ -30,7 +30,7 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
       beforeDelete: async (user) => {
-        // clean up R2
+        // clean up R2 — images
         const sets = await db
           .select({ id: imageSet.id })
           .from(imageSet)
@@ -51,6 +51,18 @@ export const auth = betterAuth({
             images
               .filter((img) => !img.url.includes("/samples/"))
               .map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
+          );
+        }
+
+        // clean up R2 — audio clips
+        const audioClips = await db
+          .select({ url: audio.url })
+          .from(audio)
+          .where(eq(audio.userId, user.id));
+
+        if (audioClips.length > 0) {
+          await Promise.allSettled(
+            audioClips.map((a) => deleteFromR2(r2KeyFromUrl(a.url))),
           );
         }
       },

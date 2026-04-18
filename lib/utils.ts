@@ -20,6 +20,15 @@ export function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+/** Format a duration in milliseconds as `m:ss` or `Ns` (under a minute). */
+export function formatDuration(ms: number | null | undefined): string {
+  if (!ms) return "—";
+  const seconds = Math.round(ms / 1000);
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+  return min > 0 ? `${min}:${String(sec).padStart(2, "0")}` : `${sec}s`;
+}
+
 export async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);

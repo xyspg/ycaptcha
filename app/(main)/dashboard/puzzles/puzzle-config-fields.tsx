@@ -295,9 +295,11 @@ export function AdvancedSettings({
 export function PuzzlePreviewSidebar({
   images,
   config,
+  audioEnabled,
 }: {
   images: ImageData[];
   config: ReturnType<typeof usePuzzleConfig>;
+  audioEnabled?: boolean;
 }) {
   return (
     <PuzzlePreviewPanel
@@ -308,6 +310,7 @@ export function PuzzlePreviewSidebar({
       handPickIncorrect={config.handPickIncorrect}
       correctCount={config.previewCorrectCount}
       difficulty={config.difficulty}
+      audioEnabled={audioEnabled}
     />
   );
 }

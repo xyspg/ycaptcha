@@ -2,7 +2,7 @@ import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { createChallengeSession } from "@/lib/captcha-session";
 import { db } from "@/lib/db";
-import { image, puzzle, site } from "@/lib/db/app-schema";
+import { audio, image, puzzle, site } from "@/lib/db/app-schema";
 import { env } from "@/lib/env";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
@@ -65,67 +65,97 @@ export async function POST(request: Request) {
     );
   }
 
-  const allCorrectIds = puzzleData.correctImageIds as string[];
-  const min = puzzleData.correctCount;
-  const max = puzzleData.correctCountMax ?? min;
-  const correctCount = min + Math.floor(Math.random() * (max - min + 1));
+  const mode = puzzleData.captchaMode;
+  const needsImages = mode !== "audio";
+  const needsAudio = mode !== "image";
 
-  const selectedCorrectIds = shuffle(allCorrectIds).slice(0, correctCount);
+  let allImages: { id: string; url: string }[] = [];
+  let correctImages: { id: string; url: string }[] = [];
+  let correctCount = 0;
 
-  const correctImages =
-    selectedCorrectIds.length > 0
-      ? await db
-          .select({ id: image.id, url: image.url })
-          .from(image)
-          .where(
-            and(
-              eq(image.imageSetId, puzzleData.imageSetId),
-              inArray(image.id, selectedCorrectIds),
-            ),
-          )
-      : [];
+  if (needsImages && puzzleData.imageSetId) {
+    const allCorrectIds = puzzleData.correctImageIds as string[];
+    const min = puzzleData.correctCount;
+    const max = puzzleData.correctCountMax ?? min;
+    correctCount = min + Math.floor(Math.random() * (max - min + 1));
 
-  const neededIncorrect = CAPTCHA_GRID_SIZE - correctImages.length;
-  let incorrectImages: { id: string; url: string }[] = [];
+    const selectedCorrectIds = shuffle(allCorrectIds).slice(0, correctCount);
 
-  if (puzzleData.incorrectImageIds) {
-    const incorrectIds = puzzleData.incorrectImageIds as string[];
-    incorrectImages = await db
-      .select({ id: image.id, url: image.url })
-      .from(image)
-      .where(
-        and(
-          eq(image.imageSetId, puzzleData.imageSetId),
-          inArray(image.id, incorrectIds),
-          ...(selectedCorrectIds.length > 0
-            ? [notInArray(image.id, selectedCorrectIds)]
-            : []),
-        ),
-      )
-      .orderBy(sql`RANDOM()`)
-      .limit(neededIncorrect);
-  } else {
-    // exclude ALL correct images, not just the ones selected for this challenge
-    incorrectImages = await db
-      .select({ id: image.id, url: image.url })
-      .from(image)
-      .where(
-        and(
-          eq(image.imageSetId, puzzleData.imageSetId),
-          ...(allCorrectIds.length > 0
-            ? [notInArray(image.id, allCorrectIds)]
-            : []),
-        ),
-      )
-      .orderBy(sql`RANDOM()`)
-      .limit(neededIncorrect);
+    correctImages =
+      selectedCorrectIds.length > 0
+        ? await db
+            .select({ id: image.id, url: image.url })
+            .from(image)
+            .where(
+              and(
+                eq(image.imageSetId, puzzleData.imageSetId),
+                inArray(image.id, selectedCorrectIds),
+              ),
+            )
+        : [];
+
+    const neededIncorrect = CAPTCHA_GRID_SIZE - correctImages.length;
+    let incorrectImages: { id: string; url: string }[] = [];
+
+    if (puzzleData.incorrectImageIds) {
+      const incorrectIds = puzzleData.incorrectImageIds as string[];
+      incorrectImages = await db
+        .select({ id: image.id, url: image.url })
+        .from(image)
+        .where(
+          and(
+            eq(image.imageSetId, puzzleData.imageSetId),
+            inArray(image.id, incorrectIds),
+            ...(selectedCorrectIds.length > 0
+              ? [notInArray(image.id, selectedCorrectIds)]
+              : []),
+          ),
+        )
+        .orderBy(sql`RANDOM()`)
+        .limit(neededIncorrect);
+    } else {
+      incorrectImages = await db
+        .select({ id: image.id, url: image.url })
+        .from(image)
+        .where(
+          and(
+            eq(image.imageSetId, puzzleData.imageSetId),
+            ...(allCorrectIds.length > 0
+              ? [notInArray(image.id, allCorrectIds)]
+              : []),
+          ),
+        )
+        .orderBy(sql`RANDOM()`)
+        .limit(neededIncorrect);
+    }
+
+    allImages = shuffle([...correctImages, ...incorrectImages]);
+
+    if (allImages.length < CAPTCHA_GRID_SIZE) {
+      return NextResponse.json(
+        { error: "Not enough images configured for this puzzle" },
+        { status: 500 },
+      );
+    }
   }
 
-  const allImages = shuffle([...correctImages, ...incorrectImages]);
+  let audioUrl: string | undefined;
+  let audioAnswer: string | undefined;
 
-  if (allImages.length < CAPTCHA_GRID_SIZE) {
+  if (needsAudio && puzzleData.audioId) {
+    const [audioData] = await db
+      .select({ url: audio.url })
+      .from(audio)
+      .where(eq(audio.id, puzzleData.audioId));
+    if (audioData) {
+      audioUrl = audioData.url;
+      audioAnswer = puzzleData.audioAnswer ?? undefined;
+    }
+  }
+
+  if (mode === "audio" && !audioUrl) {
     return NextResponse.json(
-      { error: "Not enough images configured for this puzzle" },
+      { error: "Audio not configured for this puzzle" },
       { status: 500 },
     );
   }
@@ -138,14 +168,20 @@ export async function POST(request: Request) {
     correctImageIds: correctImages.map((img) => img.id),
     correctCount: correctImages.length,
     difficulty: puzzleData.difficulty,
+    ...(audioUrl && { audioUrl }),
+    ...(audioAnswer && { audioAnswer }),
   });
 
   // proxy URLs only — no image IDs exposed to client
   return NextResponse.json({
     sessionToken: token,
+    captchaMode: mode,
     prompt: puzzleData.prompt,
-    images: allImages.map((_, i) => ({
-      url: `/api/v0/captcha/image/${token}/${i}`,
-    })),
+    ...(needsImages && {
+      images: allImages.map((_, i) => ({
+        url: `/api/v0/captcha/image/${token}/${i}`,
+      })),
+    }),
+    audioEnabled: !!audioUrl,
   });
 }

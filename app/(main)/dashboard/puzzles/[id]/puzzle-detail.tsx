@@ -3,7 +3,7 @@
 import { ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
   AdvancedSettings,
   CorrectImageGrid,
@@ -21,7 +21,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
+import type { CaptchaMode } from "@/lib/types";
 import { deletePuzzle, updatePuzzle } from "./actions";
+
+interface AudioClipData {
+  id: string;
+  name: string;
+}
 
 interface PuzzleDetailProps {
   puzzle: {
@@ -32,20 +41,29 @@ interface PuzzleDetailProps {
     incorrectImageIds: string[] | null;
     correctCount: number;
     correctCountMax: number | null;
-    imageSetId: string;
+    imageSetId: string | null;
+    audioId: string | null;
+    audioAnswer: string | null;
+    captchaMode: CaptchaMode;
   };
   siteName: string;
   images: ImageData[];
+  audioClips: AudioClipData[];
 }
 
 export function PuzzleDetail({
   puzzle: p,
   siteName,
   images,
+  audioClips,
 }: PuzzleDetailProps) {
   const t = useTranslations("puzzles.edit");
+  const tc = useTranslations("puzzles.create");
   const tp = useTranslations("puzzles");
-  const tc = useTranslations("common");
+  const tCommon = useTranslations("common");
+  const [captchaMode, setCaptchaMode] = useState<CaptchaMode>(p.captchaMode);
+  const [selectedAudioId, setSelectedAudioId] = useState(p.audioId ?? "");
+  const [audioAnswer, setAudioAnswer] = useState(p.audioAnswer ?? "");
   const config = usePuzzleConfig({
     prompt: p.prompt,
     correctImageIds: p.correctImageIds,
@@ -54,6 +72,9 @@ export function PuzzleDetail({
     correctCountMax: p.correctCountMax,
     difficulty: p.difficulty,
   });
+
+  const needsImages = captchaMode !== "audio";
+  const needsAudio = captchaMode !== "image";
 
   const [state, formAction, isPending] = useActionState(updatePuzzle, null);
   const [deleteState, deleteAction, isDeleting] = useActionState(
@@ -80,29 +101,115 @@ export function PuzzleDetail({
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           <form action={formAction} className="flex flex-col gap-6">
             <input type="hidden" name="puzzleId" value={p.id} />
+            <input type="hidden" name="captchaMode" value={captchaMode} />
+            <input type="hidden" name="audioId" value={selectedAudioId} />
+            <input type="hidden" name="audioAnswer" value={audioAnswer} />
             <PuzzleHiddenFields config={config} />
 
-            <PromptField config={config} errors={state?.errors?.prompt} />
+            {/* Captcha Mode */}
+            <Card>
+              <CardHeader>
+                <CardTitle>{tc("captchaMode")}</CardTitle>
+                <CardDescription>
+                  {tc("captchaModeDescription")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <NativeSelect
+                  value={captchaMode}
+                  onChange={(e) =>
+                    setCaptchaMode(e.target.value as CaptchaMode)
+                  }
+                >
+                  <option value="image">{tc("modeImage")}</option>
+                  <option value="audio">{tc("modeAudio")}</option>
+                  <option value="combined">{tc("modeCombined")}</option>
+                </NativeSelect>
+              </CardContent>
+            </Card>
 
-            <CorrectImageGrid
-              images={images}
-              config={config}
-              errors={state?.errors?.correctImageIds}
-            />
+            {needsImages && (
+              <PromptField config={config} errors={state?.errors?.prompt} />
+            )}
 
-            <AdvancedSettings
-              images={images}
-              config={config}
-              errors={state?.errors}
-            />
+            {needsImages && (
+              <CorrectImageGrid
+                images={images}
+                config={config}
+                errors={state?.errors?.correctImageIds}
+              />
+            )}
+
+            {needsImages && (
+              <AdvancedSettings
+                images={images}
+                config={config}
+                errors={state?.errors}
+              />
+            )}
+
+            {/* Audio config */}
+            {needsAudio && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{tc("audioCaptcha")}</CardTitle>
+                  <CardDescription>
+                    {tc("audioCaptchaDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <Label>{tc("selectAudio")}</Label>
+                    <NativeSelect
+                      value={selectedAudioId}
+                      onChange={(e) => setSelectedAudioId(e.target.value)}
+                    >
+                      <option value="">{tc("selectAudioPlaceholder")}</option>
+                      {audioClips.map((clip) => (
+                        <option key={clip.id} value={clip.id}>
+                          {clip.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="audioAnswer">
+                      {tc("audioAnswerLabel")}
+                    </Label>
+                    <Input
+                      id="audioAnswer"
+                      value={audioAnswer}
+                      onChange={(e) => setAudioAnswer(e.target.value)}
+                      placeholder={tc("audioAnswerPlaceholder")}
+                      autoComplete="off"
+                      data-1p-ignore
+                      data-lpignore="true"
+                      data-form-type="other"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {tc("audioAnswerHint")}
+                    </p>
+                    {state?.errors?.audioAnswer && (
+                      <p className="text-xs text-destructive">
+                        {state.errors.audioAnswer[0]}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Save */}
             <div className="flex items-center gap-3">
               <Button
                 type="submit"
-                disabled={isPending || config.correctIds.size === 0}
+                disabled={
+                  isPending ||
+                  (needsImages && config.correctIds.size === 0) ||
+                  (needsAudio && (!selectedAudioId || !audioAnswer.trim()))
+                }
               >
-                {isPending ? tc("saving") : tc("saveChanges")}
+                {isPending ? tCommon("saving") : tCommon("saveChanges")}
               </Button>
               {state?.success && (
                 <p className="text-xs text-muted-foreground">{state.message}</p>
@@ -123,7 +230,7 @@ export function PuzzleDetail({
                 <input type="hidden" name="puzzleId" value={p.id} />
                 <Button variant="destructive" size="sm" disabled={isDeleting}>
                   <Trash2 className="size-3" />
-                  {isDeleting ? tc("deleting") : tp("deletePuzzle")}
+                  {isDeleting ? tCommon("deleting") : tp("deletePuzzle")}
                 </Button>
               </form>
               {deleteState?.errors?.puzzleId && (
@@ -136,7 +243,13 @@ export function PuzzleDetail({
         </div>
 
         {/* Right: sticky preview */}
-        <PuzzlePreviewSidebar images={images} config={config} />
+        {needsImages && (
+          <PuzzlePreviewSidebar
+            images={images}
+            config={config}
+            audioEnabled={needsAudio && !!selectedAudioId}
+          />
+        )}
       </div>
     </div>
   );

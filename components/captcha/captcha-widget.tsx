@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, RotateCw } from "lucide-react";
+import { Check, Headphones, RotateCw } from "lucide-react";
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,8 @@ interface CaptchaWidgetProps {
   images: CaptchaImage[];
   onVerify: (selectedIndices: number[]) => void;
   onRefresh: () => void;
+  onSwitchToAudio?: () => void;
+  audioEnabled?: boolean;
   loading?: boolean;
   errorMessage?: string | null;
 }
@@ -22,6 +24,8 @@ export function CaptchaWidget({
   images,
   onVerify,
   onRefresh,
+  onSwitchToAudio,
+  audioEnabled,
   loading,
   errorMessage,
 }: CaptchaWidgetProps) {
@@ -111,15 +115,28 @@ export function CaptchaWidget({
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-[#e0e0e0] bg-[#f9f9f9] px-2 py-2">
-        <button
-          type="button"
-          onClick={handleRefresh}
-          disabled={loading}
-          className="rounded p-2 text-[#9b9b9b] transition-colors hover:text-[#4285f4] disabled:opacity-40"
-          aria-label="Get a new challenge"
-        >
-          <RotateCw className="size-[18px]" />
-        </button>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={handleRefresh}
+            disabled={loading}
+            className="rounded p-2 text-[#9b9b9b] transition-colors hover:text-[#4285f4] disabled:opacity-40"
+            aria-label="Get a new challenge"
+          >
+            <RotateCw className="size-[18px]" />
+          </button>
+          {audioEnabled && (
+            <button
+              type="button"
+              onClick={onSwitchToAudio}
+              disabled={!onSwitchToAudio}
+              className="rounded p-2 text-[#9b9b9b] transition-colors hover:text-[#4285f4] disabled:opacity-40"
+              aria-label="Switch to audio challenge"
+            >
+              <Headphones className="size-[18px]" />
+            </button>
+          )}
+        </div>
         <button
           type="button"
           onClick={handleVerify}

@@ -15,6 +15,20 @@
       "when": 1775249672273,
       "tag": "0001_mysterious_thor_girl",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776290008195,
+      "tag": "0002_dashing_moon_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1776292096067,
+      "tag": "0003_bitter_hitman",
+      "breakpoints": true
     }
   ]
 }

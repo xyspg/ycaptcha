@@ -71,6 +71,7 @@
     "sites": "站点",
     "puzzles": "验证题目",
     "imageSets": "图片集",
+    "audio": "音频",
     "homePage": "首页",
     "docs": "文档",
     "settings": "设置"
@@ -165,7 +166,21 @@
       "difficultyHelp": "用户必须至少选择 {total} 张正确图片中的 {required} 张才能通过。",
       "handPickIncorrect": "手动选择错误图片",
       "handPickIncorrectHelp": "关闭时，错误答案将从剩余图片中随机抽取。",
-      "incorrectSelected": "已选择 {count} 张错误图片"
+      "incorrectSelected": "已选择 {count} 张错误图片",
+      "captchaMode": "验证方式",
+      "captchaModeDescription": "选择用户验证方式：图片网格、音频片段或两者兼用。",
+      "modeImage": "仅图片",
+      "modeAudio": "仅音频",
+      "modeCombined": "组合（图片 + 音频切换）",
+      "audioCaptcha": "音频验证码",
+      "audioCaptchaDescription": "选择音频片段并设置用户需要输入的正确答案。",
+      "selectAudio": "音频片段",
+      "selectAudioPlaceholder": "选择音频片段...",
+      "noAudioYet": "暂无音频片段。",
+      "uploadFirst": "先上传一个",
+      "audioAnswerLabel": "正确答案",
+      "audioAnswerPlaceholder": "例如：7 3 9",
+      "audioAnswerHint": "用户听到音频后需要输入的文本答案。"
     },
     "edit": {
       "title": "编辑题目",
@@ -216,6 +231,36 @@
       "errorUploadFailed": "上传失败",
       "errorNotAnImage": "不是图片",
       "errorMaxFiles": "每次最多 {count} 个文件。"
+    }
+  },
+  "audio": {
+    "title": "音频片段",
+    "uploadAudio": "上传音频",
+    "noAudioYet": "暂无音频片段",
+    "noAudioDescription": "上传音频片段作为验证码的替代验证方式。",
+    "answer": "答案",
+    "deleteAudio": "删除音频",
+    "deleteAudioDescription": "这将永久删除此音频片段。你需要先将其从所有验证题目中移除。",
+    "cannotDeleteTitle": "无法删除音频",
+    "cannotDeleteDescription": "以下验证题目引用了此音频，请先移除。",
+    "upload": {
+      "title": "上传音频片段",
+      "description": "上传音频文件，裁剪并设置正确答案。",
+      "dropOrBrowse": "点击选择音频文件",
+      "preview": "播放",
+      "pause": "暂停",
+      "changeFile": "更换文件",
+      "namePlaceholder": "例如：语音数字",
+      "answerLabel": "正确答案",
+      "answerPlaceholder": "例如：7 3 9",
+      "answerHint": "用户必须输入的文本答案以通过音频验证。"
+    },
+    "detail": {
+      "playback": "播放",
+      "settings": "设置",
+      "settingsDescription": "更新此音频片段的名称和正确答案。",
+      "dangerZone": "危险区域",
+      "dangerDescription": "删除此音频片段将从存储中移除。你需要先将其从所有验证题目中移除。"
     }
   },
   "settings": {

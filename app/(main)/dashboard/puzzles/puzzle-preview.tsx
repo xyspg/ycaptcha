@@ -16,6 +16,7 @@ interface PuzzlePreviewProps {
   handPickIncorrect: boolean;
   correctCount: number;
   difficulty: number;
+  audioEnabled?: boolean;
 }
 
 export function PuzzlePreview({
@@ -26,6 +27,7 @@ export function PuzzlePreview({
   handPickIncorrect,
   correctCount,
   difficulty,
+  audioEnabled,
 }: PuzzlePreviewProps) {
   const t = useTranslations("puzzlePreview");
   const [phase, setPhase] = useState<
@@ -99,6 +101,7 @@ export function PuzzlePreview({
           images={preview.grid.map((img) => ({ url: img.url }))}
           onVerify={handleVerify}
           onRefresh={reshuffleGrid}
+          audioEnabled={audioEnabled}
           errorMessage={errorMessage}
         />
       ) : (
@@ -128,6 +131,7 @@ export function PuzzlePreviewPanel({
   handPickIncorrect,
   correctCount,
   difficulty,
+  audioEnabled,
 }: {
   prompt: string;
   images: { id: string; url: string; name: string | null }[];
@@ -136,6 +140,7 @@ export function PuzzlePreviewPanel({
   handPickIncorrect: boolean;
   correctCount: number;
   difficulty: number;
+  audioEnabled?: boolean;
 }) {
   const t = useTranslations("puzzlePreview");
   const previewKey = useMemo(
@@ -157,6 +162,7 @@ export function PuzzlePreviewPanel({
             handPickIncorrect={handPickIncorrect}
             correctCount={correctCount}
             difficulty={difficulty}
+            audioEnabled={audioEnabled}
           />
         ) : (
           <Card>
