@@ -22,7 +22,7 @@ import { authClient } from "@/lib/auth/client";
 function ProfileSection() {
   const t = useTranslations("settings.profile");
   const tc = useTranslations("common");
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const [nameOverride, setNameOverride] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -46,20 +46,6 @@ function ProfileSection() {
     }
   };
 
-  if (isPending) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">{tc("loading")}</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -67,6 +53,10 @@ function ProfileSection() {
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent>
+        {/* Render the same form structure unconditionally — gating on
+            `isPending` would diverge between SSR (always pending) and
+            client hydration (sometimes already loaded), causing a
+            structural hydration mismatch. */}
         <form onSubmit={handleSave} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <Label htmlFor="email">{tc("email")}</Label>
