@@ -310,7 +310,7 @@
       "step2Title": "本当に実行してもよろしいですか？",
       "step2Body": "この操作は永続的で取り消せません。あなたのすべてのサイト、パズル、画像セット、アップロードした画像が完全に破棄されます。サイト上でアクティブなCAPTCHAウィジェットは直ちに動作しなくなります。",
       "step2Continue": "理解しました、続行します",
-      "step3Instruction": "確認のため、メールアドレス {email} とフレーズ {phrase} を以下に入力してください。",
+      "step3Instruction": "確認のため、メールアドレス <email></email> とフレーズ <phrase></phrase> を以下に入力してください。",
       "step3Email": "メールアドレス",
       "step3Phrase": "\"{phrase}\" と入力",
       "step3Continue": "続行",

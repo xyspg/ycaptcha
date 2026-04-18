@@ -310,7 +310,7 @@
       "step2Title": "Are you sure you want to do this?",
       "step2Body": "This action is permanent and irreversible. All your sites, puzzles, image sets, and uploaded images will be permanently destroyed. Active CAPTCHA widgets on your sites will stop working immediately.",
       "step2Continue": "I understand, continue",
-      "step3Instruction": "To verify, type your email {email} and the phrase {phrase} below.",
+      "step3Instruction": "To verify, type your email <email></email> and the phrase <phrase></phrase> below.",
       "step3Email": "Your email",
       "step3Phrase": "Type \"{phrase}\"",
       "step3Continue": "Continue",

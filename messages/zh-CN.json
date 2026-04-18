@@ -310,7 +310,7 @@
       "step2Title": "你确定要这样做吗？",
       "step2Body": "此操作是永久且不可逆的。你的所有站点、题目、图片集和已上传的图片将被永久销毁。你站点上活跃的验证码组件将立即停止工作",
       "step2Continue": "我已了解，继续",
-      "step3Instruction": "为进行验证，请在下方输入你的邮箱 {email} 和短语 {phrase}",
+      "step3Instruction": "为进行验证，请在下方输入你的邮箱 <email></email> 和短语 <phrase></phrase>",
       "step3Email": "你的邮箱",
       "step3Phrase": "输入 {phrase}",
       "step3Continue": "继续",
