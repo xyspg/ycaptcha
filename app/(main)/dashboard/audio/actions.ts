@@ -32,7 +32,10 @@ async function requireOwnedAudio(audioId: string, userId: string) {
   return row ?? null;
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+// Client renders ≤10s mono 22.05kHz 16-bit WAV (~430KB). 1MB leaves
+// headroom for the WAV header and any per-platform variance.
+const MAX_FILE_SIZE = 1 * 1024 * 1024;
+const MAX_DURATION_MS = 10_500; // 10s plus a small tolerance
 
 export async function uploadAudio(
   prevState: ActionState,
@@ -54,10 +57,13 @@ export async function uploadAudio(
     return { errors: { name: ["Name is too long"] } };
   }
   if (file.size > MAX_FILE_SIZE) {
-    return { errors: { file: ["File exceeds 10MB limit"] } };
+    return { errors: { file: ["File exceeds 1MB limit"] } };
   }
   if (!file.type.startsWith("audio/")) {
     return { errors: { file: ["File must be an audio file"] } };
+  }
+  if (durationMs && durationMs > MAX_DURATION_MS) {
+    return { errors: { file: ["Audio must be 10 seconds or shorter"] } };
   }
 
   const buffer = Buffer.from(await file.arrayBuffer());

@@ -22,6 +22,10 @@ import { Label } from "@/components/ui/label";
 import { encodeWav } from "@/lib/wav";
 import { uploadAudio } from "./actions";
 
+const MAX_AUDIO_SEC = 10;
+const TARGET_SAMPLE_RATE = 22050;
+const TARGET_CHANNELS = 1;
+
 export function UploadAudioDialog() {
   const t = useTranslations("audio");
   const tc = useTranslations("common");
@@ -60,7 +64,13 @@ export function UploadAudioDialog() {
       const decoded = await ctx.decodeAudioData(arrayBuf);
       setAudioBuffer(decoded);
       setTrimStart(0);
-      setTrimEnd(1);
+      // Default the selected region to ≤ MAX_AUDIO_SEC so long uploads don't
+      // start with an over-cap selection the user has to manually shrink.
+      const initialEnd =
+        decoded.duration > 0
+          ? Math.min(1, MAX_AUDIO_SEC / decoded.duration)
+          : 1;
+      setTrimEnd(initialEnd);
     },
     [],
   );
@@ -76,26 +86,26 @@ export function UploadAudioDialog() {
   } | null> => {
     if (!audioBuffer) return null;
 
-    const length = Math.floor(
-      (trimEnd - trimStart) * audioBuffer.duration * audioBuffer.sampleRate,
+    // Clip selection length once at render time — the trimmer also enforces
+    // this, but a defensive clamp keeps the upload honest.
+    const selectedSec = Math.min(
+      MAX_AUDIO_SEC,
+      (trimEnd - trimStart) * audioBuffer.duration,
     );
-    const durationMs = Math.round(
-      (trimEnd - trimStart) * audioBuffer.duration * 1000,
-    );
+    const length = Math.floor(selectedSec * TARGET_SAMPLE_RATE);
+    const durationMs = Math.round(selectedSec * 1000);
 
+    // Downsample to mono at TARGET_SAMPLE_RATE so a 10s clip is ~430KB
+    // instead of multi-MB at the source's 44.1kHz stereo.
     const offline = new OfflineAudioContext(
-      audioBuffer.numberOfChannels,
+      TARGET_CHANNELS,
       length,
-      audioBuffer.sampleRate,
+      TARGET_SAMPLE_RATE,
     );
     const source = offline.createBufferSource();
     source.buffer = audioBuffer;
     source.connect(offline.destination);
-    source.start(
-      0,
-      trimStart * audioBuffer.duration,
-      (trimEnd - trimStart) * audioBuffer.duration,
-    );
+    source.start(0, trimStart * audioBuffer.duration, selectedSec);
 
     const rendered = await offline.startRendering();
     return { blob: encodeWav(rendered), durationMs };
@@ -182,6 +192,7 @@ export function UploadAudioDialog() {
                 trimStart={trimStart}
                 trimEnd={trimEnd}
                 onTrimChange={handleTrimChange}
+                maxDurationSec={MAX_AUDIO_SEC}
               />
             </div>
           )}

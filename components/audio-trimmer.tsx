@@ -17,6 +17,8 @@ interface AudioTrimmerProps {
   /** 0–1 normalized */
   trimEnd: number;
   onTrimChange: (start: number, end: number) => void;
+  /** Hard cap on the selected region length, in seconds. */
+  maxDurationSec?: number;
 }
 
 export interface AudioTrimmerHandle {
@@ -32,7 +34,14 @@ type DragTarget = "start" | "end" | "region" | null;
 
 export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
   function AudioTrimmer(
-    { audioBuffer, audioContext, trimStart, trimEnd, onTrimChange },
+    {
+      audioBuffer,
+      audioContext,
+      trimStart,
+      trimEnd,
+      onTrimChange,
+      maxDurationSec,
+    },
     ref,
   ) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -327,13 +336,21 @@ export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
       let newStart = trimStart;
       let newEnd = trimEnd;
 
+      const maxGap =
+        maxDurationSec && audioBuffer.duration > 0
+          ? Math.min(1, maxDurationSec / audioBuffer.duration)
+          : 1;
+
       if (target === "start") {
         newStart = Math.max(
-          0,
+          Math.max(0, trimEnd - maxGap),
           Math.min(trimEnd - MIN_GAP, startAtDown + delta),
         );
       } else if (target === "end") {
-        newEnd = Math.min(1, Math.max(trimStart + MIN_GAP, endAtDown + delta));
+        newEnd = Math.min(
+          Math.min(1, trimStart + maxGap),
+          Math.max(trimStart + MIN_GAP, endAtDown + delta),
+        );
       } else if (target === "region") {
         const len = endAtDown - startAtDown;
         let s = startAtDown + delta;
