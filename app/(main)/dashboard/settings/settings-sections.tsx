@@ -51,6 +51,7 @@ function ProfileSection() {
       <Card>
         <CardHeader>
           <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">{tc("loading")}</p>
