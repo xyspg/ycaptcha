@@ -29,6 +29,16 @@ export function formatDuration(ms: number | null | undefined): string {
   return min > 0 ? `${min}:${String(sec).padStart(2, "0")}` : `${sec}s`;
 }
 
+/** Format a byte count as KB / MB / GB with one decimal. */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} KB`;
+  const mb = kb / 1024;
+  if (mb < 1024) return `${mb.toFixed(1)} MB`;
+  return `${(mb / 1024).toFixed(1)} GB`;
+}
+
 export async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);

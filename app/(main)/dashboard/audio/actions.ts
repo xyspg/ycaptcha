@@ -13,6 +13,7 @@ import {
   r2KeyFromUrl,
   uploadAudioToR2,
 } from "@/lib/r2";
+import { checkQuota, getUserStorageUsage } from "@/lib/storage-quota";
 import type { ActionState } from "@/lib/types";
 import { parseWav } from "@/lib/wav";
 
@@ -77,7 +78,12 @@ export async function uploadAudio(
   const durationMs = wav.durationMs;
 
   const buffer = Buffer.from(arrayBuffer);
+  const sizeBytes = buffer.length;
   const contentHash = hashBuffer(buffer);
+
+  const usage = await getUserStorageUsage(session.user.id);
+  const quotaErr = checkQuota(usage, sizeBytes);
+  if (quotaErr) return { errors: { file: [quotaErr] } };
 
   // Check dedup for this user
   const [existing] = await db
@@ -108,6 +114,7 @@ export async function uploadAudio(
         name,
         durationMs,
         contentHash,
+        sizeBytes,
       })
       .returning({ id: audio.id });
   } catch (err) {

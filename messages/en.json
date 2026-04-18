@@ -230,7 +230,8 @@
       "errorUnsupportedFormat": "Unsupported format",
       "errorUploadFailed": "Upload failed",
       "errorNotAnImage": "Not an image",
-      "errorMaxFiles": "Maximum {count} files at a time."
+      "errorMaxFiles": "Maximum {count} files at a time.",
+      "errorOverQuota": "Storage quota exceeded"
     }
   },
   "audio": {
@@ -282,6 +283,13 @@
     "language": {
       "title": "Language",
       "description": "Choose your preferred language."
+    },
+    "storage": {
+      "title": "Storage",
+      "description": "{quota} free per account, shared across images and audio.",
+      "used": "{used} of {quota} used ({percent}%)",
+      "imageBytes": "Images",
+      "audioBytes": "Audio"
     },
     "passkeys": {
       "title": "Passkeys",

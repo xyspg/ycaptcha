@@ -29,6 +29,13 @@
       "when": 1776292096067,
       "tag": "0003_bitter_hitman",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1776487013210,
+      "tag": "0004_magenta_shard",
+      "breakpoints": true
     }
   ]
 }

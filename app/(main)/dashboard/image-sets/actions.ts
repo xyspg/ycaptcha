@@ -14,6 +14,11 @@ import {
   uploadBufferToR2,
 } from "@/lib/r2";
 import { SAMPLE_SETS } from "@/lib/samples";
+import {
+  checkQuota,
+  getUserStorageUsage,
+  STORAGE_QUOTA_BYTES,
+} from "@/lib/storage-quota";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
@@ -197,8 +202,31 @@ export async function uploadImages(
     );
   }
 
+  // Quota gate — fetch usage once, accumulate file sizes, drop anything
+  // that would push the user over 200MB.
+  const usage = await getUserStorageUsage(session.user.id);
+  let provisionalBytes = usage.totalBytes;
+  const accepted: typeof newProcessed = [];
+  let quotaSkipped = 0;
+  for (const item of newProcessed) {
+    const next = provisionalBytes + item.buffer.length;
+    if (next > STORAGE_QUOTA_BYTES) {
+      quotaSkipped++;
+      continue;
+    }
+    provisionalBytes = next;
+    accepted.push(item);
+  }
+  if (quotaSkipped > 0) {
+    skipped.push(`${quotaSkipped} over storage quota`);
+  }
+
+  const sizeByHash = new Map(
+    accepted.map((p) => [p.contentHash, p.buffer.length]),
+  );
+
   const results = await Promise.allSettled(
-    newProcessed.map(async ({ file, buffer, contentHash }) => {
+    accepted.map(async ({ file, buffer, contentHash }) => {
       const existingUrl = crossSetMap.get(contentHash);
       if (existingUrl) {
         return {
@@ -234,6 +262,7 @@ export async function uploadImages(
           url: u.url,
           name: u.name,
           contentHash: u.contentHash,
+          sizeBytes: sizeByHash.get(u.contentHash) ?? 0,
         })),
       );
     } catch (err) {
@@ -258,6 +287,7 @@ export async function uploadImages(
 export type UploadSingleResult =
   | { status: "ok"; name: string }
   | { status: "duplicate"; name: string }
+  | { status: "quota"; name: string }
   | { status: "error"; name: string; error: string };
 
 export async function uploadSingleImage(
@@ -279,6 +309,11 @@ export async function uploadSingleImage(
     contentHash = result.contentHash;
   } catch {
     return { status: "error", name, error: "Invalid image" };
+  }
+
+  const usage = await getUserStorageUsage(session.user.id);
+  if (checkQuota(usage, buffer.length)) {
+    return { status: "quota", name };
   }
 
   // Check duplicate in this set
@@ -315,6 +350,7 @@ export async function uploadSingleImage(
       url,
       name,
       contentHash,
+      sizeBytes: buffer.length,
     });
   } catch (err) {
     if (uploadedKey) {

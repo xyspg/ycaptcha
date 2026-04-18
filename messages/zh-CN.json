@@ -230,7 +230,8 @@
       "errorUnsupportedFormat": "不支持的格式",
       "errorUploadFailed": "上传失败",
       "errorNotAnImage": "不是图片",
-      "errorMaxFiles": "每次最多 {count} 个文件。"
+      "errorMaxFiles": "每次最多 {count} 个文件。",
+      "errorOverQuota": "已超出存储配额"
     }
   },
   "audio": {
@@ -282,6 +283,13 @@
     "language": {
       "title": "语言",
       "description": "选择你偏好的界面语言"
+    },
+    "storage": {
+      "title": "存储",
+      "description": "每个账号免费 {quota}，图片和音频共享。",
+      "used": "已使用 {used} / {quota}（{percent}%）",
+      "imageBytes": "图片",
+      "audioBytes": "音频"
     },
     "passkeys": {
       "title": "通行密钥",

@@ -64,6 +64,7 @@ export const image = pgTable(
     url: text("url").notNull(), // public URL from Cloudflare R2
     name: text("name"), // optional display name
     contentHash: text("content_hash"), // SHA-256 of processed image for dedup
+    sizeBytes: integer("size_bytes").notNull().default(0), // processed WebP size for quota math
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [
@@ -88,6 +89,7 @@ export const audio = pgTable(
     name: text("name").notNull(), // display name
     durationMs: integer("duration_ms"), // clip length for UI display
     contentHash: text("content_hash"), // SHA-256 for dedup
+    sizeBytes: integer("size_bytes").notNull().default(0), // wav size for quota math
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (table) => [index("audio_userId_idx").on(table.userId)],

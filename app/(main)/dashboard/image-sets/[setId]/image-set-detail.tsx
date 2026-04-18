@@ -217,6 +217,11 @@ function ImageUploader({ setId }: { setId: string }) {
             updateItem(item.id, { step: "done" });
           } else if (result.status === "duplicate") {
             updateItem(item.id, { step: "duplicate" });
+          } else if (result.status === "quota") {
+            updateItem(item.id, {
+              step: "error",
+              message: t("errorOverQuota"),
+            });
           } else {
             updateItem(item.id, { step: "error", message: result.error });
           }

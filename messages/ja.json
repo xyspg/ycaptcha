@@ -230,7 +230,8 @@
       "errorUnsupportedFormat": "サポートされていない形式です",
       "errorUploadFailed": "アップロードに失敗しました",
       "errorNotAnImage": "画像ではありません",
-      "errorMaxFiles": "一度にアップロードできるのは最大 {count} ファイルです。"
+      "errorMaxFiles": "一度にアップロードできるのは最大 {count} ファイルです。",
+      "errorOverQuota": "ストレージ容量を超えています"
     }
   },
   "audio": {
@@ -282,6 +283,13 @@
     "language": {
       "title": "言語",
       "description": "お好みの言語を選択してください。"
+    },
+    "storage": {
+      "title": "ストレージ",
+      "description": "アカウントごとに {quota} 無料、画像と音声で共有されます。",
+      "used": "{used} / {quota} 使用中（{percent}%）",
+      "imageBytes": "画像",
+      "audioBytes": "音声"
     },
     "passkeys": {
       "title": "パスキー",
