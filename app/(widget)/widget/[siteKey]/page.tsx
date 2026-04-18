@@ -118,7 +118,11 @@ export default function WidgetPage() {
       setTimeout(() => {
         setPhase("challenge");
         // Audio-only is shorter than the image grid
-        postResize(350, captchaMode === "audio" ? 340 : 520);
+        if (captchaMode === "audio") {
+          postResize(300, 320);
+        } else {
+          postResize(350, 520);
+        }
       }, 600);
     }
   };
