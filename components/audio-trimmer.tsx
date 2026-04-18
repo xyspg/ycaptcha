@@ -197,8 +197,11 @@ export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
         el.style.opacity = "0";
         return;
       }
+      // translateX with `%` resolves to the element's own width (2px), not
+      // the parent's. Measure the canvas instead.
+      const widthPx = canvasRef.current?.clientWidth ?? 0;
       el.style.opacity = "1";
-      el.style.transform = `translateX(${normPos * 100}%)`;
+      el.style.transform = `translateX(${normPos * widthPx}px)`;
     }, []);
 
     const animatePlayhead = useCallback(() => {
@@ -217,7 +220,10 @@ export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
     }, [audioBuffer, audioContext, trimEnd, movePlayhead, stopPlayback]);
 
     const togglePlay = useCallback(() => {
-      if (isPlaying) {
+      // Gate on the synchronous ref, not React state — rapid clicks (Space +
+      // mouse) can fire before `setIsPlaying(true)` flushes, which would
+      // otherwise spawn a second source and orphan the first.
+      if (sourceRef.current) {
         stopPlayback();
         return;
       }
@@ -230,6 +236,9 @@ export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
       const durSec = (trimEnd - trimStart) * audioBuffer.duration;
       source.start(0, startSec, durSec);
       source.onended = () => {
+        // Only clean up if this source is still the active one — a
+        // stop-then-replay can install a new source before our onended fires.
+        if (sourceRef.current !== source) return;
         sourceRef.current = null;
         setIsPlaying(false);
         cancelAnimationFrame(rafRef.current);
@@ -247,7 +256,6 @@ export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
       audioContext,
       trimStart,
       trimEnd,
-      isPlaying,
       stopPlayback,
       animatePlayhead,
       movePlayhead,
@@ -289,10 +297,8 @@ export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
       const target = hitTest(x);
       if (!target) return;
 
-      // Trimming a region invalidates the playhead's reference point.
-      if (target === "start" || target === "end") {
-        stopPlayback();
-      }
+      // Any trim change invalidates what the user is hearing.
+      stopPlayback();
 
       canvas.setPointerCapture(e.pointerId);
       dragRef.current = {
