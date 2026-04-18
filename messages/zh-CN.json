@@ -179,7 +179,7 @@
       "noAudioYet": "暂无音频片段。",
       "uploadFirst": "先上传一个",
       "audioAnswerLabel": "正确答案",
-      "audioAnswerPlaceholder": "例如：7 3 9",
+      "audioAnswerPlaceholder": "例如：Describe the city you live in",
       "audioAnswerHint": "用户听到音频后需要输入的文本答案。"
     },
     "edit": {
@@ -252,7 +252,7 @@
       "changeFile": "更换文件",
       "namePlaceholder": "例如：语音数字",
       "answerLabel": "正确答案",
-      "answerPlaceholder": "例如：7 3 9",
+      "answerPlaceholder": "例如：Describe the city you live in",
       "answerHint": "用户必须输入的文本答案以通过音频验证。"
     },
     "detail": {
@@ -319,7 +319,8 @@
     "title": "预览",
     "description": "测试此题目对用户的呈现效果。",
     "refreshPreview": "刷新预览",
-    "selectCorrectImages": "选择正确图片以查看预览"
+    "selectCorrectImages": "选择正确图片以查看预览",
+    "selectAudioClip": "选择音频片段并填写答案以查看预览"
   },
   "confirmDelete": {
     "typeToConfirm": "输入 <bold>{text}</bold> 以确认。"

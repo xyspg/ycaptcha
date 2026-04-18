@@ -18,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
   CAPTCHA_GRID_SIZE,
+  type CaptchaMode,
   DEFAULT_CORRECT_COUNT,
   DIFFICULTY_PRESETS,
 } from "@/lib/types";
@@ -295,11 +296,15 @@ export function AdvancedSettings({
 export function PuzzlePreviewSidebar({
   images,
   config,
-  audioEnabled,
+  captchaMode,
+  audioUrl,
+  audioAnswer,
 }: {
   images: ImageData[];
   config: ReturnType<typeof usePuzzleConfig>;
-  audioEnabled?: boolean;
+  captchaMode: CaptchaMode;
+  audioUrl?: string;
+  audioAnswer?: string;
 }) {
   return (
     <PuzzlePreviewPanel
@@ -310,7 +315,9 @@ export function PuzzlePreviewSidebar({
       handPickIncorrect={config.handPickIncorrect}
       correctCount={config.previewCorrectCount}
       difficulty={config.difficulty}
-      audioEnabled={audioEnabled}
+      captchaMode={captchaMode}
+      audioUrl={audioUrl}
+      audioAnswer={audioAnswer}
     />
   );
 }

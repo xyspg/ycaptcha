@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Grid3X3, Info, RotateCw } from "lucide-react";
+import { Download, Eye, RotateCw } from "lucide-react";
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -97,7 +97,7 @@ export function CaptchaAudioWidget({
           data-1p-ignore
           data-lpignore="true"
           data-form-type="other"
-          className="w-full rounded-sm border border-[#9b9b9b] bg-white px-2.5 py-2 text-[13px] outline-none focus:border-[#4285f4] focus:ring-1 focus:ring-[#4285f4]"
+          className="w-full rounded-sm border border-[#9b9b9b] bg-white px-2.5 py-2 text-[13px] text-[#212121] outline-none focus:border-[#4285f4] focus:ring-1 focus:ring-[#4285f4]"
         />
 
         <a
@@ -136,16 +136,9 @@ export function CaptchaAudioWidget({
               className="rounded p-1.5 text-[#9b9b9b] transition-colors hover:text-[#4285f4]"
               aria-label="Switch to image challenge"
             >
-              <Grid3X3 className="size-[16px]" />
+              <Eye className="size-[16px]" />
             </button>
           )}
-          <button
-            type="button"
-            className="rounded p-1.5 text-[#9b9b9b] transition-colors hover:text-[#4285f4]"
-            aria-label="About this challenge"
-          >
-            <Info className="size-[16px]" />
-          </button>
         </div>
         <button
           type="button"

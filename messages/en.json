@@ -179,7 +179,7 @@
       "noAudioYet": "No audio clips yet.",
       "uploadFirst": "Upload one first",
       "audioAnswerLabel": "Correct Answer",
-      "audioAnswerPlaceholder": "e.g. 7 3 9",
+      "audioAnswerPlaceholder": "e.g. Describe the city you live in",
       "audioAnswerHint": "The text users must type after hearing the audio to pass."
     },
     "edit": {
@@ -252,7 +252,7 @@
       "changeFile": "Change file",
       "namePlaceholder": "e.g. Spoken digits",
       "answerLabel": "Correct Answer",
-      "answerPlaceholder": "e.g. 7 3 9",
+      "answerPlaceholder": "e.g. Describe the city you live in",
       "answerHint": "The text answer users must type to pass the audio CAPTCHA."
     },
     "detail": {
@@ -319,7 +319,8 @@
     "title": "Preview",
     "description": "Test how this puzzle works for users.",
     "refreshPreview": "Refresh preview",
-    "selectCorrectImages": "Select correct images to see preview"
+    "selectCorrectImages": "Select correct images to see preview",
+    "selectAudioClip": "Select an audio clip and answer to see preview"
   },
   "confirmDelete": {
     "typeToConfirm": "Type <bold>{text}</bold> to confirm."

@@ -36,6 +36,7 @@ interface ImageSetData {
 interface AudioClipData {
   id: string;
   name: string;
+  url: string;
 }
 
 interface CreatePuzzleFormProps {
@@ -65,6 +66,7 @@ export function CreatePuzzleForm({
   const needsAudio = captchaMode !== "image";
 
   const selectedSet = imageSets.find((s) => s.id === selectedSetId);
+  const selectedAudio = audioClips.find((c) => c.id === selectedAudioId);
 
   const [state, formAction, isPending] = useActionState(createPuzzle, null);
 
@@ -311,7 +313,9 @@ export function CreatePuzzleForm({
         <PuzzlePreviewSidebar
           images={selectedSet?.images ?? []}
           config={config}
-          audioEnabled={needsAudio && !!selectedAudioId}
+          captchaMode={captchaMode}
+          audioUrl={selectedAudio?.url}
+          audioAnswer={audioAnswer}
         />
       </div>
     </div>

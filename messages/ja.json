@@ -179,7 +179,7 @@
       "noAudioYet": "オーディオクリップがありません。",
       "uploadFirst": "先にアップロードしてください",
       "audioAnswerLabel": "正解",
-      "audioAnswerPlaceholder": "例: 7 3 9",
+      "audioAnswerPlaceholder": "例: Describe the city you live in",
       "audioAnswerHint": "ユーザーがオーディオを聞いた後に入力するテキスト回答。"
     },
     "edit": {
@@ -252,7 +252,7 @@
       "changeFile": "ファイルを変更",
       "namePlaceholder": "例: 音声数字",
       "answerLabel": "正解",
-      "answerPlaceholder": "例: 7 3 9",
+      "answerPlaceholder": "例: Describe the city you live in",
       "answerHint": "ユーザーがオーディオCAPTCHAに合格するために入力するテキスト回答。"
     },
     "detail": {
@@ -319,7 +319,8 @@
     "title": "プレビュー",
     "description": "このパズルがユーザーにどう見えるかテストします。",
     "refreshPreview": "プレビューを更新",
-    "selectCorrectImages": "正解の画像を選択するとプレビューが表示されます"
+    "selectCorrectImages": "正解の画像を選択するとプレビューが表示されます",
+    "selectAudioClip": "音声クリップと回答を選択するとプレビューが表示されます"
   },
   "confirmDelete": {
     "typeToConfirm": "確認のため <bold>{text}</bold> と入力してください。"

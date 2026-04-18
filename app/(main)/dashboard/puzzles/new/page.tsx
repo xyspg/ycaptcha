@@ -22,7 +22,7 @@ export default async function Page({
       orderBy: (is, { desc }) => desc(is.createdAt),
     }),
     db
-      .select({ id: audio.id, name: audio.name })
+      .select({ id: audio.id, name: audio.name, url: audio.url })
       .from(audio)
       .where(eq(audio.userId, session.user.id))
       .orderBy(audio.createdAt),
