@@ -10,17 +10,62 @@ export async function POST(request: Request) {
   if (limited) return limited;
 
   const body = await request.json().catch(() => null);
-  if (!body?.sessionToken || !Array.isArray(body?.selectedIndices)) {
+  if (!body?.sessionToken) {
+    return Response.json({ error: "Missing sessionToken" }, { status: 400 });
+  }
+
+  const { sessionToken } = body as { sessionToken: string };
+
+  // Detect mode: audio (textAnswer) vs image (selectedIndices)
+  const isAudioMode = typeof body.textAnswer === "string";
+  const isImageMode = Array.isArray(body.selectedIndices);
+
+  if (!isAudioMode && !isImageMode) {
     return Response.json(
-      { error: "Missing sessionToken or selectedIndices" },
+      { error: "Missing textAnswer or selectedIndices" },
       { status: 400 },
     );
   }
 
-  const { sessionToken, selectedIndices } = body as {
-    sessionToken: string;
-    selectedIndices: number[];
-  };
+  // --- Audio verification ---
+  if (isAudioMode) {
+    const textAnswer = (body.textAnswer as string).trim();
+    if (textAnswer.length === 0) {
+      return Response.json({ success: false });
+    }
+
+    const session = await consumeChallengeSession(sessionToken);
+    if (!session) {
+      return Response.json(
+        { success: false, error: "Invalid or expired session" },
+        { status: 400 },
+      );
+    }
+
+    if (!session.audioAnswer) {
+      return Response.json(
+        { error: "Audio not configured for this session" },
+        { status: 400 },
+      );
+    }
+
+    const correct =
+      textAnswer.toLowerCase() === session.audioAnswer.toLowerCase();
+
+    if (!correct) {
+      return Response.json({ success: false });
+    }
+
+    const verifyToken = await createVerifiedSession({
+      puzzleId: session.puzzleId,
+      siteId: session.siteId,
+    });
+
+    return Response.json({ success: true, token: verifyToken });
+  }
+
+  // --- Image verification (existing flow) ---
+  const { selectedIndices } = body as { selectedIndices: number[] };
 
   if (selectedIndices.length > CAPTCHA_GRID_SIZE) {
     return Response.json({ error: "Invalid indices" }, { status: 400 });

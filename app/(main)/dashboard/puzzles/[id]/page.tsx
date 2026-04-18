@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { image, puzzle, site } from "@/lib/db/app-schema";
+import { audio, puzzle, site } from "@/lib/db/app-schema";
 import { PuzzleDetail } from "./puzzle-detail";
 
 export default async function Page({
@@ -23,10 +23,18 @@ export default async function Page({
 
   if (!puzzleData) notFound();
 
-  const images = await db
-    .select({ id: image.id, url: image.url, name: image.name })
-    .from(image)
-    .where(eq(image.imageSetId, puzzleData.puzzle.imageSetId));
+  const [imageSets, audioClips] = await Promise.all([
+    db.query.imageSet.findMany({
+      where: (is, { eq: e }) => e(is.userId, session.user.id),
+      with: { images: true },
+      orderBy: (is, { desc }) => desc(is.createdAt),
+    }),
+    db
+      .select({ id: audio.id, name: audio.name, url: audio.url })
+      .from(audio)
+      .where(eq(audio.userId, session.user.id))
+      .orderBy(audio.createdAt),
+  ]);
 
   return (
     <PuzzleDetail
@@ -41,9 +49,24 @@ export default async function Page({
         correctCount: puzzleData.puzzle.correctCount,
         correctCountMax: puzzleData.puzzle.correctCountMax,
         imageSetId: puzzleData.puzzle.imageSetId,
+        audioId: puzzleData.puzzle.audioId,
+        audioAnswer: puzzleData.puzzle.audioAnswer,
+        captchaMode: puzzleData.puzzle.captchaMode as
+          | "image"
+          | "audio"
+          | "combined",
       }}
       siteName={puzzleData.site.name}
-      images={images}
+      imageSets={imageSets.map((is) => ({
+        id: is.id,
+        name: is.name,
+        images: is.images.map((img) => ({
+          id: img.id,
+          url: img.url,
+          name: img.name,
+        })),
+      }))}
+      audioClips={audioClips}
     />
   );
 }

@@ -20,6 +20,25 @@ export function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+/** Format a duration in milliseconds as `m:ss` or `Ns` (under a minute). */
+export function formatDuration(ms: number | null | undefined): string {
+  if (!ms) return "—";
+  const seconds = Math.round(ms / 1000);
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+  return min > 0 ? `${min}:${String(sec).padStart(2, "0")}` : `${sec}s`;
+}
+
+/** Format a byte count as KB / MB / GB with one decimal. */
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const kb = bytes / 1024;
+  if (kb < 1024) return `${kb.toFixed(1)} KB`;
+  const mb = kb / 1024;
+  if (mb < 1024) return `${mb.toFixed(1)} MB`;
+  return `${(mb / 1024).toFixed(1)} GB`;
+}
+
 export async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);

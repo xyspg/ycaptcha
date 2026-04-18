@@ -10,6 +10,8 @@ export interface ChallengeSession {
   correctImageIds: string[];
   correctCount: number;
   difficulty: number;
+  audioUrl?: string; // R2 URL for audio proxy
+  audioAnswer?: string; // correct text answer for audio mode
 }
 
 export interface VerifiedSession {

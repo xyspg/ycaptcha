@@ -25,7 +25,7 @@ interface PuzzleCardProps {
   prompt: string;
   siteName: string;
   difficulty: number;
-  imageSetName: string;
+  imageSetName: string | null;
   correctCount: number;
   enabled: boolean;
 }
@@ -71,8 +71,12 @@ export function PuzzleCard({
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{t("imageSet", { name: imageSetName })}</span>
-                  <span>&middot;</span>
+                  {imageSetName && (
+                    <>
+                      <span>{t("imageSet", { name: imageSetName })}</span>
+                      <span>&middot;</span>
+                    </>
+                  )}
                   <span>
                     {t("correctPerChallenge", { count: correctCount })}
                   </span>

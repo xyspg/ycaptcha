@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { site } from "@/lib/db/app-schema";
+import { audio, site } from "@/lib/db/app-schema";
 import { CreatePuzzleForm } from "./create-puzzle-form";
 
 export default async function Page({
@@ -11,16 +11,22 @@ export default async function Page({
 }) {
   const [session, params] = await Promise.all([requireSession(), searchParams]);
 
-  const sites = await db
-    .select({ id: site.id, name: site.name })
-    .from(site)
-    .where(eq(site.userId, session.user.id));
-
-  const imageSets = await db.query.imageSet.findMany({
-    where: (is, { eq: e }) => e(is.userId, session.user.id),
-    with: { images: true },
-    orderBy: (is, { desc }) => desc(is.createdAt),
-  });
+  const [sites, imageSets, audioClips] = await Promise.all([
+    db
+      .select({ id: site.id, name: site.name })
+      .from(site)
+      .where(eq(site.userId, session.user.id)),
+    db.query.imageSet.findMany({
+      where: (is, { eq: e }) => e(is.userId, session.user.id),
+      with: { images: true },
+      orderBy: (is, { desc }) => desc(is.createdAt),
+    }),
+    db
+      .select({ id: audio.id, name: audio.name, url: audio.url })
+      .from(audio)
+      .where(eq(audio.userId, session.user.id))
+      .orderBy(audio.createdAt),
+  ]);
 
   return (
     <CreatePuzzleForm
@@ -35,6 +41,7 @@ export default async function Page({
           name: img.name,
         })),
       }))}
+      audioClips={audioClips}
     />
   );
 }

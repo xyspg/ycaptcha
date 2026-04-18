@@ -6,13 +6,13 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { image, puzzle, site } from "@/lib/db/app-schema";
+import { audio, image, imageSet, puzzle, site } from "@/lib/db/app-schema";
 import type { ActionState } from "@/lib/types";
-import { CAPTCHA_GRID_SIZE } from "@/lib/types";
+import { CAPTCHA_GRID_SIZE, CAPTCHA_MODES } from "@/lib/types";
 
 async function requireOwnedPuzzle(puzzleId: string, userId: string) {
   const [row] = await db
-    .select({ id: puzzle.id, imageSetId: puzzle.imageSetId })
+    .select({ id: puzzle.id })
     .from(puzzle)
     .innerJoin(site, and(eq(site.id, puzzle.siteId), eq(site.userId, userId)))
     .where(eq(puzzle.id, puzzleId));
@@ -30,16 +30,15 @@ function ownedPuzzleWhere(puzzleId: string, userId: string) {
   );
 }
 
+const captchaModeEnum = z.enum(CAPTCHA_MODES);
+
 const updatePuzzleSchema = z
   .object({
     puzzleId: z.string().min(1),
-    prompt: z
-      .string()
-      .min(1, "Prompt is required")
-      .max(200, "Prompt is too long"),
-    correctImageIds: z
-      .array(z.string())
-      .min(1, "Select at least 1 correct image"),
+    captchaMode: captchaModeEnum,
+    imageSetId: z.string(),
+    prompt: z.string().max(200, "Prompt is too long"),
+    correctImageIds: z.array(z.string()),
     incorrectImageIds: z.array(z.string()).nullable(),
     correctCount: z
       .number()
@@ -53,27 +52,73 @@ const updatePuzzleSchema = z
       .max(CAPTCHA_GRID_SIZE - 1)
       .nullable(),
     difficulty: z.number().min(0.1).max(1),
-  })
-  .refine((data) => data.correctCount <= data.correctImageIds.length, {
-    message: "Correct count per challenge cannot exceed total correct images",
-    path: ["correctCount"],
+    audioId: z.string().nullable(),
+    audioAnswer: z.string().max(200).nullable(),
   })
   .refine(
-    (data) =>
-      !data.correctCountMax || data.correctCountMax >= data.correctCount,
+    (data) => {
+      if (data.captchaMode === "audio") return true;
+      return data.imageSetId.length > 0;
+    },
+    { message: "Please select an image set", path: ["imageSetId"] },
+  )
+  .refine(
+    (data) => {
+      if (data.captchaMode === "audio") return true;
+      return data.correctImageIds.length > 0;
+    },
+    { message: "Select at least 1 correct image", path: ["correctImageIds"] },
+  )
+  .refine(
+    (data) => {
+      if (data.captchaMode === "audio") return true;
+      return data.prompt.length > 0;
+    },
+    { message: "Prompt is required", path: ["prompt"] },
+  )
+  .refine(
+    (data) => {
+      if (data.captchaMode === "audio") return true;
+      return data.correctCount <= data.correctImageIds.length;
+    },
     {
-      message: "Max must be greater than or equal to min",
-      path: ["correctCountMax"],
+      message: "Correct count per challenge cannot exceed total correct images",
+      path: ["correctCount"],
     },
   )
   .refine(
-    (data) =>
-      !data.correctCountMax ||
-      data.correctCountMax <= data.correctImageIds.length,
+    (data) => {
+      if (data.captchaMode === "audio") return true;
+      return !data.correctCountMax || data.correctCountMax >= data.correctCount;
+    },
+    { message: "Max must be >= min", path: ["correctCountMax"] },
+  )
+  .refine(
+    (data) => {
+      if (data.captchaMode === "audio") return true;
+      return (
+        !data.correctCountMax ||
+        data.correctCountMax <= data.correctImageIds.length
+      );
+    },
     {
       message: "Max cannot exceed total correct images",
       path: ["correctCountMax"],
     },
+  )
+  .refine(
+    (data) => {
+      if (data.captchaMode === "image") return true;
+      return !!data.audioId;
+    },
+    { message: "Please select an audio clip", path: ["audioId"] },
+  )
+  .refine(
+    (data) => {
+      if (data.captchaMode === "image") return true;
+      return !!data.audioAnswer && data.audioAnswer.trim().length > 0;
+    },
+    { message: "Answer is required", path: ["audioAnswer"] },
   );
 
 export async function updatePuzzle(
@@ -97,14 +142,18 @@ export async function updatePuzzle(
 
   const raw = {
     puzzleId: formData.get("puzzleId") as string,
-    prompt: formData.get("prompt") as string,
+    captchaMode: formData.get("captchaMode") as string,
+    imageSetId: (formData.get("imageSetId") as string) || "",
+    prompt: (formData.get("prompt") as string) || "",
     correctImageIds,
     incorrectImageIds,
-    correctCount: Number(formData.get("correctCount")),
+    correctCount: Number(formData.get("correctCount")) || 3,
     correctCountMax: formData.get("correctCountMax")
       ? Number(formData.get("correctCountMax"))
       : null,
-    difficulty: Number(formData.get("difficulty")),
+    difficulty: Number(formData.get("difficulty")) || 0.5,
+    audioId: (formData.get("audioId") as string) || null,
+    audioAnswer: (formData.get("audioAnswer") as string) || null,
   };
 
   const parsed = updatePuzzleSchema.safeParse(raw);
@@ -118,39 +167,79 @@ export async function updatePuzzle(
     return { errors: { puzzleId: ["Puzzle not found"] } };
   }
 
-  // validate all image IDs belong to the puzzle's imageSet
-  const allImageIds = [
-    ...parsed.data.correctImageIds,
-    ...(parsed.data.incorrectImageIds ?? []),
-  ];
-  const validImages = await db
-    .select({ id: image.id })
-    .from(image)
-    .where(
-      and(
-        eq(image.imageSetId, owned.imageSetId),
-        inArray(image.id, allImageIds),
-      ),
-    );
-  if (validImages.length !== new Set(allImageIds).size) {
-    return {
-      errors: {
-        correctImageIds: [
-          "Some images do not belong to the puzzle's image set",
-        ],
-      },
-    };
+  const needsImages = parsed.data.captchaMode !== "audio";
+  const needsAudio = parsed.data.captchaMode !== "image";
+
+  // validate image set ownership and image membership
+  if (needsImages) {
+    const [setData] = await db
+      .select({ id: imageSet.id })
+      .from(imageSet)
+      .where(
+        and(
+          eq(imageSet.id, parsed.data.imageSetId),
+          eq(imageSet.userId, session.user.id),
+        ),
+      );
+    if (!setData) {
+      return { errors: { imageSetId: ["Image set not found"] } };
+    }
+
+    const allImageIds = [
+      ...parsed.data.correctImageIds,
+      ...(parsed.data.incorrectImageIds ?? []),
+    ];
+    if (allImageIds.length > 0) {
+      const validImages = await db
+        .select({ id: image.id })
+        .from(image)
+        .where(
+          and(
+            eq(image.imageSetId, parsed.data.imageSetId),
+            inArray(image.id, allImageIds),
+          ),
+        );
+      if (validImages.length !== new Set(allImageIds).size) {
+        return {
+          errors: {
+            correctImageIds: [
+              "Some images do not belong to the selected image set",
+            ],
+          },
+        };
+      }
+    }
+  }
+
+  // validate audio ownership
+  if (needsAudio && parsed.data.audioId) {
+    const [audioData] = await db
+      .select({ id: audio.id })
+      .from(audio)
+      .where(
+        and(
+          eq(audio.id, parsed.data.audioId),
+          eq(audio.userId, session.user.id),
+        ),
+      );
+    if (!audioData) {
+      return { errors: { audioId: ["Audio clip not found"] } };
+    }
   }
 
   await db
     .update(puzzle)
     .set({
-      prompt: parsed.data.prompt,
-      correctImageIds: parsed.data.correctImageIds,
-      incorrectImageIds: parsed.data.incorrectImageIds,
+      captchaMode: parsed.data.captchaMode,
+      imageSetId: needsImages ? parsed.data.imageSetId : null,
+      prompt: parsed.data.prompt || "Verify",
+      correctImageIds: needsImages ? parsed.data.correctImageIds : [],
+      incorrectImageIds: needsImages ? parsed.data.incorrectImageIds : null,
       correctCount: parsed.data.correctCount,
       correctCountMax: parsed.data.correctCountMax,
       difficulty: parsed.data.difficulty,
+      audioId: needsAudio ? parsed.data.audioId : null,
+      audioAnswer: needsAudio ? parsed.data.audioAnswer : null,
     })
     .where(ownedPuzzleWhere(parsed.data.puzzleId, session.user.id));
 

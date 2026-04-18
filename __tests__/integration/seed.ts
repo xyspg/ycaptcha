@@ -1,6 +1,6 @@
 import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { image, imageSet, puzzle, site } from "@/lib/db/app-schema";
+import { audio, image, imageSet, puzzle, site } from "@/lib/db/app-schema";
 import { user } from "@/lib/db/schema";
 
 // ── Fixed test IDs ──────────────────────────────────────────────────
@@ -19,6 +19,25 @@ export const TEST_IMAGE_SET_ID = "test-imageset-integration";
 export const TEST_PUZZLE_ID = "test-puzzle-integration";
 export const TEST_DISABLED_PUZZLE_ID = "test-puzzle-disabled";
 export const TEST_HARD_PUZZLE_ID = "test-puzzle-hard";
+
+// Audio fixtures — used for audio-only and combined puzzle modes.
+export const TEST_AUDIO_ID = "test-audio-integration";
+export const TEST_AUDIO_URL =
+  "https://r2.ycaptcha.xyspg.moe/audio/test-fixture.wav";
+export const TEST_AUDIO_ANSWER = "RainBow";
+
+// Dedicated sites per mode so the random puzzle pick in the challenge
+// route deterministically returns the puzzle we're testing.
+export const TEST_AUDIO_SITE_ID = "test-site-audio";
+export const TEST_AUDIO_SITE_KEY = "pk_test_audio_key_12345678901";
+export const TEST_AUDIO_SECRET_KEY = "sk_test_audio_key_12345678901";
+
+export const TEST_COMBINED_SITE_ID = "test-site-combined";
+export const TEST_COMBINED_SITE_KEY = "pk_test_combined_key_1234567890";
+export const TEST_COMBINED_SECRET_KEY = "sk_test_combined_key_1234567890";
+
+export const TEST_AUDIO_PUZZLE_ID = "test-puzzle-audio-only";
+export const TEST_COMBINED_PUZZLE_ID = "test-puzzle-combined";
 
 export const TEST_IMAGE_IDS = Array.from(
   { length: 15 },
@@ -68,6 +87,22 @@ export async function seed() {
           siteKey: TEST_HARD_SITE_KEY,
           secretKey: TEST_HARD_SECRET_KEY,
         },
+        {
+          id: TEST_AUDIO_SITE_ID,
+          userId: TEST_USER_ID,
+          name: "Test Audio Site",
+          domain: null,
+          siteKey: TEST_AUDIO_SITE_KEY,
+          secretKey: TEST_AUDIO_SECRET_KEY,
+        },
+        {
+          id: TEST_COMBINED_SITE_ID,
+          userId: TEST_USER_ID,
+          name: "Test Combined Site",
+          domain: null,
+          siteKey: TEST_COMBINED_SITE_KEY,
+          secretKey: TEST_COMBINED_SECRET_KEY,
+        },
       ])
       .onConflictDoNothing(),
     db
@@ -76,6 +111,18 @@ export async function seed() {
         id: TEST_IMAGE_SET_ID,
         userId: TEST_USER_ID,
         name: "Test Image Set",
+      })
+      .onConflictDoNothing(),
+    db
+      .insert(audio)
+      .values({
+        id: TEST_AUDIO_ID,
+        userId: TEST_USER_ID,
+        url: TEST_AUDIO_URL,
+        name: "test-audio",
+        durationMs: 1000,
+        contentHash: "test-audio-hash",
+        sizeBytes: 44_100, // ~1s of mono 22kHz 16-bit WAV
       })
       .onConflictDoNothing(),
   ]);
@@ -106,6 +153,7 @@ export async function seed() {
         correctCountMax: null,
         difficulty: 0.5,
         enabled: true,
+        captchaMode: "image",
       },
       {
         id: TEST_DISABLED_PUZZLE_ID,
@@ -117,6 +165,7 @@ export async function seed() {
         correctCount: 3,
         difficulty: 0.5,
         enabled: false,
+        captchaMode: "image",
       },
       {
         id: TEST_HARD_PUZZLE_ID,
@@ -128,6 +177,34 @@ export async function seed() {
         correctCount: 3,
         difficulty: 1.0,
         enabled: true,
+        captchaMode: "image",
+      },
+      {
+        id: TEST_AUDIO_PUZZLE_ID,
+        siteId: TEST_AUDIO_SITE_ID,
+        imageSetId: null,
+        prompt: "Type what you hear",
+        correctImageIds: [],
+        correctCount: 1,
+        difficulty: 0.5,
+        enabled: true,
+        captchaMode: "audio",
+        audioId: TEST_AUDIO_ID,
+        audioAnswer: TEST_AUDIO_ANSWER,
+      },
+      {
+        id: TEST_COMBINED_PUZZLE_ID,
+        siteId: TEST_COMBINED_SITE_ID,
+        imageSetId: TEST_IMAGE_SET_ID,
+        prompt: "Select test images or type the audio",
+        correctImageIds: TEST_CORRECT_IDS,
+        incorrectImageIds: TEST_INCORRECT_IDS,
+        correctCount: 3,
+        difficulty: 0.5,
+        enabled: true,
+        captchaMode: "combined",
+        audioId: TEST_AUDIO_ID,
+        audioAnswer: TEST_AUDIO_ANSWER,
       },
     ])
     .onConflictDoNothing();

@@ -71,6 +71,7 @@
     "sites": "サイト",
     "puzzles": "パズル",
     "imageSets": "画像セット",
+    "audio": "オーディオ",
     "homePage": "ホームページ",
     "docs": "ドキュメント",
     "settings": "設定"
@@ -165,7 +166,21 @@
       "difficultyHelp": "合格するには {total} 枚の正解{count, plural, one {画像} other {画像}}のうち少なくとも {required} 枚を選択する必要があります。",
       "handPickIncorrect": "不正解画像を手動選択",
       "handPickIncorrectHelp": "オフにすると、不正解は残りの画像からランダムに選ばれます。",
-      "incorrectSelected": "{count} 枚の不正解{count, plural, one {画像} other {画像}}が選択されました"
+      "incorrectSelected": "{count} 枚の不正解{count, plural, one {画像} other {画像}}が選択されました",
+      "captchaMode": "認証モード",
+      "captchaModeDescription": "ユーザーの認証方法を選択：画像グリッド、オーディオクリップ、または両方。",
+      "modeImage": "画像のみ",
+      "modeAudio": "オーディオのみ",
+      "modeCombined": "コンビネーション（画像 + オーディオ切替）",
+      "audioCaptcha": "オーディオCAPTCHA",
+      "audioCaptchaDescription": "オーディオクリップを選択し、ユーザーが入力する正解を設定します。",
+      "selectAudio": "オーディオクリップ",
+      "selectAudioPlaceholder": "オーディオクリップを選択...",
+      "noAudioYet": "オーディオクリップがありません。",
+      "uploadFirst": "先にアップロードしてください",
+      "audioAnswerLabel": "正解",
+      "audioAnswerPlaceholder": "例: Describe the city you live in",
+      "audioAnswerHint": "ユーザーがオーディオを聞いた後に入力するテキスト回答。"
     },
     "edit": {
       "title": "パズルを編集",
@@ -215,7 +230,38 @@
       "errorUnsupportedFormat": "サポートされていない形式です",
       "errorUploadFailed": "アップロードに失敗しました",
       "errorNotAnImage": "画像ではありません",
-      "errorMaxFiles": "一度にアップロードできるのは最大 {count} ファイルです。"
+      "errorMaxFiles": "一度にアップロードできるのは最大 {count} ファイルです。",
+      "errorOverQuota": "ストレージ容量を超えています"
+    }
+  },
+  "audio": {
+    "title": "オーディオクリップ",
+    "uploadAudio": "オーディオをアップロード",
+    "noAudioYet": "オーディオクリップがありません",
+    "noAudioDescription": "CAPTCHA の代替認証としてオーディオクリップをアップロードしてください。",
+    "answer": "回答",
+    "deleteAudio": "オーディオを削除",
+    "deleteAudioDescription": "このオーディオクリップを完全に削除します。先にパズルから削除してください。",
+    "cannotDeleteTitle": "オーディオを削除できません",
+    "cannotDeleteDescription": "このオーディオは以下のパズルで使用されています。先に削除してください。",
+    "upload": {
+      "title": "オーディオクリップをアップロード",
+      "description": "オーディオファイルをアップロードし、トリミングして正解を設定します。",
+      "dropOrBrowse": "クリックしてオーディオファイルを選択",
+      "preview": "再生",
+      "pause": "一時停止",
+      "changeFile": "ファイルを変更",
+      "namePlaceholder": "例: 音声数字",
+      "answerLabel": "正解",
+      "answerPlaceholder": "例: Describe the city you live in",
+      "answerHint": "ユーザーがオーディオCAPTCHAに合格するために入力するテキスト回答。"
+    },
+    "detail": {
+      "playback": "再生",
+      "settings": "設定",
+      "settingsDescription": "このオーディオクリップの名前と正解を更新します。",
+      "dangerZone": "危険ゾーン",
+      "dangerDescription": "このオーディオクリップを削除するとストレージから削除されます。先にパズルから削除してください。"
     }
   },
   "settings": {
@@ -238,6 +284,13 @@
       "title": "言語",
       "description": "お好みの言語を選択してください。"
     },
+    "storage": {
+      "title": "ストレージ",
+      "description": "アカウントごとに {quota} 無料、画像と音声で共有されます。",
+      "used": "{used} / {quota} 使用中（{percent}%）",
+      "imageBytes": "画像",
+      "audioBytes": "音声"
+    },
     "passkeys": {
       "title": "パスキー",
       "description": "生体認証、セキュリティキー、またはお使いのデバイスを使って、パスワードなしでサインインできます。",
@@ -257,7 +310,7 @@
       "step2Title": "本当に実行してもよろしいですか？",
       "step2Body": "この操作は永続的で取り消せません。あなたのすべてのサイト、パズル、画像セット、アップロードした画像が完全に破棄されます。サイト上でアクティブなCAPTCHAウィジェットは直ちに動作しなくなります。",
       "step2Continue": "理解しました、続行します",
-      "step3Instruction": "確認のため、メールアドレス {email} とフレーズ {phrase} を以下に入力してください。",
+      "step3Instruction": "確認のため、メールアドレス <email></email> とフレーズ <phrase></phrase> を以下に入力してください。",
       "step3Email": "メールアドレス",
       "step3Phrase": "\"{phrase}\" と入力",
       "step3Continue": "続行",
@@ -274,7 +327,8 @@
     "title": "プレビュー",
     "description": "このパズルがユーザーにどう見えるかテストします。",
     "refreshPreview": "プレビューを更新",
-    "selectCorrectImages": "正解の画像を選択するとプレビューが表示されます"
+    "selectCorrectImages": "正解の画像を選択するとプレビューが表示されます",
+    "selectAudioClip": "音声クリップと回答を選択するとプレビューが表示されます"
   },
   "confirmDelete": {
     "typeToConfirm": "確認のため <bold>{text}</bold> と入力してください。"

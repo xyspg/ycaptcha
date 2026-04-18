@@ -14,6 +14,11 @@ import {
   uploadBufferToR2,
 } from "@/lib/r2";
 import { SAMPLE_SETS } from "@/lib/samples";
+import {
+  checkQuota,
+  getUserStorageUsage,
+  STORAGE_QUOTA_BYTES,
+} from "@/lib/storage-quota";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
@@ -197,14 +202,42 @@ export async function uploadImages(
     );
   }
 
+  // Quota gate — fetch usage once, accumulate file sizes, drop anything
+  // that would push the user over 200MB.
+  const usage = await getUserStorageUsage(session.user.id);
+  let provisionalBytes = usage.totalBytes;
+  const accepted: typeof newProcessed = [];
+  let quotaSkipped = 0;
+  for (const item of newProcessed) {
+    const next = provisionalBytes + item.buffer.length;
+    if (next > STORAGE_QUOTA_BYTES) {
+      quotaSkipped++;
+      continue;
+    }
+    provisionalBytes = next;
+    accepted.push(item);
+  }
+  if (quotaSkipped > 0) {
+    skipped.push(`${quotaSkipped} over storage quota`);
+  }
+
+  const sizeByHash = new Map(
+    accepted.map((p) => [p.contentHash, p.buffer.length]),
+  );
+
   const results = await Promise.allSettled(
-    newProcessed.map(async ({ file, buffer, contentHash }) => {
+    accepted.map(async ({ file, buffer, contentHash }) => {
       const existingUrl = crossSetMap.get(contentHash);
       if (existingUrl) {
-        return { url: existingUrl, name: file.name, contentHash };
+        return {
+          url: existingUrl,
+          name: file.name,
+          contentHash,
+          uploadedKey: null as string | null,
+        };
       }
-      const { url } = await uploadBufferToR2(buffer);
-      return { url, name: file.name, contentHash };
+      const { key, url } = await uploadBufferToR2(buffer);
+      return { url, name: file.name, contentHash, uploadedKey: key };
     }),
   );
 
@@ -216,19 +249,29 @@ export async function uploadImages(
         url: string;
         name: string;
         contentHash: string;
+        uploadedKey: string | null;
       }> => r.status === "fulfilled",
     )
     .map((r) => r.value);
 
   if (uploaded.length > 0) {
-    await db.insert(image).values(
-      uploaded.map((u) => ({
-        imageSetId: setId,
-        url: u.url,
-        name: u.name,
-        contentHash: u.contentHash,
-      })),
-    );
+    try {
+      await db.insert(image).values(
+        uploaded.map((u) => ({
+          imageSetId: setId,
+          url: u.url,
+          name: u.name,
+          contentHash: u.contentHash,
+          sizeBytes: sizeByHash.get(u.contentHash) ?? 0,
+        })),
+      );
+    } catch (err) {
+      const newKeys = uploaded
+        .map((u) => u.uploadedKey)
+        .filter((k): k is string => !!k);
+      await Promise.allSettled(newKeys.map((k) => deleteFromR2(k)));
+      throw err;
+    }
   }
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
@@ -244,6 +287,7 @@ export async function uploadImages(
 export type UploadSingleResult =
   | { status: "ok"; name: string }
   | { status: "duplicate"; name: string }
+  | { status: "quota"; name: string }
   | { status: "error"; name: string; error: string };
 
 export async function uploadSingleImage(
@@ -267,6 +311,11 @@ export async function uploadSingleImage(
     return { status: "error", name, error: "Invalid image" };
   }
 
+  const usage = await getUserStorageUsage(session.user.id);
+  if (checkQuota(usage, buffer.length)) {
+    return { status: "quota", name };
+  }
+
   // Check duplicate in this set
   const [existing] = await db
     .select({ id: image.id })
@@ -285,14 +334,30 @@ export async function uploadSingleImage(
     .where(eq(image.contentHash, contentHash))
     .limit(1);
 
-  const url = crossSet ? crossSet.url : (await uploadBufferToR2(buffer)).url;
+  let uploadedKey: string | null = null;
+  let url: string;
+  if (crossSet) {
+    url = crossSet.url;
+  } else {
+    const uploaded = await uploadBufferToR2(buffer);
+    url = uploaded.url;
+    uploadedKey = uploaded.key;
+  }
 
-  await db.insert(image).values({
-    imageSetId: setId,
-    url,
-    name,
-    contentHash,
-  });
+  try {
+    await db.insert(image).values({
+      imageSetId: setId,
+      url,
+      name,
+      contentHash,
+      sizeBytes: buffer.length,
+    });
+  } catch (err) {
+    if (uploadedKey) {
+      await deleteFromR2(uploadedKey).catch(() => {});
+    }
+    throw err;
+  }
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
   return { status: "ok", name };
@@ -342,21 +407,26 @@ export async function deleteImage(
 
   await db.delete(image).where(eq(image.id, imageId));
 
-  // only delete from R2 if no other rows share the same content hash
-  // ignore sample images
+  // R2 delete is post-DB so a transient R2 failure leaves a benign byte
+  // orphan instead of a dead-URL DB row. Sample images live in a shared
+  // bucket prefix and must never be touched.
   const isSample = img.url.includes("/samples/");
   if (!isSample) {
+    let shouldDelete = true;
     if (img.contentHash) {
       const [ref] = await db
         .select({ id: image.id })
         .from(image)
         .where(eq(image.contentHash, img.contentHash))
         .limit(1);
-      if (!ref) {
+      shouldDelete = !ref;
+    }
+    if (shouldDelete) {
+      try {
         await deleteFromR2(r2KeyFromUrl(img.url));
+      } catch (err) {
+        console.warn(`R2 cleanup failed for image ${imageId}:`, err);
       }
-    } else {
-      await deleteFromR2(r2KeyFromUrl(img.url));
     }
   }
 
@@ -424,13 +494,22 @@ export async function deleteImageSet(
         )
       : new Set<string>();
 
-  await Promise.allSettled(
-    imgs
-      .filter((img) => img.contentHash !== null)
-      .filter((img) => !stillReferenced.has(img.contentHash))
-      .filter((img) => !img.url.includes("/samples/"))
-      .map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
+  const toDelete = imgs
+    .filter((img) => img.contentHash !== null)
+    .filter((img) => !stillReferenced.has(img.contentHash))
+    .filter((img) => !img.url.includes("/samples/"));
+
+  const results = await Promise.allSettled(
+    toDelete.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
   );
+  for (let i = 0; i < results.length; i++) {
+    if (results[i].status === "rejected") {
+      console.warn(
+        `R2 cleanup failed for image set ${setId} key ${toDelete[i].url}:`,
+        (results[i] as PromiseRejectedResult).reason,
+      );
+    }
+  }
 
   redirect("/dashboard/image-sets");
 }
@@ -456,17 +535,27 @@ export async function importSampleSet(slug: string): Promise<void> {
     })
     .returning({ id: imageSet.id });
 
-  await db
-    .insert(image)
-    .values(
-      sample.images.map((img) => ({
-        imageSetId: created.id,
-        url: img.url,
-        name: img.name,
-        contentHash: img.contentHash,
-      })),
-    )
-    .onConflictDoNothing({
-      target: [image.imageSetId, image.contentHash],
-    });
+  // Roll back the empty imageSet if image inserts fail — otherwise the
+  // user sees a phantom set with zero images in the dashboard.
+  try {
+    await db
+      .insert(image)
+      .values(
+        sample.images.map((img) => ({
+          imageSetId: created.id,
+          url: img.url,
+          name: img.name,
+          contentHash: img.contentHash,
+        })),
+      )
+      .onConflictDoNothing({
+        target: [image.imageSetId, image.contentHash],
+      });
+  } catch (err) {
+    await db
+      .delete(imageSet)
+      .where(eq(imageSet.id, created.id))
+      .catch(() => {});
+    throw err;
+  }
 }

@@ -21,7 +21,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { NativeSelect } from "@/components/ui/native-select";
+import type { CaptchaMode } from "@/lib/types";
 import { createPuzzle } from "./actions";
 
 interface ImageSetData {
@@ -30,25 +33,40 @@ interface ImageSetData {
   images: ImageData[];
 }
 
+interface AudioClipData {
+  id: string;
+  name: string;
+  url: string;
+}
+
 interface CreatePuzzleFormProps {
   sites: { id: string; name: string }[];
   defaultSiteId?: string;
   imageSets: ImageSetData[];
+  audioClips: AudioClipData[];
 }
 
 export function CreatePuzzleForm({
   sites,
   defaultSiteId,
   imageSets,
+  audioClips,
 }: CreatePuzzleFormProps) {
   const t = useTranslations("puzzles.create");
   const tp = useTranslations("puzzles");
   const tc = useTranslations("common");
   const [selectedSiteId, setSelectedSiteId] = useState(defaultSiteId ?? "");
   const [selectedSetId, setSelectedSetId] = useState("");
+  const [captchaMode, setCaptchaMode] = useState<CaptchaMode>("image");
+  const [selectedAudioId, setSelectedAudioId] = useState("");
+  const [audioAnswer, setAudioAnswer] = useState("");
   const config = usePuzzleConfig();
 
+  const needsImages = captchaMode !== "audio";
+  const needsAudio = captchaMode !== "image";
+
   const selectedSet = imageSets.find((s) => s.id === selectedSetId);
+  const selectedAudio = audioClips.find((c) => c.id === selectedAudioId);
 
   const [state, formAction, isPending] = useActionState(createPuzzle, null);
 
@@ -75,6 +93,9 @@ export function CreatePuzzleForm({
           <form action={formAction} className="flex flex-col gap-6">
             <input type="hidden" name="siteId" value={selectedSiteId} />
             <input type="hidden" name="imageSetId" value={selectedSetId} />
+            <input type="hidden" name="captchaMode" value={captchaMode} />
+            <input type="hidden" name="audioId" value={selectedAudioId} />
+            <input type="hidden" name="audioAnswer" value={audioAnswer} />
             <PuzzleHiddenFields config={config} />
 
             {/* Site Selection */}
@@ -115,59 +136,83 @@ export function CreatePuzzleForm({
               </CardContent>
             </Card>
 
-            {/* Image Set Selection */}
+            {/* Captcha Mode */}
             <Card>
               <CardHeader>
-                <CardTitle>{t("imageSet")}</CardTitle>
-                <CardDescription>
-                  {t("imageSetDescription")}{" "}
-                  <Link
-                    href="/dashboard/image-sets"
-                    className="underline hover:text-foreground"
-                  >
-                    {tc("manage")}
-                  </Link>
-                </CardDescription>
+                <CardTitle>{t("captchaMode")}</CardTitle>
+                <CardDescription>{t("captchaModeDescription")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <NativeSelect
-                  name="imageSetId"
-                  value={selectedSetId}
-                  onChange={(e) => handleSetChange(e.target.value)}
+                  value={captchaMode}
+                  onChange={(e) =>
+                    setCaptchaMode(e.target.value as CaptchaMode)
+                  }
                 >
-                  <option value="">{t("selectImageSet")}</option>
-                  {imageSets.map((is) => (
-                    <option key={is.id} value={is.id}>
-                      {t("imageSetOption", {
-                        name: is.name,
-                        count: is.images.length,
-                      })}
-                    </option>
-                  ))}
+                  <option value="image">{t("modeImage")}</option>
+                  <option value="audio">{t("modeAudio")}</option>
+                  <option value="combined">{t("modeCombined")}</option>
                 </NativeSelect>
-                {imageSets.length === 0 && (
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {t("noImageSetsYet")}{" "}
+              </CardContent>
+            </Card>
+
+            {/* Image Set Selection — shown for image/combined modes */}
+            {needsImages && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("imageSet")}</CardTitle>
+                  <CardDescription>
+                    {t("imageSetDescription")}{" "}
                     <Link
                       href="/dashboard/image-sets"
                       className="underline hover:text-foreground"
                     >
-                      {t("createOneFirst")}
+                      {tc("manage")}
                     </Link>
-                    .
-                  </p>
-                )}
-                {state?.errors?.imageSetId && (
-                  <p className="mt-1 text-xs text-destructive">
-                    {state.errors.imageSetId[0]}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <NativeSelect
+                    name="imageSetId"
+                    value={selectedSetId}
+                    onChange={(e) => handleSetChange(e.target.value)}
+                  >
+                    <option value="">{t("selectImageSet")}</option>
+                    {imageSets.map((is) => (
+                      <option key={is.id} value={is.id}>
+                        {t("imageSetOption", {
+                          name: is.name,
+                          count: is.images.length,
+                        })}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                  {imageSets.length === 0 && (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {t("noImageSetsYet")}{" "}
+                      <Link
+                        href="/dashboard/image-sets"
+                        className="underline hover:text-foreground"
+                      >
+                        {t("createOneFirst")}
+                      </Link>
+                      .
+                    </p>
+                  )}
+                  {state?.errors?.imageSetId && (
+                    <p className="mt-1 text-xs text-destructive">
+                      {state.errors.imageSetId[0]}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
-            <PromptField config={config} errors={state?.errors?.prompt} />
+            {needsImages && (
+              <PromptField config={config} errors={state?.errors?.prompt} />
+            )}
 
-            {selectedSet && (
+            {needsImages && selectedSet && (
               <CorrectImageGrid
                 images={selectedSet.images}
                 config={config}
@@ -175,11 +220,73 @@ export function CreatePuzzleForm({
               />
             )}
 
-            <AdvancedSettings
-              images={selectedSet?.images ?? []}
-              config={config}
-              errors={state?.errors}
-            />
+            {needsImages && (
+              <AdvancedSettings
+                images={selectedSet?.images ?? []}
+                config={config}
+                errors={state?.errors}
+              />
+            )}
+
+            {/* Audio config — shown for audio/combined modes */}
+            {needsAudio && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("audioCaptcha")}</CardTitle>
+                  <CardDescription>
+                    {t("audioCaptchaDescription")}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-2">
+                    <Label>{t("selectAudio")}</Label>
+                    <NativeSelect
+                      value={selectedAudioId}
+                      onChange={(e) => setSelectedAudioId(e.target.value)}
+                    >
+                      <option value="">{t("selectAudioPlaceholder")}</option>
+                      {audioClips.map((clip) => (
+                        <option key={clip.id} value={clip.id}>
+                          {clip.name}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                    {audioClips.length === 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        {t("noAudioYet")}{" "}
+                        <Link
+                          href="/dashboard/audio"
+                          className="underline hover:text-foreground"
+                        >
+                          {t("uploadFirst")}
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label htmlFor="audioAnswer">{t("audioAnswerLabel")}</Label>
+                    <Input
+                      id="audioAnswer"
+                      value={audioAnswer}
+                      onChange={(e) => setAudioAnswer(e.target.value)}
+                      placeholder={t("audioAnswerPlaceholder")}
+                      autoComplete="off"
+                      data-1p-ignore
+                      data-lpignore="true"
+                      data-form-type="other"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {t("audioAnswerHint")}
+                    </p>
+                    {state?.errors?.audioAnswer && (
+                      <p className="text-xs text-destructive">
+                        {state.errors.audioAnswer[0]}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Submit */}
             <div className="flex items-center gap-3">
@@ -187,8 +294,9 @@ export function CreatePuzzleForm({
                 type="submit"
                 disabled={
                   isPending ||
-                  config.correctIds.size === 0 ||
-                  !selectedSetId ||
+                  (needsImages &&
+                    (config.correctIds.size === 0 || !selectedSetId)) ||
+                  (needsAudio && (!selectedAudioId || !audioAnswer.trim())) ||
                   !selectedSiteId
                 }
               >
@@ -205,6 +313,9 @@ export function CreatePuzzleForm({
         <PuzzlePreviewSidebar
           images={selectedSet?.images ?? []}
           config={config}
+          captchaMode={captchaMode}
+          audioUrl={selectedAudio?.url}
+          audioAnswer={audioAnswer}
         />
       </div>
     </div>

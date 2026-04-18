@@ -68,11 +68,29 @@ export async function getVerificationToken(
   return token;
 }
 
+/**
+ * Audio counterpart to {@link getVerificationToken} — challenge → text-answer
+ * verify, returns the consumed-once verification token.
+ */
+export async function getAudioVerificationToken(
+  siteKey: string,
+  textAnswer: string,
+): Promise<string> {
+  const { sessionToken } = await getChallenge(siteKey);
+
+  const { POST: verifyPOST } = await import(
+    "@/app/(main)/api/v0/captcha/verify/route"
+  );
+  const verifyRes = await verifyPOST(postRequest({ sessionToken, textAnswer }));
+  const { token } = await verifyRes.json();
+  return token;
+}
+
 // ── R2 fetch mock ────────────────────────────────────────────────
 
 const originalFetch = globalThis.fetch;
 
-/** Mock fetch only for R2 image URLs, pass through everything else (Neon, Upstash). */
+/** Mock fetch only for R2 asset URLs, pass through everything else (Neon, Upstash). */
 export function mockR2Fetch() {
   globalThis.fetch = vi.fn(
     async (input: RequestInfo | URL, init?: RequestInit) => {
@@ -84,9 +102,14 @@ export function mockR2Fetch() {
             : input.url;
 
       if (url.includes("r2.ycaptcha.xyspg.moe")) {
-        return new Response(Buffer.from("fake-image-data"), {
+        // Match the bucket prefix so audio + image proxies both get a
+        // realistic Content-Type without leaking through to real R2.
+        const isAudio = /\/audio\//.test(url);
+        return new Response(Buffer.from("fake-asset-data"), {
           status: 200,
-          headers: { "Content-Type": "image/webp" },
+          headers: {
+            "Content-Type": isAudio ? "audio/wav" : "image/webp",
+          },
         });
       }
 

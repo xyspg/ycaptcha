@@ -20,6 +20,10 @@ const s3 = new S3Client({
 const MAX_DIMENSION = 300; // 2x retina for ~115px grid cells
 const WEBP_QUALITY = 80;
 
+export function hashBuffer(buf: Buffer): string {
+  return createHash("sha256").update(buf).digest("hex");
+}
+
 export async function processImage(
   rawBuffer: Buffer,
 ): Promise<{ buffer: Buffer; contentHash: string }> {
@@ -31,7 +35,7 @@ export async function processImage(
     .webp({ quality: WEBP_QUALITY })
     .toBuffer();
 
-  const contentHash = createHash("sha256").update(processed).digest("hex");
+  const contentHash = hashBuffer(processed);
   return { buffer: processed, contentHash };
 }
 
@@ -53,6 +57,33 @@ export async function uploadBufferToR2(
   return { key, url };
 }
 
+export async function uploadAudioToR2(
+  buffer: Buffer,
+  ext: string,
+): Promise<{ key: string; url: string }> {
+  const contentType =
+    ext === "webm"
+      ? "audio/webm"
+      : ext === "mp3"
+        ? "audio/mpeg"
+        : ext === "ogg"
+          ? "audio/ogg"
+          : "audio/wav";
+  const key = `audio/${nanoid()}.${ext}`;
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: env.R2_BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: contentType,
+    }),
+  );
+
+  const url = `${env.R2_PUBLIC_URL}/${key}`;
+  return { key, url };
+}
+
 export async function deleteFromR2(key: string): Promise<void> {
   await s3.send(
     new DeleteObjectCommand({
@@ -60,6 +91,30 @@ export async function deleteFromR2(key: string): Promise<void> {
       Key: key,
     }),
   );
+}
+
+/**
+ * Stream an asset from R2 through a proxy without exposing the underlying URL.
+ * Sets `no-store` cache headers and `nosniff` to prevent client-side caching
+ * and MIME confusion.
+ */
+export async function proxyR2Asset(
+  sourceUrl: string,
+  fallbackContentType: string,
+): Promise<Response> {
+  const upstream = await fetch(sourceUrl);
+  if (!upstream.ok) {
+    return new Response("Asset not found", { status: 502 });
+  }
+  return new Response(upstream.body, {
+    status: 200,
+    headers: {
+      "Content-Type":
+        upstream.headers.get("Content-Type") ?? fallbackContentType,
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
 }
 
 export function r2KeyFromUrl(url: string): string {
