@@ -283,11 +283,19 @@ export const AudioTrimmer = forwardRef<AudioTrimmerHandle, AudioTrimmerProps>(
       const xPx = xNorm * w;
       const sPx = trimStart * w;
       const ePx = trimEnd * w;
+      const regionPx = ePx - sPx;
 
-      if (Math.abs(xPx - sPx) <= HANDLE_HIT_PX) return "start";
-      if (Math.abs(xPx - ePx) <= HANDLE_HIT_PX) return "end";
-      if (xPx > sPx + HANDLE_HIT_PX && xPx < ePx - HANDLE_HIT_PX)
-        return "region";
+      // Handles always own ±HANDLE_HIT_PX *outside* the region so they're
+      // easy to grab. *Inside* the region they're capped to a third of the
+      // region width so a tiny window still leaves a center strip for
+      // region-drag (long source + short cap → narrow region).
+      const innerHit = Math.min(HANDLE_HIT_PX, regionPx / 3);
+
+      if (xPx < sPx && xPx >= sPx - HANDLE_HIT_PX) return "start";
+      if (xPx > ePx && xPx <= ePx + HANDLE_HIT_PX) return "end";
+      if (xPx >= sPx && xPx < sPx + innerHit) return "start";
+      if (xPx <= ePx && xPx > ePx - innerHit) return "end";
+      if (xPx >= sPx + innerHit && xPx <= ePx - innerHit) return "region";
       return null;
     };
 

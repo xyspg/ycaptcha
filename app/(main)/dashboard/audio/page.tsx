@@ -42,7 +42,7 @@ export default async function Page() {
           </div>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,280px))] gap-4">
           {clips.map((clip) => (
             <AudioCard
               key={clip.id}

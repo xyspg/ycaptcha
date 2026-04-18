@@ -14,6 +14,7 @@ import {
   uploadAudioToR2,
 } from "@/lib/r2";
 import type { ActionState } from "@/lib/types";
+import { parseWav } from "@/lib/wav";
 
 export type { ActionState } from "@/lib/types";
 
@@ -45,7 +46,6 @@ export async function uploadAudio(
 
   const file = formData.get("file") as File | null;
   const name = (formData.get("name") as string)?.trim();
-  const durationMs = Number(formData.get("durationMs")) || null;
 
   if (!file || file.size === 0) {
     return { errors: { file: ["No file selected"] } };
@@ -59,14 +59,24 @@ export async function uploadAudio(
   if (file.size > MAX_FILE_SIZE) {
     return { errors: { file: ["File exceeds 1MB limit"] } };
   }
-  if (!file.type.startsWith("audio/")) {
-    return { errors: { file: ["File must be an audio file"] } };
+
+  const arrayBuffer = await file.arrayBuffer();
+
+  // Decode the WAV ourselves rather than trusting MIME or the client's
+  // durationMs — that's the only way to guarantee uploads stay within
+  // the 10s cap regardless of what the form claims.
+  let wav: ReturnType<typeof parseWav>;
+  try {
+    wav = parseWav(arrayBuffer);
+  } catch {
+    return { errors: { file: ["File must be a 16-bit PCM WAV"] } };
   }
-  if (durationMs && durationMs > MAX_DURATION_MS) {
+  if (wav.durationMs > MAX_DURATION_MS) {
     return { errors: { file: ["Audio must be 10 seconds or shorter"] } };
   }
+  const durationMs = wav.durationMs;
 
-  const buffer = Buffer.from(await file.arrayBuffer());
+  const buffer = Buffer.from(arrayBuffer);
   const contentHash = hashBuffer(buffer);
 
   // Check dedup for this user

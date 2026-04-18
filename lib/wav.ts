@@ -51,3 +51,70 @@ function writeString(view: DataView, offset: number, str: string) {
     view.setUint8(offset + i, str.charCodeAt(i));
   }
 }
+
+export interface WavInfo {
+  sampleRate: number;
+  numChannels: number;
+  bitsPerSample: number;
+  /** Number of audio sample frames (per channel). */
+  numSamples: number;
+  durationMs: number;
+}
+
+/**
+ * Parse a 16-bit PCM WAV header. Throws on anything we don't accept so
+ * uploads can't smuggle in long or non-PCM audio behind a WAV MIME type.
+ */
+export function parseWav(buffer: ArrayBuffer): WavInfo {
+  if (buffer.byteLength < 44) throw new Error("WAV: too small");
+  const view = new DataView(buffer);
+
+  if (readAscii(view, 0, 4) !== "RIFF") throw new Error("WAV: missing RIFF");
+  if (readAscii(view, 8, 4) !== "WAVE") throw new Error("WAV: missing WAVE");
+
+  // Walk subchunks (fmt, data, optional LIST/fact, …) starting after "WAVE".
+  let offset = 12;
+  let format: number | null = null;
+  let numChannels = 0;
+  let sampleRate = 0;
+  let bitsPerSample = 0;
+  let dataSize: number | null = null;
+
+  while (offset + 8 <= view.byteLength) {
+    const id = readAscii(view, offset, 4);
+    const size = view.getUint32(offset + 4, true);
+    const body = offset + 8;
+    if (id === "fmt ") {
+      if (size < 16) throw new Error("WAV: short fmt");
+      format = view.getUint16(body, true);
+      numChannels = view.getUint16(body + 2, true);
+      sampleRate = view.getUint32(body + 4, true);
+      bitsPerSample = view.getUint16(body + 14, true);
+    } else if (id === "data") {
+      dataSize = size;
+      break;
+    }
+    offset = body + size + (size % 2); // chunks are word-aligned
+  }
+
+  if (format !== 1) throw new Error("WAV: only PCM accepted");
+  if (numChannels < 1 || numChannels > 2)
+    throw new Error("WAV: unsupported channel count");
+  if (sampleRate < 8000 || sampleRate > 48000)
+    throw new Error("WAV: unsupported sample rate");
+  if (bitsPerSample !== 16) throw new Error("WAV: only 16-bit PCM accepted");
+  if (dataSize == null) throw new Error("WAV: missing data chunk");
+
+  const bytesPerFrame = numChannels * (bitsPerSample / 8);
+  const numSamples = Math.floor(dataSize / bytesPerFrame);
+  const durationMs = Math.round((numSamples / sampleRate) * 1000);
+
+  return { sampleRate, numChannels, bitsPerSample, numSamples, durationMs };
+}
+
+function readAscii(view: DataView, offset: number, length: number): string {
+  let s = "";
+  for (let i = 0; i < length; i++)
+    s += String.fromCharCode(view.getUint8(offset + i));
+  return s;
+}
