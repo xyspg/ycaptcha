@@ -206,9 +206,11 @@ export function PuzzlePreviewPanel({
   const audioReady = !needsAudio || (!!audioUrl && !!audioAnswer?.trim());
   const ready = imagesReady && audioReady;
 
-  const placeholder = !needsImages
-    ? t("selectAudioClip")
-    : t("selectCorrectImages");
+  // Pick the placeholder for whichever requirement is still missing —
+  // important for combined mode, which needs both images and audio.
+  const placeholder = !imagesReady
+    ? t("selectCorrectImages")
+    : t("selectAudioClip");
 
   return (
     <div className="hidden w-[370px] shrink-0 lg:block">
