@@ -120,13 +120,15 @@ test.describe
       await page.waitForURL("**/dashboard/sites/**", { timeout: 10_000 });
     });
 
-    test("audio-only puzzle appears on site detail (default prompt)", async ({
-      page,
-    }) => {
-      // Audio-only mode has no prompt input, so the action falls back to
-      // "Verify" — that's what shows on the card.
+    // Puzzle detail links — excludes the "Create Puzzle" link (/new).
+    const puzzleRowLinks = 'a[href^="/dashboard/puzzles/"]:not([href*="/new"])';
+
+    test("audio-only puzzle appears on site detail", async ({ page }) => {
+      // Audio-only mode allows an empty prompt (commit c27aa29 removed the
+      // `|| "Verify"` fallback), so assert on the puzzle link itself
+      // rather than the card's prompt text.
       await page.goto(siteDetailUrl);
-      await expect(page.getByText("Verify").first()).toBeVisible();
+      await expect(page.locator(puzzleRowLinks)).toHaveCount(1);
     });
 
     // ── Edit puzzle: switch from audio-only to combined ───────────────────
@@ -135,7 +137,7 @@ test.describe
       page,
     }) => {
       await page.goto(siteDetailUrl);
-      await page.getByText("Verify").first().click();
+      await page.locator(puzzleRowLinks).first().click();
       await page.waitForURL("**/dashboard/puzzles/**");
 
       await selectCaptchaMode(page, "Combined (image + audio toggle)");

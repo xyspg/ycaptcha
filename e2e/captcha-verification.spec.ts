@@ -66,11 +66,10 @@ test.describe
 
     test("setup: ensure sample image set exists", async ({ page }) => {
       await page.goto("/dashboard/image-sets");
-      const hasImported = await page
-        .getByRole("link")
-        .filter({ hasText: "Tech Stacks" })
+      const hasImageSet = await page
+        .locator('a[href^="/dashboard/image-sets/"]')
         .count();
-      if (hasImported === 0) {
+      if (hasImageSet === 0) {
         await importSampleSet(page);
       }
     });

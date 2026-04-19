@@ -315,8 +315,15 @@ test.describe
 
     test("cleanup: delete audio-only puzzle + site", async ({ page }) => {
       await page.goto(audioSiteUrl);
-      // Audio-only puzzles have no prompt input → action defaults to "Verify".
-      await deletePuzzleByPromptText(page, "Verify");
+      // Audio-only puzzles have empty prompt (commit c27aa29 removed the
+      // `|| "Verify"` fallback); target the row link by href instead.
+      const puzzleRow = page
+        .locator('a[href^="/dashboard/puzzles/"]:not([href*="/new"])')
+        .first();
+      await puzzleRow.click({ button: "right" });
+      await page.getByRole("menuitem", { name: "Delete Puzzle" }).click();
+      await page.getByRole("button", { name: "Delete" }).click();
+      await expect(puzzleRow).toBeHidden({ timeout: 10_000 });
       await deleteSite(page, audioSiteUrl, audioSiteName);
     });
 

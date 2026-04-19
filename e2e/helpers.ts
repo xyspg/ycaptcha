@@ -1,6 +1,9 @@
 import type { APIRequestContext, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { buildSilentWav } from "@/__tests__/fixtures/wav";
+import { buildTestPngs } from "./fixtures/test-images";
+
+export const SAMPLE_SET_IMAGE_COUNT = 13;
 
 export const ORIGIN = "http://localhost:3000";
 
@@ -76,44 +79,57 @@ export async function deleteSite(page: Page, url: string, name: string) {
   await expect(page.getByText(name)).not.toBeVisible();
 }
 
-/** Import the first available sample set. Returns the image set detail URL. */
-export async function importSampleSet(page: Page): Promise<string> {
+/**
+ * Create a fresh image set and upload a deterministic batch of test images
+ * through the dashboard UI. Returns the detail URL.
+ *
+ * Pass a stable `seed` when two calls need identical content hashes (dedup
+ * tests). Default seed is per-call random so other specs' image rows don't
+ * hold references to the bytes dedup uploads — otherwise refcount cleanup
+ * never fires when dedup deletes its last set.
+ */
+export async function importSampleSet(
+  page: Page,
+  opts: { name?: string; seed?: number | string } = {},
+): Promise<string> {
+  const name =
+    opts.name ?? `test-set-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  const seed = opts.seed ?? Math.random().toString(36).slice(2);
+
   await page.goto("/dashboard/image-sets");
 
-  const setLinks = page.locator("a[href^='/dashboard/image-sets/']");
-  const before = new Set(
-    await setLinks.evaluateAll((els) =>
-      els.map((el) => (el as HTMLAnchorElement).getAttribute("href") ?? ""),
-    ),
-  );
-
   await page
-    .getByRole("button", { name: "Import", exact: true })
+    .getByRole("button", { name: "Create Image Set", exact: true })
     .first()
     .click();
 
-  await expect
-    .poll(
-      async () =>
-        (
-          await setLinks.evaluateAll((els) =>
-            els.map(
-              (el) => (el as HTMLAnchorElement).getAttribute("href") ?? "",
-            ),
-          )
-        ).some((href) => !before.has(href)),
-      { timeout: 15_000 },
-    )
-    .toBe(true);
+  const dialog = page.locator("[data-slot='dialog-content']");
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel("Name", { exact: true }).fill(name);
+  await dialog
+    .getByRole("button", { name: "Create Image Set", exact: true })
+    .click();
 
-  const after = await setLinks.evaluateAll((els) =>
-    els.map((el) => (el as HTMLAnchorElement).getAttribute("href") ?? ""),
+  await page.waitForURL(/\/dashboard\/image-sets\/[^/]+$/, { timeout: 10_000 });
+  const detailUrl = page.url();
+
+  // The dropzone's <input type="file"> is hidden by react-dropzone; setInputFiles
+  // targets it directly.
+  await page.locator("input[type='file']").setInputFiles(
+    buildTestPngs(SAMPLE_SET_IMAGE_COUNT, seed).map((f) => ({
+      name: f.name,
+      mimeType: f.mimeType,
+      buffer: f.buffer,
+    })),
   );
-  const newHref = after.find((href) => !before.has(href));
-  if (!newHref) throw new Error("No new image set detected after import");
 
-  await page.goto(newHref);
-  return page.url();
+  // Uploads run serially on the client (compress → upload per file), so 13
+  // files take noticeably longer than a single-file flow.
+  await expect(
+    page.getByText(new RegExp(`Images \\(${SAMPLE_SET_IMAGE_COUNT}\\)`)),
+  ).toBeVisible({ timeout: 60_000 });
+
+  return detailUrl;
 }
 
 /** Retry challenge+verify until we get a passing token. */
@@ -193,13 +209,21 @@ export async function loadWidgetWithReferer(page: Page, siteKey: string) {
  * Upload an audio clip via the dashboard dialog. The trimmer decodes the
  * silent fixture, leaves the default trim window, and submits.
  *
+ * Server-side dedup keys on the SHA-256 of the final re-encoded WAV bytes
+ * per user, so two specs uploading identical silence collide. Default
+ * duration is derived from `name` (0.40s–0.90s, 5ms granularity) so each
+ * named clip produces unique bytes; callers can still pin `durationSec`
+ * explicitly when they want byte equality.
+ *
  * Returns once the new card is visible in the listing.
  */
 export async function uploadAudioClip(
   page: Page,
   name: string,
-  durationSec = 0.5,
+  durationSec?: number,
 ) {
+  const duration = durationSec ?? durationFromName(name);
+
   await page.goto("/dashboard/audio");
 
   await page.getByRole("button", { name: "Upload Audio" }).first().click();
@@ -207,7 +231,7 @@ export async function uploadAudioClip(
   const dialog = page.locator("[data-slot='dialog-content']");
   await expect(dialog).toBeVisible();
 
-  const wav = buildSilentWav({ durationSec });
+  const wav = buildSilentWav({ durationSec: duration });
   await dialog.locator("input[type='file']").setInputFiles({
     name: `${name}.wav`,
     mimeType: "audio/wav",
@@ -225,6 +249,21 @@ export async function uploadAudioClip(
   await expect(page.getByRole("link", { name })).toBeVisible({
     timeout: 10_000,
   });
+}
+
+/**
+ * Derive a duration in [0.40s, 0.90s] with 5 ms steps from an arbitrary
+ * name, giving same-name callers byte-stable output and different-name
+ * callers collision-free contentHashes.
+ */
+function durationFromName(name: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < name.length; i++) {
+    h ^= name.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const steps = (h >>> 0) % 101; // 0..100 → 0.000..0.500
+  return 0.4 + steps * 0.005;
 }
 
 /**
