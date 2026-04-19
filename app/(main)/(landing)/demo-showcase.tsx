@@ -5,7 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { SAMPLE_SETS, type SampleSet } from "@/lib/samples";
+import { DEMO_SETS, type DemoSet } from "@/lib/demo-sets";
+import { env } from "@/lib/env";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
 import { DemoCaptchaWidget } from "./demo-captcha-widget";
@@ -16,14 +17,11 @@ interface Demo {
 }
 
 // deterministic to avoid hydration mismatch
-function buildSingleDemo(set: SampleSet, deterministic = false): Demo {
+function buildSingleDemo(set: DemoSet, deterministic = false): Demo {
   const correctSet = new Set(set.correctHashes);
-  const correct = (deterministic ? set.images : shuffle(set.images)).filter(
-    (img) => correctSet.has(img.contentHash),
-  );
-  const incorrect = (deterministic ? set.images : shuffle(set.images)).filter(
-    (img) => !correctSet.has(img.contentHash),
-  );
+  const pool = deterministic ? set.images : shuffle(set.images);
+  const correct = pool.filter((img) => correctSet.has(img.contentHash));
+  const incorrect = pool.filter((img) => !correctSet.has(img.contentHash));
   const correctCount = deterministic ? 3 : 3 + Math.floor(Math.random() * 3); // 3–5
   const combined = [
     ...correct.slice(0, correctCount),
@@ -34,13 +32,13 @@ function buildSingleDemo(set: SampleSet, deterministic = false): Demo {
     prompt: set.name,
     images: picked.map((img) => ({
       contentHash: img.contentHash,
-      url: img.url,
+      url: `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${img.path}`,
     })),
   };
 }
 
 function buildDemos(deterministic = false): Demo[] {
-  return SAMPLE_SETS.map((set) => buildSingleDemo(set, deterministic));
+  return DEMO_SETS.map((set) => buildSingleDemo(set, deterministic));
 }
 
 const DESKTOP_POSITIONS = [
@@ -66,7 +64,7 @@ export function DemoShowcase() {
   const reshuffleSingle = (demoIndex: number) => {
     setDemos((prev) => {
       const next = [...prev];
-      next[demoIndex] = buildSingleDemo(SAMPLE_SETS[demoIndex]);
+      next[demoIndex] = buildSingleDemo(DEMO_SETS[demoIndex]);
       return next;
     });
   };
@@ -95,7 +93,7 @@ export function DemoShowcase() {
     if (justSwitchedRef.current) return;
     if (selectedIndices.length === 0) return;
 
-    const correctSet = new Set(SAMPLE_SETS[demoIndex].correctHashes);
+    const correctSet = new Set(DEMO_SETS[demoIndex].correctHashes);
     const selectedHashes = selectedIndices.map(
       (i) => demos[demoIndex].images[i].contentHash,
     );

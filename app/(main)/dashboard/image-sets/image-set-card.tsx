@@ -1,7 +1,8 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Sparkles, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
@@ -47,6 +48,7 @@ export function ImageSetCard({
 }: ImageSetCardProps) {
   const t = useTranslations("imageSets");
   const tc = useTranslations("common");
+  const router = useRouter();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [blockedPuzzles, setBlockedPuzzles] = useState<ReferencingPuzzle[]>([]);
 
@@ -82,6 +84,12 @@ export function ImageSetCard({
           </Link>
         </ContextMenuTrigger>
         <ContextMenuContent>
+          <ContextMenuItem
+            onSelect={() => router.push(`/dashboard/image-sets/${id}/publish`)}
+          >
+            <Sparkles className="size-3.5" />
+            Publish to gallery…
+          </ContextMenuItem>
           <ContextMenuItem
             className="text-destructive focus:text-destructive"
             onSelect={() => setDeleteOpen(true)}

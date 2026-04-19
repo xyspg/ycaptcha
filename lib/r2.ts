@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import {
+  CopyObjectCommand,
   DeleteObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -53,7 +54,7 @@ export async function uploadBufferToR2(
     }),
   );
 
-  const url = `${env.R2_PUBLIC_URL}/${key}`;
+  const url = `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`;
   return { key, url };
 }
 
@@ -80,8 +81,22 @@ export async function uploadAudioToR2(
     }),
   );
 
-  const url = `${env.R2_PUBLIC_URL}/${key}`;
+  const url = `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`;
   return { key, url };
+}
+
+export async function copyObjectInR2(
+  sourceKey: string,
+  destKey: string,
+): Promise<{ key: string; url: string }> {
+  await s3.send(
+    new CopyObjectCommand({
+      Bucket: env.R2_BUCKET,
+      CopySource: `${env.R2_BUCKET}/${sourceKey}`,
+      Key: destKey,
+    }),
+  );
+  return { key: destKey, url: `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${destKey}` };
 }
 
 export async function deleteFromR2(key: string): Promise<void> {
@@ -118,7 +133,7 @@ export async function proxyR2Asset(
 }
 
 export function r2KeyFromUrl(url: string): string {
-  const prefix = `${env.R2_PUBLIC_URL}/`;
+  const prefix = `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/`;
   if (url.startsWith(prefix)) {
     return url.slice(prefix.length);
   }

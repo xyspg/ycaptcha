@@ -50,7 +50,7 @@ export default async function globalTeardown() {
 }
 
 async function deleteR2Urls(urls: string[]) {
-  const publicUrl = process.env.R2_PUBLIC_URL;
+  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
   const bucket = process.env.R2_BUCKET;
   const endpoint = process.env.R2_ENDPOINT;
   const accessKeyId = process.env.R2_ACCESS_KEY_ID;

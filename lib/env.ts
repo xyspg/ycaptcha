@@ -12,7 +12,6 @@ export const env = createEnv({
     R2_SECRET_ACCESS_KEY: z.string(),
     R2_BUCKET: z.string(),
     R2_ENDPOINT: z.url(),
-    R2_PUBLIC_URL: z.url(),
     UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
     RESEND_API_KEY: z.string(),
@@ -20,9 +19,13 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_SITE_URL: z.url(),
     NEXT_PUBLIC_SENTRY_DSN: z.url(),
+    NEXT_PUBLIC_GITHUB_URL: z.url(),
+    NEXT_PUBLIC_R2_PUBLIC_URL: z.url(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    NEXT_PUBLIC_GITHUB_URL: process.env.NEXT_PUBLIC_GITHUB_URL,
+    NEXT_PUBLIC_R2_PUBLIC_URL: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
   },
 });

@@ -127,6 +127,44 @@ export const puzzle = pgTable(
   (table) => [index("puzzle_siteId_idx").on(table.siteId)],
 );
 
+// Gallery items are frozen snapshots of an imageSet — a curated pool of
+// images, not a puzzle. The prompt and which images count as "correct" are
+// per-puzzle decisions the forker makes later. Gallery items are fully
+// independent of the source imageSet: editing the source never changes the
+// gallery item, and deleting the source or author does not remove it.
+export const galleryItem = pgTable(
+  "gallery_item",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    slug: text("slug")
+      .notNull()
+      .unique()
+      .$defaultFn(() => nanoid(10)),
+    authorId: text("author_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    authorDisplayName: text("author_display_name").notNull(),
+    anonymous: boolean("anonymous").notNull().default(false),
+    title: text("title").notNull(),
+    description: text("description"),
+    tags: jsonb("tags").$type<string[]>().notNull().default([]),
+    images: jsonb("images")
+      .$type<{ url: string; name: string | null; contentHash: string }[]>()
+      .notNull()
+      .default([]),
+    downloadCount: integer("download_count").notNull().default(0),
+    status: text("status").notNull().default("published"), // published | hidden | removed
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("galleryItem_authorId_idx").on(table.authorId),
+    index("galleryItem_status_createdAt_idx").on(table.status, table.createdAt),
+  ],
+);
+
 export const siteRelations = relations(site, ({ one, many }) => ({
   user: one(user, { fields: [site.userId], references: [user.id] }),
   puzzles: many(puzzle),
@@ -155,4 +193,11 @@ export const puzzleRelations = relations(puzzle, ({ one }) => ({
     references: [imageSet.id],
   }),
   audio: one(audio, { fields: [puzzle.audioId], references: [audio.id] }),
+}));
+
+export const galleryItemRelations = relations(galleryItem, ({ one }) => ({
+  author: one(user, {
+    fields: [galleryItem.authorId],
+    references: [user.id],
+  }),
 }));

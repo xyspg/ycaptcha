@@ -13,7 +13,6 @@ import {
   r2KeyFromUrl,
   uploadBufferToR2,
 } from "@/lib/r2";
-import { SAMPLE_SETS } from "@/lib/samples";
 import {
   checkQuota,
   getUserStorageUsage,
@@ -512,50 +511,4 @@ export async function deleteImageSet(
   }
 
   redirect("/dashboard/image-sets");
-}
-
-const importSampleSchema = z.object({
-  slug: z.string().min(1),
-});
-
-export async function importSampleSet(slug: string): Promise<void> {
-  const session = await requireSession();
-
-  const parsed = importSampleSchema.safeParse({ slug });
-  if (!parsed.success) throw new Error("Invalid input");
-
-  const sample = SAMPLE_SETS.find((s) => s.slug === parsed.data.slug);
-  if (!sample) throw new Error("Unknown sample set");
-
-  const [created] = await db
-    .insert(imageSet)
-    .values({
-      userId: session.user.id,
-      name: sample.displayName,
-    })
-    .returning({ id: imageSet.id });
-
-  // Roll back the empty imageSet if image inserts fail — otherwise the
-  // user sees a phantom set with zero images in the dashboard.
-  try {
-    await db
-      .insert(image)
-      .values(
-        sample.images.map((img) => ({
-          imageSetId: created.id,
-          url: img.url,
-          name: img.name,
-          contentHash: img.contentHash,
-        })),
-      )
-      .onConflictDoNothing({
-        target: [image.imageSetId, image.contentHash],
-      });
-  } catch (err) {
-    await db
-      .delete(imageSet)
-      .where(eq(imageSet.id, created.id))
-      .catch(() => {});
-    throw err;
-  }
 }

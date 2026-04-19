@@ -1,5 +1,6 @@
 import { count, eq } from "drizzle-orm";
-import { Images } from "lucide-react";
+import { Images, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
@@ -7,7 +8,6 @@ import { db } from "@/lib/db";
 import { image, imageSet } from "@/lib/db/app-schema";
 import { CreateImageSetDialog } from "./create-image-set-dialog";
 import { ImageSetCard } from "./image-set-card";
-import { SampleSets } from "./sample-sets";
 
 export default async function Page() {
   const session = await requireSession();
@@ -39,7 +39,16 @@ export default async function Page() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
-        <CreateImageSetDialog />
+        <div className="flex items-center gap-2">
+          <Link
+            href="/gallery"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-amber-500/5 px-3 py-1 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-500/10 dark:text-amber-400"
+          >
+            <Sparkles className="size-3" />
+            Browse gallery
+          </Link>
+          <CreateImageSetDialog />
+        </div>
       </div>
 
       {sets.length === 0 ? (
@@ -67,8 +76,6 @@ export default async function Page() {
           ))}
         </div>
       )}
-
-      <SampleSets />
     </div>
   );
 }

@@ -1,9 +1,9 @@
 /**
- * One-time script to upload sample images to R2 under samples/ prefix.
- * Usage: bun run scripts/upload-samples.ts <path-to-samples-dir>
+ * One-time script to upload landing-demo images to R2 under demo/ prefix.
+ * Usage: bun run scripts/upload-demo.ts <path-to-demo-dir>
  *
- * The directory should contain subdirectories, each being a sample set.
- * Outputs a JSON manifest to stdout that can be pasted into lib/samples.ts
+ * The directory should contain subdirectories, each being a demo set.
+ * Outputs a JSON manifest to stdout that can be pasted into lib/demo-sets.ts
  */
 
 import { createHash } from "node:crypto";
@@ -20,7 +20,7 @@ const R2_ENDPOINT = process.env.R2_ENDPOINT!;
 const R2_ACCESS_KEY_ID = process.env.R2_ACCESS_KEY_ID!;
 const R2_SECRET_ACCESS_KEY = process.env.R2_SECRET_ACCESS_KEY!;
 const R2_BUCKET = process.env.R2_BUCKET!;
-const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL!;
+const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL!;
 
 const s3 = new S3Client({
   region: "auto",
@@ -34,13 +34,11 @@ const s3 = new S3Client({
 const MAX_DIMENSION = 300;
 const WEBP_QUALITY = 80;
 
-const SAMPLE_DIR = process.argv[2];
-if (!SAMPLE_DIR) {
+const DEMO_DIR = process.argv[2];
+if (!DEMO_DIR) {
+  console.error("Usage: bun run scripts/upload-demo.ts <path-to-demo-dir>");
   console.error(
-    "Usage: bun run scripts/upload-samples.ts <path-to-samples-dir>",
-  );
-  console.error(
-    "The directory should contain subdirectories, each being a sample set.",
+    "The directory should contain subdirectories, each being a demo set.",
   );
   process.exit(1);
 }
@@ -61,7 +59,7 @@ async function processAndUpload(
     .toBuffer();
 
   const contentHash = createHash("sha256").update(processed).digest("hex");
-  const key = `samples/${setSlug}/${contentHash}.webp`;
+  const key = `demo/${setSlug}/${contentHash}.webp`;
 
   // Check if already exists (idempotent)
   try {
@@ -90,10 +88,10 @@ async function processAndUpload(
 
 async function main() {
   const { stat } = await import("node:fs/promises");
-  const entries = await readdir(SAMPLE_DIR);
+  const entries = await readdir(DEMO_DIR);
   const dirs = [];
   for (const entry of entries) {
-    const full = join(SAMPLE_DIR, entry);
+    const full = join(DEMO_DIR, entry);
     if ((await stat(full)).isDirectory()) dirs.push(entry);
   }
   dirs.sort();
@@ -107,7 +105,7 @@ async function main() {
   > = {};
 
   for (const dir of dirs) {
-    const dirPath = join(SAMPLE_DIR, dir);
+    const dirPath = join(DEMO_DIR, dir);
     const files = (await readdir(dirPath))
       .filter((f) => !f.startsWith("."))
       .sort();

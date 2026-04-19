@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Pencil, Trash2, Upload } from "lucide-react";
+import { ArrowLeft, Pencil, Sparkles, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState, useCallback, useRef, useState } from "react";
@@ -455,6 +455,25 @@ export function ImageSetDetail({ set, images }: ImageSetDetailProps) {
           )}
         </CardContent>
       </Card>
+
+      {images.length >= 9 && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-border bg-amber-500/5 px-4 py-3">
+          <div className="flex items-center gap-3 text-sm">
+            <Sparkles className="size-4 text-amber-600 dark:text-amber-400" />
+            <div>
+              <div className="font-medium">Want to share this set?</div>
+              <div className="text-xs text-muted-foreground">
+                Publish a copy to the public gallery.
+              </div>
+            </div>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/dashboard/image-sets/${set.id}/publish`}>
+              Publish to gallery…
+            </Link>
+          </Button>
+        </div>
+      )}
 
       {/* Danger Zone */}
       <Card className="border-destructive/50">

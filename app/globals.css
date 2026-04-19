@@ -165,6 +165,25 @@
     margin-bottom: 0.5rem;
 }
 
+/* Shiki dual-theme: emit both light & dark tokens, swap via `.dark` ancestor */
+.shiki-embed .shiki {
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-family: inherit;
+}
+.shiki-embed .shiki code {
+    display: block;
+    white-space: pre;
+}
+html.dark .shiki-embed .shiki,
+html.dark .shiki-embed .shiki span {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;

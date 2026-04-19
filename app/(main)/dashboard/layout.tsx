@@ -9,7 +9,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="sticky top-0 z-10 flex items-center border-b bg-background p-2 md:hidden">
           <SidebarTrigger />
         </div>
-        <div className="p-6">{children}</div>
+        <div className="mx-auto w-full max-w-7xl p-6">{children}</div>
       </main>
     </SidebarProvider>
   );

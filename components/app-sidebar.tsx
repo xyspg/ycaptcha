@@ -8,6 +8,7 @@ import {
   KeyRound,
   LogOut,
   Settings,
+  Sparkles,
   Volume2,
 } from "lucide-react";
 import Image from "next/image";
@@ -86,6 +87,14 @@ export function AppSidebar() {
               <Link href="/home">
                 <Home />
                 <span>{t("homePage")}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild>
+              <Link href="/gallery" target="_blank">
+                <Sparkles />
+                <span>{t("gallery")}</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
