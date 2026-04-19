@@ -10,6 +10,7 @@ import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { galleryItem, image, imageSet } from "@/lib/db/app-schema";
 import { copyObjectInR2, deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
+import { getUserStorageUsage, STORAGE_QUOTA_BYTES } from "@/lib/storage-quota";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
@@ -62,7 +63,13 @@ export async function publishGalleryItem(
       a(e(is.id, data.imageSetId), e(is.userId, session.user.id)),
     with: {
       images: {
-        columns: { id: true, url: true, name: true, contentHash: true },
+        columns: {
+          id: true,
+          url: true,
+          name: true,
+          contentHash: true,
+          sizeBytes: true,
+        },
       },
     },
   });
@@ -137,24 +144,45 @@ export async function publishGalleryItem(
         r2KeyFromUrl(img.url),
         `gallery/${itemId}/${contentHash}.webp`,
       );
-      return { url: copied.url, name: img.name, contentHash };
+      return {
+        url: copied.url,
+        name: img.name,
+        contentHash,
+        sizeBytes: img.sizeBytes,
+      };
     }),
   );
 
-  const [inserted] = await db
-    .insert(galleryItem)
-    .values({
-      id: itemId,
-      authorId: session.user.id,
-      authorDisplayName: session.user.name || "anonymous",
-      anonymous: data.anonymous,
-      title: data.title,
-      description: data.description,
-      images: copiedImages,
-      imagesHash,
-      status: "published",
-    })
-    .returning({ slug: galleryItem.slug });
+  // Wrap the insert so a unique-hash race (concurrent publish) doesn't leak
+  // the R2 objects we just copied.
+  let inserted: { slug: string };
+  try {
+    const rows = await db
+      .insert(galleryItem)
+      .values({
+        id: itemId,
+        authorId: session.user.id,
+        authorDisplayName: session.user.name || "anonymous",
+        anonymous: data.anonymous,
+        title: data.title,
+        description: data.description,
+        images: copiedImages,
+        imagesHash,
+        status: "published",
+      })
+      .returning({ slug: galleryItem.slug });
+    inserted = rows[0];
+  } catch (err) {
+    const cleanup = await Promise.allSettled(
+      copiedImages.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
+    );
+    for (const r of cleanup) {
+      if (r.status === "rejected") {
+        console.error("[gallery] publish rollback R2 delete failed", r.reason);
+      }
+    }
+    throw err;
+  }
 
   revalidatePath("/gallery");
   revalidatePath("/gallery/mine");
@@ -273,6 +301,21 @@ export async function forkGalleryItem(
     }
   }
 
+  // Quota gate — fork charges the forker for the full bytes even when R2
+  // dedup reuses objects, otherwise a user could endlessly fork to bypass
+  // the per-user cap while still keeping the files referenced.
+  const forkBytes = item.images.reduce((n, img) => n + img.sizeBytes, 0);
+  const usage = await getUserStorageUsage(session.user.id);
+  if (usage.totalBytes + forkBytes > STORAGE_QUOTA_BYTES) {
+    return {
+      errors: {
+        _: [
+          "Forking this set would exceed your storage quota. Remove some images first.",
+        ],
+      },
+    };
+  }
+
   // Reuse existing R2 objects by contentHash — avoids piling up duplicate
   // copies when the same set is forked repeatedly.
   const existingImages = galleryHashes.length
@@ -291,30 +334,48 @@ export async function forkGalleryItem(
     })
     .returning({ id: imageSet.id });
 
+  // Track keys we freshly copied (as opposed to reused) so we can roll them
+  // back if the follow-up DB insert fails.
+  const newlyCopiedKeys: string[] = [];
   const copied = await Promise.all(
     item.images.map(async (img) => {
       const reused = urlByHash.get(img.contentHash);
-      const url =
-        reused ??
-        (await copyObjectInR2(r2KeyFromUrl(img.url), `images/${nanoid()}.webp`))
-          .url;
+      let url: string;
+      if (reused) {
+        url = reused;
+      } else {
+        const c = await copyObjectInR2(
+          r2KeyFromUrl(img.url),
+          `images/${nanoid()}.webp`,
+        );
+        url = c.url;
+        newlyCopiedKeys.push(c.key);
+      }
       return {
         imageSetId: newSet.id,
         url,
         name: img.name,
         contentHash: img.contentHash,
-        sizeBytes: 0,
+        sizeBytes: img.sizeBytes,
       };
     }),
   );
 
-  await Promise.all([
-    db.insert(image).values(copied),
-    db
-      .update(galleryItem)
-      .set({ downloadCount: sql`${galleryItem.downloadCount} + 1` })
-      .where(eq(galleryItem.id, item.id)),
-  ]);
+  try {
+    await Promise.all([
+      db.insert(image).values(copied),
+      db
+        .update(galleryItem)
+        .set({ downloadCount: sql`${galleryItem.downloadCount} + 1` })
+        .where(eq(galleryItem.id, item.id)),
+    ]);
+  } catch (err) {
+    await Promise.allSettled([
+      db.delete(imageSet).where(eq(imageSet.id, newSet.id)),
+      ...newlyCopiedKeys.map((key) => deleteFromR2(key)),
+    ]);
+    throw err;
+  }
 
   revalidatePath("/dashboard/image-sets");
   redirect(`/dashboard/image-sets/${newSet.id}`);

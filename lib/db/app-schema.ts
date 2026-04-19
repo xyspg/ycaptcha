@@ -151,7 +151,14 @@ export const galleryItem = pgTable(
     description: text("description"),
     tags: jsonb("tags").$type<string[]>().notNull().default([]),
     images: jsonb("images")
-      .$type<{ url: string; name: string | null; contentHash: string }[]>()
+      .$type<
+        {
+          url: string;
+          name: string | null;
+          contentHash: string;
+          sizeBytes: number;
+        }[]
+      >()
       .notNull()
       .default([]),
     // SHA-256 over sorted contentHashes — globally unique so the same image

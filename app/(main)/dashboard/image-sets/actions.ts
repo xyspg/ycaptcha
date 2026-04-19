@@ -493,9 +493,13 @@ export async function deleteImageSet(
         )
       : new Set<string>();
 
+  // Null-hash rows pre-date dedup and can't have other references, so
+  // always delete their R2 object. Hashed rows need the refcount check.
   const toDelete = imgs
-    .filter((img) => img.contentHash !== null)
-    .filter((img) => !stillReferenced.has(img.contentHash))
+    .filter(
+      (img) =>
+        img.contentHash === null || !stillReferenced.has(img.contentHash),
+    )
     .filter((img) => !img.url.includes("/samples/"));
 
   const results = await Promise.allSettled(

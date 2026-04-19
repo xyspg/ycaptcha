@@ -225,7 +225,7 @@ export function PublishForm({
             type="submit"
             size="lg"
             disabled={isPending || tooFewImages}
-            className="rounded-full bg-amber-600 px-5 text-white hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-400"
+            className="rounded-full bg-amber-600 px-5 text-white hover:bg-amber-700 dark:bg-amber-500 dark:text-amber-950 dark:hover:bg-amber-400"
           >
             <Sparkles className="size-4" />
             {isPending ? "Publishing…" : "Publish to gallery"}
