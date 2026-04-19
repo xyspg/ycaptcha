@@ -192,7 +192,7 @@ export async function HomePage() {
                 {COMMUNITY_THEMES.map((c) => (
                   <Link
                     key={c.name}
-                    href={`/gallery?tag=${encodeURIComponent(c.name)}`}
+                    href="/gallery"
                     className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-2.5 py-1 text-xs text-foreground/70 backdrop-blur-sm transition-colors hover:border-foreground/30 hover:bg-background hover:text-foreground"
                     style={{ fontFamily: "var(--font-geist-mono)" }}
                   >

@@ -115,19 +115,47 @@ interface QueueItem {
   status: FileStatus;
 }
 
+function loadImageElement(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("image decode failed"));
+    };
+    img.src = url;
+  });
+}
+
 async function compressImage(file: File): Promise<File> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(
-    1,
-    COMPRESS_MAX_DIM / Math.max(bitmap.width, bitmap.height),
-  );
-  const w = Math.round(bitmap.width * scale);
-  const h = Math.round(bitmap.height * scale);
+  // createImageBitmap rejects SVG in most browsers; fall back to <img> which
+  // rasterizes vectors (and anything else a browser can decode). SVGs missing
+  // intrinsic dimensions fall back to the browser's 300x150 default for <img>.
+  let source: ImageBitmap | HTMLImageElement;
+  let srcW: number;
+  let srcH: number;
+  try {
+    source = await createImageBitmap(file);
+    srcW = source.width;
+    srcH = source.height;
+  } catch {
+    source = await loadImageElement(file);
+    srcW = source.naturalWidth || 512;
+    srcH = source.naturalHeight || 512;
+  }
+
+  const scale = Math.min(1, COMPRESS_MAX_DIM / Math.max(srcW, srcH));
+  const w = Math.round(srcW * scale);
+  const h = Math.round(srcH * scale);
 
   const canvas = new OffscreenCanvas(w, h);
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(bitmap, 0, 0, w, h);
-  bitmap.close();
+  ctx.drawImage(source, 0, 0, w, h);
+  if (source instanceof ImageBitmap) source.close();
 
   const blob = await canvas.convertToBlob({
     type: "image/webp",
