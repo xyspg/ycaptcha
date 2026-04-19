@@ -189,9 +189,10 @@ export async function HomePage() {
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {COMMUNITY_THEMES.map((c) => (
-                  <span
+                  <Link
                     key={c.name}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-2.5 py-1 text-xs text-foreground/70 backdrop-blur-sm"
+                    href={`/gallery?tag=${encodeURIComponent(c.name)}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-2.5 py-1 text-xs text-foreground/70 backdrop-blur-sm transition-colors hover:border-foreground/30 hover:bg-background hover:text-foreground"
                     style={{ fontFamily: "var(--font-geist-mono)" }}
                   >
                     <span
@@ -199,14 +200,15 @@ export async function HomePage() {
                       className={`size-1.5 rounded-full ${c.hue}`}
                     />
                     {c.name}
-                  </span>
+                  </Link>
                 ))}
-                <span
-                  className="inline-flex items-center rounded-full border border-dashed border-border px-2.5 py-1 text-xs text-muted-foreground"
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center rounded-full border border-dashed border-border px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                   style={{ fontFamily: "var(--font-geist-mono)" }}
                 >
                   {t("bringYourOwn")}
-                </span>
+                </Link>
               </div>
             </div>
           </div>
@@ -282,7 +284,7 @@ export async function HomePage() {
             <Button
               asChild
               size="lg"
-              className="rounded-full bg-white px-6 text-neutral-950 hover:bg-neutral-200"
+              className="rounded-full bg-white px-6 text-neutral-950 [a]:hover:bg-neutral-200"
             >
               <Link href="/login">
                 {t("ctaButton")}
