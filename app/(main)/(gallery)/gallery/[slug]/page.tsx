@@ -137,7 +137,17 @@ export default async function GalleryItemPage({
             <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               {item.downloadCount} fork{item.downloadCount === 1 ? "" : "s"}
             </div>
-            {session ? (
+            {isAuthor ? (
+              <>
+                <Button asChild size="lg" className="rounded-full">
+                  <Link href="/gallery/mine">Manage in My items</Link>
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  This is your image set. Manage it from My items to edit,
+                  unpublish, or wire it to a site.
+                </p>
+              </>
+            ) : session ? (
               <>
                 <ForkButton slug={item.slug} />
                 <p className="text-xs text-muted-foreground">
@@ -156,11 +166,6 @@ export default async function GalleryItemPage({
                   puzzle around it.
                 </p>
               </>
-            )}
-            {isAuthor && (
-              <Button asChild variant="outline" size="sm" className="mt-1">
-                <Link href="/gallery/mine">Manage in My items</Link>
-              </Button>
             )}
           </div>
         </aside>
