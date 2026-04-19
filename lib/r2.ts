@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import {
-  CopyObjectCommand,
   DeleteObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -83,20 +82,6 @@ export async function uploadAudioToR2(
 
   const url = `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`;
   return { key, url };
-}
-
-export async function copyObjectInR2(
-  sourceKey: string,
-  destKey: string,
-): Promise<{ key: string; url: string }> {
-  await s3.send(
-    new CopyObjectCommand({
-      Bucket: env.R2_BUCKET,
-      CopySource: `${env.R2_BUCKET}/${sourceKey}`,
-      Key: destKey,
-    }),
-  );
-  return { key: destKey, url: `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${destKey}` };
 }
 
 export async function deleteFromR2(key: string): Promise<void> {

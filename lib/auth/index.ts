@@ -16,6 +16,7 @@ import {
 import * as schema from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
+import { galleryItemHashRefs } from "@/lib/storage-refcount";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -75,37 +76,47 @@ export const auth = betterAuth({
 
         // galleryItem.authorId FK is `set null`, so the rows survive user
         // deletion by default. Drop them explicitly here so the user's
-        // published content actually goes away.
+        // published content actually goes away, AND so the gallery
+        // refcount below only counts other users' items.
         await db.delete(galleryItem).where(eq(galleryItem.authorId, user.id));
 
-        // Cross-user contentHash dedup means other users' image rows may
-        // reference the same R2 objects we're about to delete. Find those
-        // and skip their URLs so forkers' image sets don't 404.
-        const hashesToCheck = imageRows
+        // Gallery items now reference the same `images/` keys as the
+        // image table (no more `gallery/` prefix), so we have to refcount
+        // both the image url hashes AND the user's gallery snapshots.
+        const imageHashes = imageRows
           .map((r) => r.contentHash)
           .filter((h): h is string => h !== null);
-        const stillReferenced =
-          hashesToCheck.length > 0
-            ? new Set(
-                (
-                  await db
-                    .select({ contentHash: image.contentHash })
-                    .from(image)
-                    .innerJoin(imageSet, eq(imageSet.id, image.imageSetId))
-                    .where(
-                      and(
-                        inArray(image.contentHash, hashesToCheck),
-                        ne(imageSet.userId, user.id),
-                      ),
-                    )
-                ).map((r) => r.contentHash),
-              )
-            : new Set<string>();
+        const galleryHashes = galleryRows
+          .flatMap((r) => r.images.map((img) => img.contentHash))
+          .filter((h): h is string => !!h);
+        const allHashes = [...new Set([...imageHashes, ...galleryHashes])];
+
+        const [otherUserImageRefs, otherUserGalleryRefs] = await Promise.all([
+          allHashes.length > 0
+            ? db
+                .select({ contentHash: image.contentHash })
+                .from(image)
+                .innerJoin(imageSet, eq(imageSet.id, image.imageSetId))
+                .where(
+                  and(
+                    inArray(image.contentHash, allHashes),
+                    ne(imageSet.userId, user.id),
+                  ),
+                )
+            : Promise.resolve([] as { contentHash: string | null }[]),
+          galleryItemHashRefs(db, allHashes),
+        ]);
+        const stillReferenced = new Set<string>();
+        for (const r of otherUserImageRefs) {
+          if (r.contentHash) stillReferenced.add(r.contentHash);
+        }
+        for (const h of otherUserGalleryRefs) stillReferenced.add(h);
 
         // Dedup — user may have the same content in multiple of their own
         // image_sets (within-user cross-set dedup reuses the same R2 URL),
-        // and we don't want to DELETE the same key twice (second attempt
-        // 404s and trips a false Sentry alert).
+        // and/or a gallery_item whose snapshot points at the same URL. We
+        // don't want to DELETE the same key twice (second attempt 404s and
+        // trips a false Sentry alert).
         const keys = [
           ...new Set(
             [
@@ -118,7 +129,10 @@ export const auth = betterAuth({
                 .map((r) => r.url)
                 .filter((u) => !u.includes("/samples/")),
               ...audioRows.map((r) => r.url),
-              ...galleryRows.flatMap((r) => r.images.map((img) => img.url)),
+              ...galleryRows
+                .flatMap((r) => r.images)
+                .filter((img) => !stillReferenced.has(img.contentHash))
+                .map((img) => img.url),
             ].map(r2KeyFromUrl),
           ),
         ];

@@ -20,6 +20,7 @@ import {
   QuotaExceededError,
   STORAGE_QUOTA_BYTES,
 } from "@/lib/storage-quota";
+import { galleryItemHashRefs } from "@/lib/storage-refcount";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
@@ -394,35 +395,42 @@ export async function deleteImage(
     };
   }
 
-  const [img] = await db
-    .select({ id: image.id, url: image.url, contentHash: image.contentHash })
-    .from(image)
-    .where(and(eq(image.id, imageId), eq(image.imageSetId, setId)));
+  // Lock same-user writes so the refcount read-after-delete is atomic
+  // wrt concurrent publishes/uploads that might add a reference to the
+  // same contentHash (image row or gallery_item.images[]).
+  const result = await withUserLock(session.user.id, async (tx) => {
+    const [img] = await tx
+      .select({ id: image.id, url: image.url, contentHash: image.contentHash })
+      .from(image)
+      .where(and(eq(image.id, imageId), eq(image.imageSetId, setId)));
+    if (!img) return null;
 
-  if (!img) return { errors: { imageId: ["Image not found"] } };
+    await tx.delete(image).where(eq(image.id, imageId));
 
-  await db.delete(image).where(eq(image.id, imageId));
+    if (img.url.includes("/samples/")) return { url: img.url, purge: false };
+    if (!img.contentHash) return { url: img.url, purge: true };
 
-  // R2 delete is post-DB so a transient R2 failure leaves a benign byte
-  // orphan instead of a dead-URL DB row. Sample images live in a shared
-  // bucket prefix and must never be touched.
-  const isSample = img.url.includes("/samples/");
-  if (!isSample) {
-    let shouldDelete = true;
-    if (img.contentHash) {
-      const [ref] = await db
-        .select({ id: image.id })
-        .from(image)
-        .where(eq(image.contentHash, img.contentHash))
-        .limit(1);
-      shouldDelete = !ref;
-    }
-    if (shouldDelete) {
-      try {
-        await deleteFromR2(r2KeyFromUrl(img.url));
-      } catch (err) {
-        console.warn(`R2 cleanup failed for image ${imageId}:`, err);
-      }
+    const [imgRef] = await tx
+      .select({ id: image.id })
+      .from(image)
+      .where(eq(image.contentHash, img.contentHash))
+      .limit(1);
+    if (imgRef) return { url: img.url, purge: false };
+
+    const galleryRefs = await galleryItemHashRefs(tx, [img.contentHash]);
+    return { url: img.url, purge: !galleryRefs.has(img.contentHash) };
+  });
+
+  if (!result) return { errors: { imageId: ["Image not found"] } };
+
+  // R2 delete runs after lock release — by this point the refcount was
+  // accurate, and no new reference can land on the same URL (fresh
+  // uploads get a new nanoid key even for a matching hash).
+  if (result.purge) {
+    try {
+      await deleteFromR2(r2KeyFromUrl(result.url));
+    } catch (err) {
+      console.warn(`R2 cleanup failed for image ${imageId}:`, err);
     }
   }
 
@@ -468,34 +476,52 @@ export async function deleteImageSet(
     };
   }
 
-  const imgs = await db
-    .select({ url: image.url, contentHash: image.contentHash })
-    .from(image)
-    .where(eq(image.imageSetId, setId));
+  // All DB work inside the lock: read current image rows, cascade-delete
+  // via imageSet removal, then refcount across `image.contentHash` and
+  // `gallery_item.images[]`. Reading `imgs` outside the lock would miss
+  // rows added by a concurrent same-user upload that the cascade then
+  // silently deletes, orphaning their R2 keys.
+  const { imgs, imageRefs, galleryRefs } = await withUserLock(
+    session.user.id,
+    async (tx) => {
+      const imgs = await tx
+        .select({ url: image.url, contentHash: image.contentHash })
+        .from(image)
+        .where(eq(image.imageSetId, setId));
 
-  await db.delete(imageSet).where(eq(imageSet.id, setId));
-  const hashesToCheck = imgs
-    .map((i) => i.contentHash)
-    .filter((h): h is string => h !== null);
+      await tx.delete(imageSet).where(eq(imageSet.id, setId));
 
-  const stillReferenced =
-    hashesToCheck.length > 0
-      ? new Set(
-          (
-            await db
-              .select({ contentHash: image.contentHash })
-              .from(image)
-              .where(inArray(image.contentHash, hashesToCheck))
-          ).map((r) => r.contentHash),
-        )
-      : new Set<string>();
+      const hashesToCheck = imgs
+        .map((i) => i.contentHash)
+        .filter((h): h is string => h !== null);
+
+      const imageRefs =
+        hashesToCheck.length > 0
+          ? new Set(
+              (
+                await tx
+                  .select({ contentHash: image.contentHash })
+                  .from(image)
+                  .where(inArray(image.contentHash, hashesToCheck))
+              )
+                .map((r) => r.contentHash)
+                .filter((h): h is string => !!h),
+            )
+          : new Set<string>();
+      const galleryRefs = await galleryItemHashRefs(tx, hashesToCheck);
+
+      return { imgs, imageRefs, galleryRefs };
+    },
+  );
 
   // Null-hash rows pre-date dedup and can't have other references, so
-  // always delete their R2 object. Hashed rows need the refcount check.
+  // always delete their R2 object. Hashed rows survive if either the
+  // image table or a gallery_item still points at the same content.
   const toDelete = imgs
     .filter(
       (img) =>
-        img.contentHash === null || !stillReferenced.has(img.contentHash),
+        img.contentHash === null ||
+        (!imageRefs.has(img.contentHash) && !galleryRefs.has(img.contentHash)),
     )
     .filter((img) => !img.url.includes("/samples/"));
 

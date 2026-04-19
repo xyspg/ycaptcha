@@ -2,19 +2,19 @@
 
 import { createHash } from "node:crypto";
 import { and, count, eq, inArray, sql } from "drizzle-orm";
-import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { db, withUserLock } from "@/lib/db";
 import { galleryItem, image, imageSet } from "@/lib/db/app-schema";
-import { cleanupR2Keys, copyObjectInR2, r2KeyFromUrl } from "@/lib/r2";
+import { cleanupR2Keys, r2KeyFromUrl } from "@/lib/r2";
 import {
   getUserStorageUsage,
   QuotaExceededError,
   STORAGE_QUOTA_BYTES,
 } from "@/lib/storage-quota";
+import { galleryItemHashRefs } from "@/lib/storage-refcount";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
@@ -140,46 +140,34 @@ export async function publishGalleryItem(
     };
   }
 
-  const itemId = nanoid();
-  const copiedImages = await Promise.all(
-    set.images.map(async (img) => {
-      const contentHash = img.contentHash as string;
-      const copied = await copyObjectInR2(
-        r2KeyFromUrl(img.url),
-        `gallery/${itemId}/${contentHash}.webp`,
-      );
-      return {
-        url: copied.url,
-        name: img.name,
-        contentHash,
-        sizeBytes: img.sizeBytes,
-      };
-    }),
-  );
+  // Snapshot the source URLs directly — no R2 copy. Deletion paths use a
+  // refcount (image.contentHash + gallery_item.images[]) so these R2
+  // objects survive as long as any row still points to them.
+  const snapshotImages = set.images.map((img) => ({
+    url: img.url,
+    name: img.name,
+    contentHash: img.contentHash as string,
+    sizeBytes: img.sizeBytes,
+  }));
 
-  // Wrap the insert so a unique-hash race (concurrent publish) doesn't leak
-  // the R2 objects we just copied.
-  let inserted: { slug: string };
-  try {
-    const rows = await db
+  // Serialize against same-user delete paths so their refcount reads see
+  // this new gallery_item row before deciding what R2 keys to purge.
+  const inserted = await withUserLock(session.user.id, async (tx) => {
+    const [row] = await tx
       .insert(galleryItem)
       .values({
-        id: itemId,
         authorId: session.user.id,
         authorDisplayName: session.user.name || "anonymous",
         anonymous: data.anonymous,
         title: data.title,
         description: data.description,
-        images: copiedImages,
+        images: snapshotImages,
         imagesHash,
         status: "published",
       })
       .returning({ slug: galleryItem.slug });
-    inserted = rows[0];
-  } catch (err) {
-    await cleanupR2Keys(copiedImages.map((img) => r2KeyFromUrl(img.url)));
-    throw err;
-  }
+    return row;
+  });
 
   revalidatePath("/gallery");
   revalidatePath("/gallery/mine");
@@ -190,7 +178,6 @@ const deleteSchema = z.object({
   slug: z.string().min(1),
 });
 
-// DB-first so a failed R2 call leaves orphaned objects instead of a stale row.
 export async function deleteGalleryItem(
   _prev: ActionState,
   formData: FormData,
@@ -217,9 +204,41 @@ export async function deleteGalleryItem(
     return { errors: { _: ["Gallery item not found."] } };
   }
 
-  await db.delete(galleryItem).where(eq(galleryItem.id, item.id));
+  const hashes = item.images
+    .map((img) => img.contentHash)
+    .filter((h): h is string => !!h);
 
-  await cleanupR2Keys(item.images.map((img) => r2KeyFromUrl(img.url)));
+  const { imageRefs, galleryRefs } = await withUserLock(
+    session.user.id,
+    async (tx) => {
+      await tx.delete(galleryItem).where(eq(galleryItem.id, item.id));
+
+      const imageRefs =
+        hashes.length > 0
+          ? new Set(
+              (
+                await tx
+                  .select({ contentHash: image.contentHash })
+                  .from(image)
+                  .where(inArray(image.contentHash, hashes))
+              )
+                .map((r) => r.contentHash)
+                .filter((h): h is string => !!h),
+            )
+          : new Set<string>();
+      const galleryRefs = await galleryItemHashRefs(tx, hashes);
+      return { imageRefs, galleryRefs };
+    },
+  );
+
+  const toDelete = item.images
+    .filter(
+      (img) =>
+        !imageRefs.has(img.contentHash) && !galleryRefs.has(img.contentHash),
+    )
+    .map((img) => r2KeyFromUrl(img.url));
+
+  await cleanupR2Keys(toDelete);
 
   revalidatePath("/gallery");
   revalidatePath("/gallery/mine");
@@ -287,43 +306,11 @@ export async function forkGalleryItem(
     }
   }
 
-  // Reuse existing R2 objects by contentHash — avoids piling up duplicate
-  // copies when the same set is forked repeatedly.
-  const existingImages = galleryHashes.length
-    ? await db
-        .select({ contentHash: image.contentHash, url: image.url })
-        .from(image)
-        .where(inArray(image.contentHash, galleryHashes))
-    : [];
-  const urlByHash = new Map(existingImages.map((r) => [r.contentHash, r.url]));
-
-  // R2 copies happen before the lock — copy work doesn't touch the quota
-  // counter, and keeping the lock window tight avoids serializing up to 60
-  // cross-region copies behind every concurrent fork from the same user.
+  // Fork is a pure DB op — the forker's image rows reference the gallery's
+  // existing R2 URLs. Deletion refcount (image.contentHash +
+  // gallery_item.images[]) preserves those objects as long as any row
+  // points to them.
   const forkBytes = item.images.reduce((n, img) => n + img.sizeBytes, 0);
-  const newlyCopiedKeys: string[] = [];
-  const copied = await Promise.all(
-    item.images.map(async (img) => {
-      const reused = urlByHash.get(img.contentHash);
-      let url: string;
-      if (reused) {
-        url = reused;
-      } else {
-        const c = await copyObjectInR2(
-          r2KeyFromUrl(img.url),
-          `images/${nanoid()}.webp`,
-        );
-        url = c.url;
-        newlyCopiedKeys.push(c.key);
-      }
-      return {
-        url,
-        name: img.name,
-        contentHash: img.contentHash,
-        sizeBytes: img.sizeBytes,
-      };
-    }),
-  );
 
   let newSetId: string;
   try {
@@ -344,9 +331,15 @@ export async function forkGalleryItem(
         .returning({ id: imageSet.id });
 
       await Promise.all([
-        tx
-          .insert(image)
-          .values(copied.map((c) => ({ ...c, imageSetId: newSet.id }))),
+        tx.insert(image).values(
+          item.images.map((img) => ({
+            imageSetId: newSet.id,
+            url: img.url,
+            name: img.name,
+            contentHash: img.contentHash,
+            sizeBytes: img.sizeBytes,
+          })),
+        ),
         tx
           .update(galleryItem)
           .set({ downloadCount: sql`${galleryItem.downloadCount} + 1` })
@@ -356,7 +349,6 @@ export async function forkGalleryItem(
       return newSet.id;
     });
   } catch (err) {
-    await cleanupR2Keys(newlyCopiedKeys);
     if (err instanceof QuotaExceededError) {
       return { errors: { _: [err.message] } };
     }
