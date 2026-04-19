@@ -3,9 +3,16 @@ import * as Sentry from "@sentry/nextjs";
 import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { audio, image, imageSet, puzzle, site } from "@/lib/db/app-schema";
+import {
+  audio,
+  galleryItem,
+  image,
+  imageSet,
+  puzzle,
+  site,
+} from "@/lib/db/app-schema";
 import * as schema from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
@@ -50,9 +57,9 @@ export const auth = betterAuth({
             ),
           );
 
-        const [imageRows, audioRows] = await Promise.all([
+        const [imageRows, audioRows, galleryRows] = await Promise.all([
           db
-            .select({ url: image.url })
+            .select({ url: image.url, contentHash: image.contentHash })
             .from(image)
             .innerJoin(imageSet, eq(imageSet.id, image.imageSetId))
             .where(eq(imageSet.userId, user.id)),
@@ -60,14 +67,61 @@ export const auth = betterAuth({
             .select({ url: audio.url })
             .from(audio)
             .where(eq(audio.userId, user.id)),
+          db
+            .select({ images: galleryItem.images })
+            .from(galleryItem)
+            .where(eq(galleryItem.authorId, user.id)),
         ]);
 
+        // galleryItem.authorId FK is `set null`, so the rows survive user
+        // deletion by default. Drop them explicitly here so the user's
+        // published content actually goes away.
+        await db.delete(galleryItem).where(eq(galleryItem.authorId, user.id));
+
+        // Cross-user contentHash dedup means other users' image rows may
+        // reference the same R2 objects we're about to delete. Find those
+        // and skip their URLs so forkers' image sets don't 404.
+        const hashesToCheck = imageRows
+          .map((r) => r.contentHash)
+          .filter((h): h is string => h !== null);
+        const stillReferenced =
+          hashesToCheck.length > 0
+            ? new Set(
+                (
+                  await db
+                    .select({ contentHash: image.contentHash })
+                    .from(image)
+                    .innerJoin(imageSet, eq(imageSet.id, image.imageSetId))
+                    .where(
+                      and(
+                        inArray(image.contentHash, hashesToCheck),
+                        ne(imageSet.userId, user.id),
+                      ),
+                    )
+                ).map((r) => r.contentHash),
+              )
+            : new Set<string>();
+
+        // Dedup — user may have the same content in multiple of their own
+        // image_sets (within-user cross-set dedup reuses the same R2 URL),
+        // and we don't want to DELETE the same key twice (second attempt
+        // 404s and trips a false Sentry alert).
         const keys = [
-          ...imageRows
-            .map((r) => r.url)
-            .filter((u) => !u.includes("/samples/")),
-          ...audioRows.map((r) => r.url),
-        ].map(r2KeyFromUrl);
+          ...new Set(
+            [
+              ...imageRows
+                .filter(
+                  (r) =>
+                    r.contentHash === null ||
+                    !stillReferenced.has(r.contentHash),
+                )
+                .map((r) => r.url)
+                .filter((u) => !u.includes("/samples/")),
+              ...audioRows.map((r) => r.url),
+              ...galleryRows.flatMap((r) => r.images.map((img) => img.url)),
+            ].map(r2KeyFromUrl),
+          ),
+        ];
 
         const results = await Promise.allSettled(keys.map(deleteFromR2));
         const failedKeys = keys.filter(
