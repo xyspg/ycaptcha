@@ -1,6 +1,5 @@
 "use server";
 
-import { createHash } from "node:crypto";
 import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -8,6 +7,7 @@ import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { db, withUserLock } from "@/lib/db";
 import { galleryItem, image, imageSet } from "@/lib/db/app-schema";
+import { computeSetHash } from "@/lib/gallery-hash";
 import { cleanupR2Keys, r2KeyFromUrl } from "@/lib/r2";
 import {
   getUserStorageUsage,
@@ -23,24 +23,23 @@ const MAX_ITEMS_PER_USER = 10;
 const MAX_IMAGES_PER_ITEM = 60;
 const MIN_IMAGES_PER_ITEM = 9;
 
-function computeSetHash(contentHashes: string[]): string {
-  return createHash("sha256")
-    .update([...contentHashes].sort().join(""))
-    .digest("hex");
-}
-
 // User-facing conflicts raised from inside withUserLock, translated to
 // ActionState errors by the outer catch. Keeps the tx body linear
 // without threading discriminated-union return types through each step.
 class GalleryActionError extends Error {}
 
 function isUniqueViolation(err: unknown): boolean {
-  return (
-    typeof err === "object" &&
-    err !== null &&
-    "code" in err &&
-    (err as { code: unknown }).code === "23505"
-  );
+  // Drizzle wraps the underlying pg error in DrizzleQueryError, so the
+  // 23505 code lives on err.cause (not err itself) under neon-serverless.
+  const codes: unknown[] = [];
+  for (
+    let cur: unknown = err, depth = 0;
+    cur && typeof cur === "object" && depth < 3;
+    cur = (cur as { cause?: unknown }).cause, depth++
+  ) {
+    codes.push((cur as { code?: unknown }).code);
+  }
+  return codes.includes("23505");
 }
 
 const publishSchema = z.object({

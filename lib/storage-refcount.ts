@@ -19,10 +19,17 @@ export async function galleryItemHashRefs(
 ): Promise<Set<string>> {
   if (hashes.length === 0) return new Set();
 
+  // `e->>'contentHash' IN (${hashes})` — drizzle's sql tag spreads an array
+  // into comma-separated placeholders, which is what `IN (…)` wants. `= ANY`
+  // would need a single Postgres array param; the spread form doesn't bind
+  // correctly through neon-serverless.
   const result = await client.execute<{ hash: string | null }>(sql`
     SELECT DISTINCT e->>'contentHash' AS hash
     FROM gallery_item gi, jsonb_array_elements(gi.images) e
-    WHERE e->>'contentHash' = ANY(${hashes})
+    WHERE e->>'contentHash' IN (${sql.join(
+      hashes.map((h) => sql`${h}`),
+      sql`, `,
+    )})
   `);
 
   const rows =
