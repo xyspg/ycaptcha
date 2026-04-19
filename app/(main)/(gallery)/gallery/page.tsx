@@ -1,5 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -17,7 +18,7 @@ export default async function GalleryBrowsePage({
   const sort = params.sort === "popular" ? "popular" : "recent";
   const tag = typeof params.tag === "string" ? params.tag : null;
 
-  const [session, items] = await Promise.all([
+  const [session, items, t] = await Promise.all([
     getSession(),
     db
       .select()
@@ -29,6 +30,7 @@ export default async function GalleryBrowsePage({
           : desc(galleryItem.createdAt),
       )
       .limit(60),
+    getTranslations("gallery"),
   ]);
 
   // tag filter applied in memory — jsonb ? operator via drizzle needs a raw
@@ -41,17 +43,16 @@ export default async function GalleryBrowsePage({
       <section className="mb-10 flex flex-col gap-4 lg:mb-14">
         <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-amber-600 dark:text-amber-400">
           <span className="inline-block size-1.5 rounded-full bg-amber-500" />
-          Gallery
+          {t("browseEyebrow")}
         </div>
         <h1 className="font-heading text-4xl font-bold tracking-tight text-balance lg:text-[52px]">
-          Image sets, <br className="hidden sm:block" />
+          {t("browseHeadlineA")} <br className="hidden sm:block" />
           <em className="italic text-amber-600 dark:text-amber-400">
-            from the community.
+            {t("browseHeadlineB")}
           </em>
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground lg:text-lg">
-          Fork a shared image set into your account, then wire up your own
-          prompt and correct images on top.
+          {t("browseTagline")}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {session && (
@@ -61,22 +62,26 @@ export default async function GalleryBrowsePage({
               size="sm"
               className="rounded-full"
             >
-              <Link href="/dashboard/image-sets">Publish one of yours</Link>
+              <Link href="/dashboard/image-sets">{t("publishOneOfYours")}</Link>
             </Button>
           )}
-          <SortTabs sort={sort} tag={tag} />
+          <SortTabs
+            sort={sort}
+            tag={tag}
+            labels={{ recent: t("sortRecent"), popular: t("sortPopular") }}
+          />
         </div>
       </section>
 
       {/* Tag filter banner */}
       {tag && (
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-sm">
-          <span className="text-muted-foreground">Filter:</span>
+          <span className="text-muted-foreground">{t("filterLabel")}</span>
           <span className="font-medium">#{tag}</span>
           <Link
             href={`/gallery${sort === "popular" ? "?sort=popular" : ""}`}
             className="text-muted-foreground hover:text-foreground"
-            aria-label="Clear filter"
+            aria-label={t("clearFilter")}
           >
             ×
           </Link>
@@ -85,7 +90,10 @@ export default async function GalleryBrowsePage({
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <EmptyState hasTag={!!tag} />
+        <EmptyState
+          headline={tag ? t("emptyTagHeadline") : t("emptyHeadline")}
+          body={tag ? t("emptyTagBody") : t("emptyBody")}
+        />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((item) => (
@@ -97,7 +105,15 @@ export default async function GalleryBrowsePage({
   );
 }
 
-function SortTabs({ sort, tag }: { sort: string; tag: string | null }) {
+function SortTabs({
+  sort,
+  tag,
+  labels,
+}: {
+  sort: string;
+  tag: string | null;
+  labels: { recent: string; popular: string };
+}) {
   const tagParam = tag ? `&tag=${encodeURIComponent(tag)}` : "";
   return (
     <div className="inline-flex items-center rounded-full border border-border bg-background/70 p-0.5 text-sm">
@@ -105,19 +121,19 @@ function SortTabs({ sort, tag }: { sort: string; tag: string | null }) {
         href={`/gallery${tag ? `?tag=${encodeURIComponent(tag)}` : ""}`}
         className={`rounded-full px-3 py-1 transition-colors ${sort === "recent" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
       >
-        Recent
+        {labels.recent}
       </Link>
       <Link
         href={`/gallery?sort=popular${tagParam}`}
         className={`rounded-full px-3 py-1 transition-colors ${sort === "popular" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
       >
-        Popular
+        {labels.popular}
       </Link>
     </div>
   );
 }
 
-function EmptyState({ hasTag }: { hasTag: boolean }) {
+function EmptyState({ headline, body }: { headline: string; body: string }) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-border bg-background/50 px-8 py-20 text-center">
       <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
@@ -137,14 +153,8 @@ function EmptyState({ hasTag }: { hasTag: boolean }) {
         </svg>
       </div>
       <div className="max-w-sm">
-        <div className="font-heading text-lg font-semibold">
-          {hasTag ? "Nothing under that tag yet" : "Gallery's just opening"}
-        </div>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {hasTag
-            ? "Try another tag, or clear the filter to see everything."
-            : "No items published yet. Be the first — publish from one of your image sets."}
-        </p>
+        <div className="font-heading text-lg font-semibold">{headline}</div>
+        <p className="mt-1 text-sm text-muted-foreground">{body}</p>
       </div>
     </div>
   );

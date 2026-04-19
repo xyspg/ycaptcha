@@ -1,5 +1,6 @@
 import { and, desc, eq } from "drizzle-orm";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
@@ -11,26 +12,28 @@ export const dynamic = "force-dynamic";
 
 export default async function GalleryMinePage() {
   const session = await requireSession();
-
-  const items = await db
-    .select()
-    .from(galleryItem)
-    .where(
-      and(
-        eq(galleryItem.authorId, session.user.id),
-        eq(galleryItem.status, "published"),
-      ),
-    )
-    .orderBy(desc(galleryItem.createdAt));
+  const [items, t] = await Promise.all([
+    db
+      .select()
+      .from(galleryItem)
+      .where(
+        and(
+          eq(galleryItem.authorId, session.user.id),
+          eq(galleryItem.status, "published"),
+        ),
+      )
+      .orderBy(desc(galleryItem.createdAt)),
+    getTranslations("gallery"),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-10 lg:px-8 lg:py-14">
       <header className="mb-8 flex flex-col gap-2 lg:mb-12">
         <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-amber-600 dark:text-amber-400">
-          Your gallery items
+          {t("mineEyebrow")}
         </div>
         <h1 className="font-heading text-3xl font-bold tracking-tight lg:text-[40px]">
-          Everything you've published.
+          {t("mineHeadline")}
         </h1>
       </header>
 
@@ -38,15 +41,14 @@ export default async function GalleryMinePage() {
         <div className="flex flex-col items-center gap-4 rounded-3xl border border-dashed border-border bg-background/50 px-8 py-20 text-center">
           <div className="max-w-sm">
             <div className="font-heading text-lg font-semibold">
-              Nothing published yet
+              {t("mineEmptyHeadline")}
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              Head to your image sets and pick one to publish. You'll confirm
-              the images before anything goes public.
+              {t("mineEmptyBody")}
             </p>
           </div>
           <Button asChild size="sm" className="rounded-full">
-            <Link href="/dashboard/image-sets">Go to image sets</Link>
+            <Link href="/dashboard/image-sets">{t("goToImageSets")}</Link>
           </Button>
         </div>
       ) : (

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { toast } from "sonner";
 import { forkGalleryItem } from "@/app/(main)/(gallery)/actions";
@@ -7,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import type { ActionState } from "@/lib/types";
 
 export function ForkButton({ slug }: { slug: string }) {
+  const t = useTranslations("gallery");
   const [, formAction, isPending] = useActionState(
     async (prev: ActionState, fd: FormData) => {
       const result = await forkGalleryItem(prev, fd);
@@ -27,7 +29,7 @@ export function ForkButton({ slug }: { slug: string }) {
         className="w-full rounded-full"
         disabled={isPending}
       >
-        {isPending ? "Forking…" : "Fork to my account"}
+        {isPending ? t("forking") : t("forkToMyAccount")}
       </Button>
     </form>
   );

@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import type { galleryItem } from "@/lib/db/app-schema";
 
 type Item = typeof galleryItem.$inferSelect;
 
-export function GalleryItemCardContent({ item }: { item: Item }) {
+export async function GalleryItemCardContent({ item }: { item: Item }) {
+  const t = await getTranslations("gallery");
   const previewImages = item.images.slice(0, 4);
 
   return (
@@ -28,18 +30,16 @@ export function GalleryItemCardContent({ item }: { item: Item }) {
           ))
         ) : (
           <div className="col-span-2 flex size-full items-center justify-center text-xs text-muted-foreground">
-            (empty preview)
+            {t("cardEmptyPreview")}
           </div>
         )}
       </div>
 
       <div className="flex flex-1 flex-col gap-1 px-1 pb-1">
         <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
-          <span>{item.images.length} images</span>
+          <span>{t("cardImages", { count: item.images.length })}</span>
           <span>·</span>
-          <span>
-            {item.downloadCount} fork{item.downloadCount === 1 ? "" : "s"}
-          </span>
+          <span>{t("cardForks", { count: item.downloadCount })}</span>
         </div>
         <div className="font-heading text-base font-semibold tracking-tight">
           {item.title}
@@ -51,9 +51,9 @@ export function GalleryItemCardContent({ item }: { item: Item }) {
         )}
         <div className="mt-auto flex items-center justify-between gap-2 pt-1">
           <div className="text-xs text-muted-foreground">
-            by{" "}
+            {t("cardBy")}{" "}
             <span className="font-medium text-foreground/70">
-              {item.anonymous ? "anonymous" : item.authorDisplayName}
+              {item.anonymous ? t("cardAnonymous") : item.authorDisplayName}
             </span>
           </div>
           {item.tags.length > 0 && (

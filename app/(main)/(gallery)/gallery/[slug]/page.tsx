@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/session";
@@ -41,7 +42,12 @@ export default async function GalleryItemPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [item, session] = await Promise.all([getItem(slug), getSession()]);
+  const [item, session, t, locale] = await Promise.all([
+    getItem(slug),
+    getSession(),
+    getTranslations("gallery"),
+    getLocale(),
+  ]);
   if (!item) notFound();
 
   const isAuthor = session?.user?.id && session.user.id === item.authorId;
@@ -53,7 +59,7 @@ export default async function GalleryItemPage({
           href="/gallery"
           className="text-sm text-muted-foreground hover:text-foreground"
         >
-          ← All image sets
+          {t("backToAll")}
         </Link>
       </div>
 
@@ -62,10 +68,10 @@ export default async function GalleryItemPage({
         <section>
           <div className="mb-3 flex items-center justify-between">
             <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-              Images in this set
+              {t("imagesInSet")}
             </div>
             <div className="text-xs text-muted-foreground">
-              {item.images.length} total
+              {t("totalCount", { count: item.images.length })}
             </div>
           </div>
           <div className="rounded-2xl border border-border bg-background/70 p-3">
@@ -94,18 +100,18 @@ export default async function GalleryItemPage({
           <div>
             <div className="mb-2 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.12em] text-amber-600 dark:text-amber-400">
               <span className="inline-block size-1.5 rounded-full bg-amber-500" />
-              Image set
+              {t("detailEyebrow")}
             </div>
             <h1 className="font-heading text-3xl font-bold tracking-tight lg:text-[40px]">
               {item.title}
             </h1>
             <div className="mt-2 text-sm text-muted-foreground">
-              by{" "}
+              {t("cardBy")}{" "}
               <span className="font-medium text-foreground/80">
-                {item.anonymous ? "anonymous" : item.authorDisplayName}
+                {item.anonymous ? t("cardAnonymous") : item.authorDisplayName}
               </span>
               {" · "}
-              {new Date(item.createdAt).toLocaleDateString(undefined, {
+              {new Date(item.createdAt).toLocaleDateString(locale, {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
@@ -135,35 +141,29 @@ export default async function GalleryItemPage({
 
           <div className="flex flex-col gap-2 rounded-2xl border border-border bg-background/80 p-5">
             <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-              {item.downloadCount} fork{item.downloadCount === 1 ? "" : "s"}
+              {t("cardForks", { count: item.downloadCount })}
             </div>
             {isAuthor ? (
               <>
                 <Button asChild size="lg" className="rounded-full">
-                  <Link href="/gallery/mine">Manage in My items</Link>
+                  <Link href="/gallery/mine">{t("manageInMine")}</Link>
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  This is your image set. Manage it from My items to edit,
-                  unpublish, or wire it to a site.
+                  {t("manageInMineHint")}
                 </p>
               </>
             ) : session ? (
               <>
                 <ForkButton slug={item.slug} />
-                <p className="text-xs text-muted-foreground">
-                  Forking copies every image into your account as a new image
-                  set. From there, wire it to a site and set your own prompt +
-                  correct images.
-                </p>
+                <p className="text-xs text-muted-foreground">{t("forkHint")}</p>
               </>
             ) : (
               <>
                 <Button asChild size="lg" className="rounded-full">
-                  <Link href="/login">Sign in to fork</Link>
+                  <Link href="/login">{t("signInToFork")}</Link>
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  Forking copies this set into your account so you can build a
-                  puzzle around it.
+                  {t("signInToForkHint")}
                 </p>
               </>
             )}
