@@ -28,16 +28,17 @@ const EMBED_SNIPPET = `<script
 
 <div
   class="y-captcha"
-  data-sitekey="pk_live_..."
+  data-sitekey="pk_..."
 ></div>`;
 
 const VERIFY_SNIPPET = `const res = await fetch(
   "https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify",
   {
     method: "POST",
-    body: new URLSearchParams({
-      secret: process.env.YCAPTCHA_SECRET!,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       token,
+      secretKey: process.env.YCAPTCHA_SECRET_KEY!,
     }),
   },
 );
@@ -133,7 +134,7 @@ export async function HomePage() {
       </header>
 
       {/* Hero */}
-      <section className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-10 pt-4 md:mt-8 lg:px-10 lg:pb-20 lg:pt-10">
+      <section className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-10 pt-4 lg:px-12 lg:pb-20 lg:pt-12">
         <div className="grid items-start gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
           <div className="flex flex-col">
             {/* Logo */}

@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
@@ -10,6 +11,8 @@ import { env } from "@/lib/env";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
 import { DemoCaptchaWidget } from "./demo-captcha-widget";
+
+const TegakiTryIt = dynamic(() => import("./tegaki-try-it"), { ssr: false });
 
 interface Demo {
   prompt: string;
@@ -168,12 +171,7 @@ export function DemoShowcase() {
       <div className="hidden lg:block">
         <div className="relative h-[600px] w-[490px]">
           <div className="absolute -left-20 -top-12 z-40 select-none">
-            <span
-              className="block text-2xl text-foreground/70 rotate-[-6deg]"
-              style={{ fontFamily: "var(--font-caveat)" }}
-            >
-              {t("tryItOut")}
-            </span>
+            <TegakiTryIt text={t("tryItOut")} />
             {/* Hand-drawn arrow curving down-right */}
             <svg
               width="80"
