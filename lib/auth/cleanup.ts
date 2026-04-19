@@ -89,8 +89,7 @@ export async function cleanupUserOnDelete(userId: string): Promise<void> {
             (r) =>
               r.contentHash === null || !stillReferenced.has(r.contentHash),
           )
-          .map((r) => r.url)
-          .filter((u) => !u.includes("/samples/")),
+          .map((r) => r.url),
         ...audioRows.map((r) => r.url),
         ...galleryRows
           .flatMap((r) => r.images)

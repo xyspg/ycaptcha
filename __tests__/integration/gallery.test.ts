@@ -1020,28 +1020,6 @@ describe("cleanupUserOnDelete (R2 refcount)", () => {
 
     expect(r2State.deletedKeys).toContain(audioKey);
   });
-
-  it("never deletes R2 objects under /samples/", async () => {
-    const u = await createTestUser("samples");
-    const [set] = await db
-      .insert(imageSet)
-      .values({ userId: u, name: "samples set" })
-      .returning({ id: imageSet.id });
-    await db.insert(image).values({
-      imageSetId: set.id,
-      url: `${R2_PREFIX}samples/keep-me.webp`,
-      name: "sample",
-      contentHash: null,
-      sizeBytes: 1024,
-    });
-    r2State.deletedKeys = [];
-
-    await cleanupUserOnDelete(u);
-    await db.delete(user).where(eq(user.id, u));
-    testUserIds.delete(u);
-
-    expect(r2State.deletedKeys).not.toContain("samples/keep-me.webp");
-  });
 });
 
 // ══════════════════════════════════════════════════════════════════════

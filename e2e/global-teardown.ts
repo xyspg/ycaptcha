@@ -8,7 +8,7 @@ import { neon } from "@neondatabase/serverless";
  * 1. Look up R2 audio + image URLs the test user owns (queryable while rows still exist).
  * 2. Delete puzzles first (puzzle.image_set_id is onDelete:"restrict").
  * 3. Delete the user — Neon cascades site/imageSet/image/audio/session/account/passkey.
- * 4. Delete the R2 keys we collected, skipping anything under /samples/ (shared assets).
+ * 4. Delete the R2 keys we collected.
  */
 export default async function globalTeardown() {
   const databaseUrl = process.env.DATABASE_URL;
@@ -62,8 +62,7 @@ async function deleteR2Urls(urls: string[]) {
   const prefix = `${publicUrl}/`;
   const keys = urls
     .filter((u) => u.startsWith(prefix))
-    .map((u) => u.slice(prefix.length))
-    .filter((k) => !k.startsWith("samples/"));
+    .map((u) => u.slice(prefix.length));
 
   if (keys.length === 0) return;
 

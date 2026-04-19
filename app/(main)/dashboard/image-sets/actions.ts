@@ -407,7 +407,6 @@ export async function deleteImage(
 
     await tx.delete(image).where(eq(image.id, imageId));
 
-    if (img.url.includes("/samples/")) return { url: img.url, purge: false };
     if (!img.contentHash) return { url: img.url, purge: true };
 
     const [imgRef] = await tx
@@ -517,13 +516,11 @@ export async function deleteImageSet(
   // Null-hash rows pre-date dedup and can't have other references, so
   // always delete their R2 object. Hashed rows survive if either the
   // image table or a gallery_item still points at the same content.
-  const toDelete = imgs
-    .filter(
-      (img) =>
-        img.contentHash === null ||
-        (!imageRefs.has(img.contentHash) && !galleryRefs.has(img.contentHash)),
-    )
-    .filter((img) => !img.url.includes("/samples/"));
+  const toDelete = imgs.filter(
+    (img) =>
+      img.contentHash === null ||
+      (!imageRefs.has(img.contentHash) && !galleryRefs.has(img.contentHash)),
+  );
 
   const results = await Promise.allSettled(
     toDelete.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
