@@ -154,6 +154,9 @@ export const galleryItem = pgTable(
       .$type<{ url: string; name: string | null; contentHash: string }[]>()
       .notNull()
       .default([]),
+    // SHA-256 over sorted contentHashes — globally unique so the same image
+    // pool can't be republished (fork-rebrand or double-submit).
+    imagesHash: text("images_hash").notNull().unique(),
     downloadCount: integer("download_count").notNull().default(0),
     status: text("status").notNull().default("published"), // published | hidden | removed
     createdAt: timestamp("created_at").notNull().defaultNow(),

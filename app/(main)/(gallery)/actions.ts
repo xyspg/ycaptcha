@@ -1,6 +1,7 @@
 "use server";
 
-import { and, count, eq, sql } from "drizzle-orm";
+import { createHash } from "node:crypto";
+import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -16,6 +17,12 @@ export type { ActionState } from "@/lib/types";
 const MAX_ITEMS_PER_USER = 10;
 const MAX_IMAGES_PER_ITEM = 60;
 const MIN_IMAGES_PER_ITEM = 9;
+
+function computeSetHash(contentHashes: string[]): string {
+  return createHash("sha256")
+    .update([...contentHashes].sort().join(""))
+    .digest("hex");
+}
 
 const publishSchema = z.object({
   imageSetId: z.string().min(1),
@@ -104,6 +111,24 @@ export async function publishGalleryItem(
     };
   }
 
+  const imagesHash = computeSetHash(
+    set.images.map((img) => img.contentHash as string),
+  );
+  const [existing] = await db
+    .select({ slug: galleryItem.slug })
+    .from(galleryItem)
+    .where(eq(galleryItem.imagesHash, imagesHash))
+    .limit(1);
+  if (existing) {
+    return {
+      errors: {
+        _: [
+          "This exact image set is already in the gallery. Fork or remix it instead of re-publishing.",
+        ],
+      },
+    };
+  }
+
   const itemId = nanoid();
   const copiedImages = await Promise.all(
     set.images.map(async (img) => {
@@ -126,6 +151,7 @@ export async function publishGalleryItem(
       title: data.title,
       description: data.description,
       images: copiedImages,
+      imagesHash,
       status: "published",
     })
     .returning({ slug: galleryItem.slug });
@@ -207,6 +233,7 @@ export async function forkGalleryItem(
       id: galleryItem.id,
       title: galleryItem.title,
       images: galleryItem.images,
+      imagesHash: galleryItem.imagesHash,
     })
     .from(galleryItem)
     .where(
@@ -220,6 +247,42 @@ export async function forkGalleryItem(
     return { errors: { _: ["Gallery item not found or unpublished."] } };
   }
 
+  // Refuse if the user already has an image set with the same content — any of
+  // their own sets whose contentHash multiset equals the gallery item's.
+  const galleryHashes = item.images.map((img) => img.contentHash);
+  const userRows = await db
+    .select({ imageSetId: image.imageSetId, contentHash: image.contentHash })
+    .from(image)
+    .innerJoin(imageSet, eq(image.imageSetId, imageSet.id))
+    .where(eq(imageSet.userId, session.user.id));
+  const bySet = new Map<string, string[]>();
+  for (const r of userRows) {
+    if (!r.contentHash) continue;
+    const arr = bySet.get(r.imageSetId) ?? [];
+    arr.push(r.contentHash);
+    bySet.set(r.imageSetId, arr);
+  }
+  for (const hashes of bySet.values()) {
+    if (hashes.length !== galleryHashes.length) continue;
+    if (computeSetHash(hashes) === item.imagesHash) {
+      return {
+        errors: {
+          _: ["You already have this image set in your library."],
+        },
+      };
+    }
+  }
+
+  // Reuse existing R2 objects by contentHash — avoids piling up duplicate
+  // copies when the same set is forked repeatedly.
+  const existingImages = galleryHashes.length
+    ? await db
+        .select({ contentHash: image.contentHash, url: image.url })
+        .from(image)
+        .where(inArray(image.contentHash, galleryHashes))
+    : [];
+  const urlByHash = new Map(existingImages.map((r) => [r.contentHash, r.url]));
+
   const [newSet] = await db
     .insert(imageSet)
     .values({
@@ -229,17 +292,20 @@ export async function forkGalleryItem(
     .returning({ id: imageSet.id });
 
   const copied = await Promise.all(
-    item.images.map((img) =>
-      copyObjectInR2(r2KeyFromUrl(img.url), `images/${nanoid()}.webp`).then(
-        (c) => ({
-          imageSetId: newSet.id,
-          url: c.url,
-          name: img.name,
-          contentHash: img.contentHash,
-          sizeBytes: 0,
-        }),
-      ),
-    ),
+    item.images.map(async (img) => {
+      const reused = urlByHash.get(img.contentHash);
+      const url =
+        reused ??
+        (await copyObjectInR2(r2KeyFromUrl(img.url), `images/${nanoid()}.webp`))
+          .url;
+      return {
+        imageSetId: newSet.id,
+        url,
+        name: img.name,
+        contentHash: img.contentHash,
+        sizeBytes: 0,
+      };
+    }),
   );
 
   await Promise.all([

@@ -32,7 +32,7 @@ export const auth = betterAuth({
       enabled: true,
       beforeDelete: async (user) => {
         const DEMOUSER = "demo@example.com";
-        if (user.email === DEMOUSER) {
+        if (user.email === DEMOUSER && process.env.NODE_ENV === "production") {
           throw new APIError("BAD_REQUEST", {
             message: "unable to delete demo user",
           });
