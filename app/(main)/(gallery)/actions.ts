@@ -29,6 +29,20 @@ function computeSetHash(contentHashes: string[]): string {
     .digest("hex");
 }
 
+// User-facing conflicts raised from inside withUserLock, translated to
+// ActionState errors by the outer catch. Keeps the tx body linear
+// without threading discriminated-union return types through each step.
+class GalleryActionError extends Error {}
+
+function isUniqueViolation(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    (err as { code: unknown }).code === "23505"
+  );
+}
+
 const publishSchema = z.object({
   imageSetId: z.string().min(1),
   title: z.string().trim().min(1, "Title is required").max(80),
@@ -98,20 +112,6 @@ export async function publishGalleryItem(
     };
   }
 
-  const [countRow] = await db
-    .select({ n: count() })
-    .from(galleryItem)
-    .where(eq(galleryItem.authorId, session.user.id));
-  if ((countRow?.n ?? 0) >= MAX_ITEMS_PER_USER) {
-    return {
-      errors: {
-        _: [
-          `You've reached the limit of ${MAX_ITEMS_PER_USER} gallery items. Remove one from /gallery/mine first.`,
-        ],
-      },
-    };
-  }
-
   if (set.images.some((img) => !img.contentHash)) {
     return {
       errors: {
@@ -125,20 +125,6 @@ export async function publishGalleryItem(
   const imagesHash = computeSetHash(
     set.images.map((img) => img.contentHash as string),
   );
-  const [existing] = await db
-    .select({ slug: galleryItem.slug })
-    .from(galleryItem)
-    .where(eq(galleryItem.imagesHash, imagesHash))
-    .limit(1);
-  if (existing) {
-    return {
-      errors: {
-        _: [
-          "This exact image set is already in the gallery. Fork or remix it instead of re-publishing.",
-        ],
-      },
-    };
-  }
 
   // Snapshot the source URLs directly — no R2 copy. Deletion paths use a
   // refcount (image.contentHash + gallery_item.images[]) so these R2
@@ -150,24 +136,54 @@ export async function publishGalleryItem(
     sizeBytes: img.sizeBytes,
   }));
 
-  // Serialize against same-user delete paths so their refcount reads see
-  // this new gallery_item row before deciding what R2 keys to purge.
-  const inserted = await withUserLock(session.user.id, async (tx) => {
-    const [row] = await tx
-      .insert(galleryItem)
-      .values({
-        authorId: session.user.id,
-        authorDisplayName: session.user.name || "anonymous",
-        anonymous: data.anonymous,
-        title: data.title,
-        description: data.description,
-        images: snapshotImages,
-        imagesHash,
-        status: "published",
-      })
-      .returning({ slug: galleryItem.slug });
-    return row;
-  });
+  // Count + insert inside the lock so same-user concurrent publishes can't
+  // both pass a stale count=9 check and push the user over MAX. The
+  // imagesHash unique constraint is authoritative across ALL users — we
+  // catch the unique-violation and translate it to the friendly "already
+  // published" message so the loser of a race doesn't see a raw 500.
+  let inserted: { slug: string };
+  try {
+    inserted = await withUserLock(session.user.id, async (tx) => {
+      const [countRow] = await tx
+        .select({ n: count() })
+        .from(galleryItem)
+        .where(eq(galleryItem.authorId, session.user.id));
+      if ((countRow?.n ?? 0) >= MAX_ITEMS_PER_USER) {
+        throw new GalleryActionError(
+          `You've reached the limit of ${MAX_ITEMS_PER_USER} gallery items. Remove one from /gallery/mine first.`,
+        );
+      }
+
+      try {
+        const [row] = await tx
+          .insert(galleryItem)
+          .values({
+            authorId: session.user.id,
+            authorDisplayName: session.user.name || "anonymous",
+            anonymous: data.anonymous,
+            title: data.title,
+            description: data.description,
+            images: snapshotImages,
+            imagesHash,
+            status: "published",
+          })
+          .returning({ slug: galleryItem.slug });
+        return row;
+      } catch (err) {
+        if (isUniqueViolation(err)) {
+          throw new GalleryActionError(
+            "This exact image set is already in the gallery. Fork or remix it instead of re-publishing.",
+          );
+        }
+        throw err;
+      }
+    });
+  } catch (err) {
+    if (err instanceof GalleryActionError) {
+      return { errors: { _: [err.message] } };
+    }
+    throw err;
+  }
 
   revalidatePath("/gallery");
   revalidatePath("/gallery/mine");
@@ -261,60 +277,64 @@ export async function forkGalleryItem(
     return { errors: z.flattenError(parsed.error).fieldErrors };
   }
 
-  const [item] = await db
-    .select({
-      id: galleryItem.id,
-      title: galleryItem.title,
-      images: galleryItem.images,
-      imagesHash: galleryItem.imagesHash,
-    })
-    .from(galleryItem)
-    .where(
-      and(
-        eq(galleryItem.slug, parsed.data.slug),
-        eq(galleryItem.status, "published"),
-      ),
-    );
-
-  if (!item) {
-    return { errors: { _: ["Gallery item not found or unpublished."] } };
-  }
-
-  // Refuse if the user already has an image set with the same content — any of
-  // their own sets whose contentHash multiset equals the gallery item's.
-  const galleryHashes = item.images.map((img) => img.contentHash);
-  const userRows = await db
-    .select({ imageSetId: image.imageSetId, contentHash: image.contentHash })
-    .from(image)
-    .innerJoin(imageSet, eq(image.imageSetId, imageSet.id))
-    .where(eq(imageSet.userId, session.user.id));
-  const bySet = new Map<string, string[]>();
-  for (const r of userRows) {
-    if (!r.contentHash) continue;
-    const arr = bySet.get(r.imageSetId) ?? [];
-    arr.push(r.contentHash);
-    bySet.set(r.imageSetId, arr);
-  }
-  for (const hashes of bySet.values()) {
-    if (hashes.length !== galleryHashes.length) continue;
-    if (computeSetHash(hashes) === item.imagesHash) {
-      return {
-        errors: {
-          _: ["You already have this image set in your library."],
-        },
-      };
-    }
-  }
-
-  // Fork is a pure DB op — the forker's image rows reference the gallery's
-  // existing R2 URLs. Deletion refcount (image.contentHash +
-  // gallery_item.images[]) preserves those objects as long as any row
-  // points to them.
-  const forkBytes = item.images.reduce((n, img) => n + img.sizeBytes, 0);
-
+  // Everything inside the lock:
+  //  - SELECT ... FOR SHARE blocks the author's concurrent DELETE until we
+  //    commit. Without it, the author's deleteGalleryItem could purge R2
+  //    between our read and insert, leaving the new rows pointing at
+  //    already-deleted objects.
+  //  - The "already have this set" multiset equality check also lives
+  //    inside the lock so a same-user double-submit can't produce two
+  //    identical forked sets (each of which would double-count against
+  //    the forker's quota).
   let newSetId: string;
   try {
     newSetId = await withUserLock(session.user.id, async (tx) => {
+      const [fresh] = await tx
+        .select({
+          id: galleryItem.id,
+          title: galleryItem.title,
+          images: galleryItem.images,
+          imagesHash: galleryItem.imagesHash,
+        })
+        .from(galleryItem)
+        .where(
+          and(
+            eq(galleryItem.slug, parsed.data.slug),
+            eq(galleryItem.status, "published"),
+          ),
+        )
+        .for("share");
+
+      if (!fresh) {
+        throw new GalleryActionError("Gallery item not found or unpublished.");
+      }
+
+      const galleryHashes = fresh.images.map((img) => img.contentHash);
+      const userRows = await tx
+        .select({
+          imageSetId: image.imageSetId,
+          contentHash: image.contentHash,
+        })
+        .from(image)
+        .innerJoin(imageSet, eq(image.imageSetId, imageSet.id))
+        .where(eq(imageSet.userId, session.user.id));
+      const bySet = new Map<string, string[]>();
+      for (const r of userRows) {
+        if (!r.contentHash) continue;
+        const arr = bySet.get(r.imageSetId) ?? [];
+        arr.push(r.contentHash);
+        bySet.set(r.imageSetId, arr);
+      }
+      for (const hashes of bySet.values()) {
+        if (hashes.length !== galleryHashes.length) continue;
+        if (computeSetHash(hashes) === fresh.imagesHash) {
+          throw new GalleryActionError(
+            "You already have this image set in your library.",
+          );
+        }
+      }
+
+      const forkBytes = fresh.images.reduce((n, img) => n + img.sizeBytes, 0);
       const usage = await getUserStorageUsage(session.user.id, tx);
       if (usage.totalBytes + forkBytes > STORAGE_QUOTA_BYTES) {
         throw new QuotaExceededError(
@@ -326,13 +346,13 @@ export async function forkGalleryItem(
         .insert(imageSet)
         .values({
           userId: session.user.id,
-          name: `${item.title} (forked)`,
+          name: `${fresh.title} (forked)`,
         })
         .returning({ id: imageSet.id });
 
       await Promise.all([
         tx.insert(image).values(
-          item.images.map((img) => ({
+          fresh.images.map((img) => ({
             imageSetId: newSet.id,
             url: img.url,
             name: img.name,
@@ -343,13 +363,16 @@ export async function forkGalleryItem(
         tx
           .update(galleryItem)
           .set({ downloadCount: sql`${galleryItem.downloadCount} + 1` })
-          .where(eq(galleryItem.id, item.id)),
+          .where(eq(galleryItem.id, fresh.id)),
       ]);
 
       return newSet.id;
     });
   } catch (err) {
     if (err instanceof QuotaExceededError) {
+      return { errors: { _: [err.message] } };
+    }
+    if (err instanceof GalleryActionError) {
       return { errors: { _: [err.message] } };
     }
     throw err;
