@@ -7,10 +7,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
-import { db } from "@/lib/db";
+import { db, withUserLock } from "@/lib/db";
 import { galleryItem, image, imageSet } from "@/lib/db/app-schema";
-import { copyObjectInR2, deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
-import { getUserStorageUsage, STORAGE_QUOTA_BYTES } from "@/lib/storage-quota";
+import { cleanupR2Keys, copyObjectInR2, r2KeyFromUrl } from "@/lib/r2";
+import {
+  getUserStorageUsage,
+  QuotaExceededError,
+  STORAGE_QUOTA_BYTES,
+} from "@/lib/storage-quota";
 import type { ActionState } from "@/lib/types";
 
 export type { ActionState } from "@/lib/types";
@@ -173,14 +177,7 @@ export async function publishGalleryItem(
       .returning({ slug: galleryItem.slug });
     inserted = rows[0];
   } catch (err) {
-    const cleanup = await Promise.allSettled(
-      copiedImages.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
-    );
-    for (const r of cleanup) {
-      if (r.status === "rejected") {
-        console.error("[gallery] publish rollback R2 delete failed", r.reason);
-      }
-    }
+    await cleanupR2Keys(copiedImages.map((img) => r2KeyFromUrl(img.url)));
     throw err;
   }
 
@@ -222,18 +219,7 @@ export async function deleteGalleryItem(
 
   await db.delete(galleryItem).where(eq(galleryItem.id, item.id));
 
-  const results = await Promise.allSettled(
-    item.images.map((img) => deleteFromR2(r2KeyFromUrl(img.url))),
-  );
-  for (const r of results) {
-    if (r.status === "rejected") {
-      console.error(
-        "[gallery] R2 cleanup failed for removed item",
-        item.id,
-        r.reason,
-      );
-    }
-  }
+  await cleanupR2Keys(item.images.map((img) => r2KeyFromUrl(img.url)));
 
   revalidatePath("/gallery");
   revalidatePath("/gallery/mine");
@@ -301,21 +287,6 @@ export async function forkGalleryItem(
     }
   }
 
-  // Quota gate — fork charges the forker for the full bytes even when R2
-  // dedup reuses objects, otherwise a user could endlessly fork to bypass
-  // the per-user cap while still keeping the files referenced.
-  const forkBytes = item.images.reduce((n, img) => n + img.sizeBytes, 0);
-  const usage = await getUserStorageUsage(session.user.id);
-  if (usage.totalBytes + forkBytes > STORAGE_QUOTA_BYTES) {
-    return {
-      errors: {
-        _: [
-          "Forking this set would exceed your storage quota. Remove some images first.",
-        ],
-      },
-    };
-  }
-
   // Reuse existing R2 objects by contentHash — avoids piling up duplicate
   // copies when the same set is forked repeatedly.
   const existingImages = galleryHashes.length
@@ -326,16 +297,10 @@ export async function forkGalleryItem(
     : [];
   const urlByHash = new Map(existingImages.map((r) => [r.contentHash, r.url]));
 
-  const [newSet] = await db
-    .insert(imageSet)
-    .values({
-      userId: session.user.id,
-      name: `${item.title} (forked)`,
-    })
-    .returning({ id: imageSet.id });
-
-  // Track keys we freshly copied (as opposed to reused) so we can roll them
-  // back if the follow-up DB insert fails.
+  // R2 copies happen before the lock — copy work doesn't touch the quota
+  // counter, and keeping the lock window tight avoids serializing up to 60
+  // cross-region copies behind every concurrent fork from the same user.
+  const forkBytes = item.images.reduce((n, img) => n + img.sizeBytes, 0);
   const newlyCopiedKeys: string[] = [];
   const copied = await Promise.all(
     item.images.map(async (img) => {
@@ -352,7 +317,6 @@ export async function forkGalleryItem(
         newlyCopiedKeys.push(c.key);
       }
       return {
-        imageSetId: newSet.id,
         url,
         name: img.name,
         contentHash: img.contentHash,
@@ -361,22 +325,44 @@ export async function forkGalleryItem(
     }),
   );
 
+  let newSetId: string;
   try {
-    await Promise.all([
-      db.insert(image).values(copied),
-      db
-        .update(galleryItem)
-        .set({ downloadCount: sql`${galleryItem.downloadCount} + 1` })
-        .where(eq(galleryItem.id, item.id)),
-    ]);
+    newSetId = await withUserLock(session.user.id, async (tx) => {
+      const usage = await getUserStorageUsage(session.user.id, tx);
+      if (usage.totalBytes + forkBytes > STORAGE_QUOTA_BYTES) {
+        throw new QuotaExceededError(
+          "Forking this set would exceed your storage quota. Remove some images first.",
+        );
+      }
+
+      const [newSet] = await tx
+        .insert(imageSet)
+        .values({
+          userId: session.user.id,
+          name: `${item.title} (forked)`,
+        })
+        .returning({ id: imageSet.id });
+
+      await Promise.all([
+        tx
+          .insert(image)
+          .values(copied.map((c) => ({ ...c, imageSetId: newSet.id }))),
+        tx
+          .update(galleryItem)
+          .set({ downloadCount: sql`${galleryItem.downloadCount} + 1` })
+          .where(eq(galleryItem.id, item.id)),
+      ]);
+
+      return newSet.id;
+    });
   } catch (err) {
-    await Promise.allSettled([
-      db.delete(imageSet).where(eq(imageSet.id, newSet.id)),
-      ...newlyCopiedKeys.map((key) => deleteFromR2(key)),
-    ]);
+    await cleanupR2Keys(newlyCopiedKeys);
+    if (err instanceof QuotaExceededError) {
+      return { errors: { _: [err.message] } };
+    }
     throw err;
   }
 
   revalidatePath("/dashboard/image-sets");
-  redirect(`/dashboard/image-sets/${newSet.id}`);
+  redirect(`/dashboard/image-sets/${newSetId}`);
 }

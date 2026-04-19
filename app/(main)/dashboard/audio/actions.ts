@@ -5,15 +5,20 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
-import { db } from "@/lib/db";
+import { db, withUserLock } from "@/lib/db";
 import { audio, puzzle, site } from "@/lib/db/app-schema";
 import {
+  cleanupR2Keys,
   deleteFromR2,
   hashBuffer,
   r2KeyFromUrl,
   uploadAudioToR2,
 } from "@/lib/r2";
-import { checkQuota, getUserStorageUsage } from "@/lib/storage-quota";
+import {
+  checkQuota,
+  getUserStorageUsage,
+  QuotaExceededError,
+} from "@/lib/storage-quota";
 import type { ActionState } from "@/lib/types";
 import { parseWav } from "@/lib/wav";
 
@@ -82,11 +87,7 @@ export async function uploadAudio(
   const sizeBytes = buffer.length;
   const contentHash = hashBuffer(buffer);
 
-  const usage = await getUserStorageUsage(session.user.id);
-  const quotaErr = checkQuota(usage, sizeBytes);
-  if (quotaErr) return { errors: { file: [quotaErr] } };
-
-  // Check dedup for this user
+  // Check dedup for this user (no quota impact — safe outside the lock)
   const [existing] = await db
     .select({ id: audio.id })
     .from(audio)
@@ -102,29 +103,40 @@ export async function uploadAudio(
     return { errors: { file: ["This audio file has already been uploaded"] } };
   }
 
-  // Trim flow always re-encodes to WAV before this point.
-  const { key, url } = await uploadAudioToR2(buffer, "wav");
-
-  let created: { id: string };
+  let uploadedKey: string | null = null;
+  let createdId: string;
   try {
-    [created] = await db
-      .insert(audio)
-      .values({
-        userId: session.user.id,
-        url,
-        name,
-        durationMs,
-        contentHash,
-        sizeBytes,
-      })
-      .returning({ id: audio.id });
+    createdId = await withUserLock(session.user.id, async (tx) => {
+      const usage = await getUserStorageUsage(session.user.id, tx);
+      const quotaErr = checkQuota(usage, sizeBytes);
+      if (quotaErr) throw new QuotaExceededError(quotaErr);
+
+      const { key, url } = await uploadAudioToR2(buffer, "wav");
+      uploadedKey = key;
+
+      const [created] = await tx
+        .insert(audio)
+        .values({
+          userId: session.user.id,
+          url,
+          name,
+          durationMs,
+          contentHash,
+          sizeBytes,
+        })
+        .returning({ id: audio.id });
+      return created.id;
+    });
   } catch (err) {
-    await deleteFromR2(key).catch(() => {});
+    await cleanupR2Keys([uploadedKey]);
+    if (err instanceof QuotaExceededError) {
+      return { errors: { file: [err.message] } };
+    }
     throw err;
   }
 
   revalidatePath("/dashboard/audio");
-  return { success: true, values: { id: created.id } };
+  return { success: true, values: { id: createdId } };
 }
 
 const updateSchema = z.object({

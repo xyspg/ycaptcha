@@ -5,9 +5,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
-import { db } from "@/lib/db";
+import { db, withUserLock } from "@/lib/db";
 import { image, imageSet, puzzle, site } from "@/lib/db/app-schema";
 import {
+  cleanupR2Keys,
   deleteFromR2,
   processImage,
   r2KeyFromUrl,
@@ -16,6 +17,7 @@ import {
 import {
   checkQuota,
   getUserStorageUsage,
+  QuotaExceededError,
   STORAGE_QUOTA_BYTES,
 } from "@/lib/storage-quota";
 import type { ActionState } from "@/lib/types";
@@ -201,81 +203,77 @@ export async function uploadImages(
     );
   }
 
-  // Quota gate — fetch usage once, accumulate file sizes, drop anything
-  // that would push the user over 200MB.
-  const usage = await getUserStorageUsage(session.user.id);
-  let provisionalBytes = usage.totalBytes;
-  const accepted: typeof newProcessed = [];
-  let quotaSkipped = 0;
-  for (const item of newProcessed) {
-    const next = provisionalBytes + item.buffer.length;
-    if (next > STORAGE_QUOTA_BYTES) {
-      quotaSkipped++;
-      continue;
-    }
-    provisionalBytes = next;
-    accepted.push(item);
-  }
-  if (quotaSkipped > 0) {
-    skipped.push(`${quotaSkipped} over storage quota`);
-  }
-
-  const sizeByHash = new Map(
-    accepted.map((p) => [p.contentHash, p.buffer.length]),
-  );
-
-  const results = await Promise.allSettled(
-    accepted.map(async ({ file, buffer, contentHash }) => {
-      const existingUrl = crossSetMap.get(contentHash);
-      if (existingUrl) {
-        return {
-          url: existingUrl,
-          name: file.name,
-          contentHash,
-          uploadedKey: null as string | null,
-        };
+  const newlyUploadedKeys: string[] = [];
+  let uploadedCount: number;
+  try {
+    uploadedCount = await withUserLock(session.user.id, async (tx) => {
+      const usage = await getUserStorageUsage(session.user.id, tx);
+      let provisionalBytes = usage.totalBytes;
+      const accepted: typeof newProcessed = [];
+      let quotaSkipped = 0;
+      for (const item of newProcessed) {
+        const next = provisionalBytes + item.buffer.length;
+        if (next > STORAGE_QUOTA_BYTES) {
+          quotaSkipped++;
+          continue;
+        }
+        provisionalBytes = next;
+        accepted.push(item);
       }
-      const { key, url } = await uploadBufferToR2(buffer);
-      return { url, name: file.name, contentHash, uploadedKey: key };
-    }),
-  );
+      if (quotaSkipped > 0) {
+        skipped.push(`${quotaSkipped} over storage quota`);
+      }
 
-  const uploaded = results
-    .filter(
-      (
-        r,
-      ): r is PromiseFulfilledResult<{
-        url: string;
-        name: string;
-        contentHash: string;
-        uploadedKey: string | null;
-      }> => r.status === "fulfilled",
-    )
-    .map((r) => r.value);
-
-  if (uploaded.length > 0) {
-    try {
-      await db.insert(image).values(
-        uploaded.map((u) => ({
-          imageSetId: setId,
-          url: u.url,
-          name: u.name,
-          contentHash: u.contentHash,
-          sizeBytes: sizeByHash.get(u.contentHash) ?? 0,
-        })),
+      const sizeByHash = new Map(
+        accepted.map((p) => [p.contentHash, p.buffer.length]),
       );
-    } catch (err) {
-      const newKeys = uploaded
-        .map((u) => u.uploadedKey)
-        .filter((k): k is string => !!k);
-      await Promise.allSettled(newKeys.map((k) => deleteFromR2(k)));
-      throw err;
-    }
+
+      const results = await Promise.allSettled(
+        accepted.map(async ({ file, buffer, contentHash }) => {
+          const existingUrl = crossSetMap.get(contentHash);
+          if (existingUrl) {
+            return { url: existingUrl, name: file.name, contentHash };
+          }
+          const { key, url } = await uploadBufferToR2(buffer);
+          newlyUploadedKeys.push(key);
+          return { url, name: file.name, contentHash };
+        }),
+      );
+
+      const uploaded = results
+        .filter(
+          (
+            r,
+          ): r is PromiseFulfilledResult<{
+            url: string;
+            name: string;
+            contentHash: string;
+          }> => r.status === "fulfilled",
+        )
+        .map((r) => r.value);
+
+      if (uploaded.length > 0) {
+        await tx.insert(image).values(
+          uploaded.map((u) => ({
+            imageSetId: setId,
+            url: u.url,
+            name: u.name,
+            contentHash: u.contentHash,
+            sizeBytes: sizeByHash.get(u.contentHash) ?? 0,
+          })),
+        );
+      }
+
+      return uploaded.length;
+    });
+  } catch (err) {
+    await cleanupR2Keys(newlyUploadedKeys);
+    throw err;
   }
 
   revalidatePath(`/dashboard/image-sets/${setId}`);
 
-  let message = `${uploaded.length} image${uploaded.length === 1 ? "" : "s"} uploaded`;
+  let message = `${uploadedCount} image${uploadedCount === 1 ? "" : "s"} uploaded`;
   if (skipped.length > 0) {
     message += `. Skipped: ${skipped.join(", ")}`;
   }
@@ -310,12 +308,7 @@ export async function uploadSingleImage(
     return { status: "error", name, error: "Invalid image" };
   }
 
-  const usage = await getUserStorageUsage(session.user.id);
-  if (checkQuota(usage, buffer.length)) {
-    return { status: "quota", name };
-  }
-
-  // Check duplicate in this set
+  // Check duplicate in this set (no quota impact — safe outside the lock)
   const [existing] = await db
     .select({ id: image.id })
     .from(image)
@@ -326,35 +319,39 @@ export async function uploadSingleImage(
     return { status: "duplicate", name };
   }
 
-  // Check cross-set dedup for R2 reuse
-  const [crossSet] = await db
-    .select({ url: image.url })
-    .from(image)
-    .where(eq(image.contentHash, contentHash))
-    .limit(1);
-
   let uploadedKey: string | null = null;
-  let url: string;
-  if (crossSet) {
-    url = crossSet.url;
-  } else {
-    const uploaded = await uploadBufferToR2(buffer);
-    url = uploaded.url;
-    uploadedKey = uploaded.key;
-  }
-
   try {
-    await db.insert(image).values({
-      imageSetId: setId,
-      url,
-      name,
-      contentHash,
-      sizeBytes: buffer.length,
+    await withUserLock(session.user.id, async (tx) => {
+      const usage = await getUserStorageUsage(session.user.id, tx);
+      const quotaErr = checkQuota(usage, buffer.length);
+      if (quotaErr) throw new QuotaExceededError(quotaErr);
+
+      const [crossSet] = await tx
+        .select({ url: image.url })
+        .from(image)
+        .where(eq(image.contentHash, contentHash))
+        .limit(1);
+
+      let url: string;
+      if (crossSet) {
+        url = crossSet.url;
+      } else {
+        const uploaded = await uploadBufferToR2(buffer);
+        url = uploaded.url;
+        uploadedKey = uploaded.key;
+      }
+
+      await tx.insert(image).values({
+        imageSetId: setId,
+        url,
+        name,
+        contentHash,
+        sizeBytes: buffer.length,
+      });
     });
   } catch (err) {
-    if (uploadedKey) {
-      await deleteFromR2(uploadedKey).catch(() => {});
-    }
+    await cleanupR2Keys([uploadedKey]);
+    if (err instanceof QuotaExceededError) return { status: "quota", name };
     throw err;
   }
 
