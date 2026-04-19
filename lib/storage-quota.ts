@@ -1,7 +1,9 @@
 import { eq, sql } from "drizzle-orm";
-import { db } from "@/lib/db";
+import { db, type Tx } from "@/lib/db";
 import { audio, image, imageSet } from "@/lib/db/app-schema";
 import { formatBytes } from "@/lib/utils";
+
+type QueryClient = typeof db | Tx;
 
 export const STORAGE_QUOTA_BYTES = 200 * 1024 * 1024;
 
@@ -23,16 +25,17 @@ export interface StorageUsage {
  */
 export async function getUserStorageUsage(
   userId: string,
+  client: QueryClient = db,
 ): Promise<StorageUsage> {
   const [imageRow, audioRow] = await Promise.all([
-    db
+    client
       .select({
         total: sql<string>`coalesce(sum(${image.sizeBytes}), 0)`,
       })
       .from(image)
       .innerJoin(imageSet, eq(imageSet.id, image.imageSetId))
       .where(eq(imageSet.userId, userId)),
-    db
+    client
       .select({
         total: sql<string>`coalesce(sum(${audio.sizeBytes}), 0)`,
       })
@@ -70,4 +73,12 @@ export function checkQuota(
 ): string | null {
   if (usage.totalBytes + additionalBytes <= STORAGE_QUOTA_BYTES) return null;
   return `Upload would exceed your ${formatBytes(STORAGE_QUOTA_BYTES)} storage quota (${formatBytes(usage.remainingBytes)} remaining)`;
+}
+
+/** Throw inside a `withUserLock` callback to reject a quota-failing write. */
+export class QuotaExceededError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "QuotaExceededError";
+  }
 }

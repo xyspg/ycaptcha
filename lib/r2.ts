@@ -109,6 +109,26 @@ export async function deleteFromR2(key: string): Promise<void> {
 }
 
 /**
+ * Best-effort cleanup for R2 keys that were uploaded speculatively but then
+ * orphaned (DB insert failed, quota exceeded, etc.). Swallows individual
+ * failures and logs them — never throws, so it's safe in catch blocks.
+ */
+export async function cleanupR2Keys(
+  keys: ReadonlyArray<string | null | undefined>,
+): Promise<void> {
+  const toDelete = keys.filter((k): k is string => !!k);
+  if (toDelete.length === 0) return;
+  const results = await Promise.allSettled(
+    toDelete.map((k) => deleteFromR2(k)),
+  );
+  for (const r of results) {
+    if (r.status === "rejected") {
+      console.error("[r2] orphan cleanup failed", r.reason);
+    }
+  }
+}
+
+/**
  * Stream an asset from R2 through a proxy without exposing the underlying URL.
  * Sets `no-store` cache headers and `nosniff` to prevent client-side caching
  * and MIME confusion.
