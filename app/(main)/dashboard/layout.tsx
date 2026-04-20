@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="flex-1 bg-background">
+      <main className="flex-1 bg-background [--card:var(--background)]">
         <div className="sticky top-0 z-10 flex items-center border-b bg-background p-2 md:hidden">
           <SidebarTrigger />
         </div>

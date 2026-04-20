@@ -130,8 +130,12 @@ export const puzzle = pgTable(
 // Gallery items are frozen snapshots of an imageSet — a curated pool of
 // images, not a puzzle. The prompt and which images count as "correct" are
 // per-puzzle decisions the forker makes later. Gallery items are fully
-// independent of the source imageSet: editing the source never changes the
-// gallery item, and deleting the source or author does not remove it.
+// independent of the source imageSet: editing or deleting the source never
+// changes the snapshot. Account deletion DOES cascade — the app-level
+// cleanupUserOnDelete hook removes the user's gallery items and refcount-
+// cleans R2 before the user row is deleted. The FK's `set null` is a
+// defense-in-depth fallback — if cleanup is bypassed, the item survives
+// anonymously rather than orphaning R2 objects.
 export const galleryItem = pgTable(
   "gallery_item",
   {
