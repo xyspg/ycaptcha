@@ -2,11 +2,11 @@
 - ~~Ratelimiting~~
 - ~~Passkey~~
 - ~~Sentry~~
+- i18n
+- Support Audio CAPTCHA
 
 ## Future
 - Light/dark mode for widget
-- i18n
-- Support Audio CAPTCHA
 - X (Twitter) OAuth
 - Resend email integration
 - React SDK npm package 
