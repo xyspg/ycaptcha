@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Caveat, Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
 import "../globals.css";
@@ -35,10 +35,13 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export const metadata: Metadata = {
-  title: "yCAPTCHA",
-  description: "Customize your own CAPTCHA",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function RootLayout({
   children,

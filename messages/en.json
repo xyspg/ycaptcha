@@ -21,7 +21,7 @@
   },
   "metadata": {
     "title": "yCAPTCHA",
-    "description": "Customize your own CAPTCHA"
+    "description": "Your community's inside-joke CAPTCHA — upload your own images and build challenges around shared references instead of traffic lights."
   },
   "landing": {
     "heroHeadline": "Stop Picking Traffic Lights",
@@ -50,6 +50,16 @@
     "ctaTitle": "One Line, Your Styles. Go.",
     "ctaSub": "Drop in the widget, pick your images, ship.",
     "ctaButton": "Get started",
+    "faqEyebrow": "FAQ",
+    "faqTitle": "Questions, answered.",
+    "faqQ1": "Does this actually stop bots?",
+    "faqA1": "Not really. yCAPTCHA has no ML, no fingerprinting, no behavioral analysis — any bot with off-the-shelf image recognition will walk straight through it. If you need real bot protection, use Cloudflare Turnstile or hCaptcha. yCAPTCHA is for the vibe: your community, your puzzles.",
+    "faqQ2": "Can I use my own images?",
+    "faqA2": "That's the whole point. Upload your images, mark which images are correct, and your CAPTCHA becomes an inside joke only your community gets — subway lines, rhythm game charts, dev tools, niche memes.",
+    "faqQ4": "Is there a SLA?",
+    "faqA4": "No, but you can self-host it.",
+    "faqQ5": "Is it really free?",
+    "faqA5": "Yes. 200 MB upload cap per account, no paid tier, no credit card.",
     "verificationPassed": "Verification passed!",
     "pleaseRetry": "Please try again.",
     "previousDemo": "Previous demo",

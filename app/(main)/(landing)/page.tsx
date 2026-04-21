@@ -7,6 +7,12 @@ import { cache } from "react";
 import { codeToHtml } from "shiki";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/session";
 import { env } from "@/lib/env";
@@ -262,6 +268,31 @@ export async function HomePage() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section
+        id="faq"
+        className="relative z-10 mx-auto w-full max-w-3xl px-6 py-16 lg:px-10 lg:py-24 scroll-mt-20"
+      >
+        <div className="mb-10 text-center">
+          <div
+            className="mb-3 text-[11px] font-medium uppercase tracking-[0.12em] text-[#4285f4] dark:text-[#8ab4f8]"
+            style={{ fontFamily: "var(--font-geist-mono)" }}
+          >
+            04 &mdash; {t("faqEyebrow")}
+          </div>
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-balance lg:text-[44px]">
+            {t("faqTitle")}
+          </h2>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full">
+          <FaqRow value="q1" question={t("faqQ1")} answer={t("faqA1")} />
+          <FaqRow value="q2" question={t("faqQ2")} answer={t("faqA2")} />
+          <FaqRow value="q4" question={t("faqQ4")} answer={t("faqA4")} />
+          <FaqRow value="q5" question={t("faqQ5")} answer={t("faqA5")} />
+        </Accordion>
+      </section>
+
       {/* CTA */}
       <section className="relative z-10 mx-auto w-full max-w-5xl px-6 pb-20 lg:px-10 lg:pb-28">
         <div className="relative overflow-hidden rounded-3xl bg-neutral-950 px-8 py-14 text-center text-neutral-100 lg:px-16 lg:py-20">
@@ -371,6 +402,27 @@ function HighlightedSnippet({ html }: { html: string }) {
       // biome-ignore lint/security/noDangerouslySetInnerHtml: shiki output from hardcoded module-level snippet constants, no user input
       dangerouslySetInnerHTML={{ __html: html }}
     />
+  );
+}
+
+function FaqRow({
+  value,
+  question,
+  answer,
+}: {
+  value: string;
+  question: string;
+  answer: string;
+}) {
+  return (
+    <AccordionItem value={value}>
+      <AccordionTrigger className="py-5 text-base font-semibold hover:no-underline lg:text-lg">
+        {question}
+      </AccordionTrigger>
+      <AccordionContent className="pb-5 text-sm leading-relaxed text-muted-foreground lg:text-base">
+        {answer}
+      </AccordionContent>
+    </AccordionItem>
   );
 }
 

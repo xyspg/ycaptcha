@@ -21,7 +21,7 @@
   },
   "metadata": {
     "title": "yCAPTCHA",
-    "description": "定制你的验证码"
+    "description": "属于你小圈子的梗图验证码——用社群共享的梗代替千篇一律的红绿灯。"
   },
   "landing": {
     "heroHeadline": "告别红绿灯",
@@ -50,6 +50,16 @@
     "ctaTitle": "一行代码，你的风格。开始吧。",
     "ctaSub": "接入组件、选好图片、上线。",
     "ctaButton": "立即开始",
+    "faqEyebrow": "常见问题",
+    "faqTitle": "你问，我答。",
+    "faqQ1": "这玩意儿真能挡住机器人吗？",
+    "faqA1": "挡不住。yCAPTCHA 没有机器学习、没有指纹识别、也没有行为分析——任何带现成图像识别的 bot 都能直接过关。要真挡 bot 请用 Cloudflare Turnstile 或 hCaptcha。yCAPTCHA 是为氛围服务的：你的社群，你的题目。",
+    "faqQ2": "可以用我自己的图吗？",
+    "faqA2": "这就是整个重点。上传你自己的图片，勾出哪些图算正确，你的验证码就成了只有你社群懂的梗——地铁线路、音游谱面、开发工具、小圈子里的梗图。",
+    "faqQ4": "有 SLA 吗？",
+    "faqA4": "没有，但你可以自托管。",
+    "faqQ5": "真的免费吗？",
+    "faqA5": "真的。每个账号 200 MB 上传上限，没有付费套餐，不用绑卡。",
     "verificationPassed": "验证通过！",
     "pleaseRetry": "请重试。",
     "previousDemo": "上一个演示",
