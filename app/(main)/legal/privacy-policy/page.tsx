@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { config } from "@/lib/config";
 import { Section as BaseSection } from "../section";
 
 function Section(props: {
@@ -64,7 +65,7 @@ export default function PrivacyPolicyPage() {
         <p>This Notice explains our practices when you:</p>
         <ul className="ml-5 flex list-disc flex-col gap-2">
           <li>
-            Visit yCAPTCHA&rsquo;s websites, including ycaptcha.xyspg.moe and
+            Visit yCAPTCHA&rsquo;s websites, including {config.siteHostname} and
             related subdomains (collectively, our &ldquo;Sites&rdquo;);
           </li>
           <li>

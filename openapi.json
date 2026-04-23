@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://ycaptcha.xyspg.moe",
+      "url": "${NEXT_PUBLIC_SITE_URL}",
       "description": "Production"
     }
   ],

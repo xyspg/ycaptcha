@@ -20,6 +20,10 @@ type ResetPasswordEmailProps = {
   messages: ResetPasswordEmailMessages;
 };
 
+const previewSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+  "http://localhost:3000";
+
 export function ResetPasswordEmail({
   userName,
   resetUrl,
@@ -70,8 +74,8 @@ export function ResetPasswordEmail({
 
 ResetPasswordEmail.PreviewProps = {
   userName: "Alex",
-  resetUrl: "https://ycaptcha.xyspg.moe/reset-password?token=preview-token",
-  logoUrl: "https://ycaptcha.xyspg.moe/ycaptcha.webp",
+  resetUrl: `${previewSiteUrl}/reset-password?token=preview-token`,
+  logoUrl: `${previewSiteUrl}/ycaptcha.webp`,
   messages: {
     preview: "Reset your yCAPTCHA password",
     heading: "Reset your password",

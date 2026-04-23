@@ -3,6 +3,7 @@ import {
   type ExistingAccountEmailMessages,
 } from "@/emails/existing-account-email";
 import type { Locale } from "@/i18n/config";
+import { config } from "@/lib/config";
 import { env } from "@/lib/env";
 import enMessages from "@/messages/en.json";
 import jaMessages from "@/messages/ja.json";
@@ -45,8 +46,7 @@ export async function sendExistingAccountEmail({
     | undefined;
   if (!messages) return;
 
-  const base = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
-  const logoUrl = `${base}/ycaptcha.webp`;
+  const logoUrl = config.getSiteUrl("/ycaptcha.webp");
 
   await resend.emails.send({
     from: env.EMAIL_FROM,

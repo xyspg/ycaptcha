@@ -16,7 +16,7 @@ Add yCAPTCHA to your site with two lines of HTML. The script handles everything 
 
 ```html
 <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
-<script src="https://ycaptcha.xyspg.moe/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
 ```
 
 That's it. The script automatically finds all `.y-captcha` elements on the page, creates the widget, and inserts a hidden `<input name="ycaptcha-response">` next to it. When the user passes the challenge, the input is filled with the verification token — ready to submit with your form.
@@ -33,7 +33,7 @@ That's it. The script automatically finds all `.y-captcha` elements on the page,
 
   <button type="submit">Submit</button>
 </form>
-<script src="https://ycaptcha.xyspg.moe/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
 ```
 
 On form submission, the token is sent as `ycaptcha-response` in the form body. [Validate it on your server](/docs/get-started/server-validation).
@@ -47,7 +47,7 @@ If you need more control, use the JavaScript API instead of auto-rendering:
 ```html
 <div id="captcha-container"></div>
 
-<script src="https://ycaptcha.xyspg.moe/captcha.js?onload=onCaptchaLoad&render=explicit" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js?onload=onCaptchaLoad&render=explicit" async defer></script>
 
 <script>
 function onCaptchaLoad() {

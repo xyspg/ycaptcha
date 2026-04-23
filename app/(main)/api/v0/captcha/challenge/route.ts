@@ -1,8 +1,8 @@
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
 import { createChallengeSession } from "@/lib/captcha-session";
+import { config } from "@/lib/config";
 import { db } from "@/lib/db";
 import { audio, image, puzzle, site } from "@/lib/db/app-schema";
-import { env } from "@/lib/env";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   if (siteData.domain && body.origin) {
     try {
       const parentHost = new URL(body.origin).hostname;
-      const appHost = new URL(env.NEXT_PUBLIC_SITE_URL).hostname;
+      const appHost = config.siteHostname;
       const isLocalhost =
         parentHost === "localhost" || parentHost === "127.0.0.1";
       if (

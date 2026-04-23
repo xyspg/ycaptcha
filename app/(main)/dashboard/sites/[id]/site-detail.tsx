@@ -36,8 +36,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { config } from "@/lib/config";
 import type { puzzle, site } from "@/lib/db/app-schema";
-import { env } from "@/lib/env";
 import { togglePuzzleEnabled } from "../../puzzles/[id]/actions";
 import {
   deletePuzzleFromSite,
@@ -283,10 +283,9 @@ function PuzzlesSection({
 
 function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
   const t = useTranslations("sites.detail");
-  const siteUrl = env.NEXT_PUBLIC_SITE_URL;
-  const widgetUrl = `${siteUrl}/widget/${s.siteKey}`;
+  const widgetUrl = config.getSiteUrl(`/widget/${s.siteKey}`);
   const snippet = `<div class="y-captcha" data-sitekey="${s.siteKey}"></div>
-<script src="${siteUrl}/captcha.js" integrity="${process.env.CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`;
+<script src="${config.getSiteUrl("/captcha.js")}" integrity="${process.env.CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`;
 
   return (
     <Card>

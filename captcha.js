@@ -5,7 +5,7 @@
 			var u = new URL(s.src);
 			return u.origin;
 		}
-		return "https://ycaptcha.xyspg.moe";
+		return "__NEXT_PUBLIC_SITE_URL__";
 	})();
 
 	var SOURCE = "ycaptcha";

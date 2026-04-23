@@ -3,6 +3,7 @@ import {
   type VerificationEmailMessages,
 } from "@/emails/verification-email";
 import type { Locale } from "@/i18n/config";
+import { config } from "@/lib/config";
 import { env } from "@/lib/env";
 import enMessages from "@/messages/en.json";
 import jaMessages from "@/messages/ja.json";
@@ -43,7 +44,7 @@ export async function sendVerificationEmail({
   const messages = messagesByLocale[locale].email
     .verification as VerificationEmailMessages & { subject: string };
 
-  const logoUrl = `${env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "")}/ycaptcha.webp`;
+  const logoUrl = config.getSiteUrl("/ycaptcha.webp");
 
   await resend.emails.send({
     from: env.EMAIL_FROM,

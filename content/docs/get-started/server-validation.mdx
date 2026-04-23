@@ -12,7 +12,7 @@ After the user completes the CAPTCHA, you receive a one-time token via `postMess
 ## Endpoint
 
 ```
-POST https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify
+POST ${NEXT_PUBLIC_SITE_URL}/api/v0/captcha/siteverify
 ```
 
 ## Request
@@ -52,8 +52,10 @@ All failures return HTTP 200 with `success: false` and an `error` field:
 ### Node.js (fetch)
 
 ```js
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
 const response = await fetch(
-  "https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify",
+  `${siteUrl}/api/v0/captcha/siteverify`,
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -76,10 +78,13 @@ if (!result.success) {
 ### Python (requests)
 
 ```python
+import os
 import requests
 
+site_url = os.environ["NEXT_PUBLIC_SITE_URL"]
+
 result = requests.post(
-    "https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify",
+    f"{site_url}/api/v0/captcha/siteverify",
     json={
         "token": request.form["ycaptcha-response"],
         "secretKey": os.environ["YCAPTCHA_SECRET_KEY"],

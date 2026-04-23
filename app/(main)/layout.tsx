@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
+import { config } from "@/lib/config";
 import "../globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -60,7 +61,7 @@ export default async function RootLayout({
           defer
           src="https://mizuki.xyspg.moe/akiyama"
           data-website-id="31902df6-c1da-4e2a-93fd-d5f2a84b2bc3"
-          data-domains="ycaptcha.xyspg.moe"
+          data-domains={config.siteHostname}
           strategy="afterInteractive"
         />
         <NextIntlClientProvider messages={messages} locale={locale}>

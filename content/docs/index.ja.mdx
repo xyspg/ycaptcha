@@ -11,7 +11,7 @@ yCAPTCHA <span className="text-sm text-neutral-700 dark:text-neutral-400">(your-
 
 ## API キーの取得
 
-[ダッシュボード](https://ycaptcha.xyspg.moe/dashboard) でサイトを作成し、API キーを取得します。
+[ダッシュボード](/dashboard) でサイトを作成し、API キーを取得します。
 
 <Callout title="セキュリティ" type="warn">
   シークレットキー (`sk_...`) をクライアントサイドのコードに絶対に公開しないでください。
@@ -21,13 +21,13 @@ yCAPTCHA <span className="text-sm text-neutral-700 dark:text-neutral-400">(your-
 
 ```html
 <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
-<script src="https://ycaptcha.xyspg.moe/captcha.js" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
 ```
 
 ## LLM との連携
 
 ```
-https://ycaptcha.xyspg.moe/llms-full.txt
+${NEXT_PUBLIC_SITE_URL}/llms-full.txt
 ```
 
 ## 次のステップ

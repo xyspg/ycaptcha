@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "terser captcha.js --compress --mangle -o public/captcha.js && next build",
+    "dev": "tsx scripts/build-captcha.ts --dev && next dev",
+    "build": "tsx scripts/build-captcha.ts && next build",
     "start": "next start",
     "lint": "bunx --bun @biomejs/biome check",
     "lint:fix": "bunx --bun @biomejs/biome check --write --unsafe",

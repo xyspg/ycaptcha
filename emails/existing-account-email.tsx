@@ -19,6 +19,10 @@ type ExistingAccountEmailProps = {
   messages: ExistingAccountEmailMessages;
 };
 
+const previewSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+  "http://localhost:3000";
+
 export function ExistingAccountEmail({
   userName,
   loginUrl,
@@ -66,9 +70,8 @@ export function ExistingAccountEmail({
 
 ExistingAccountEmail.PreviewProps = {
   userName: "Alex",
-  loginUrl:
-    "https://ycaptcha.xyspg.moe/api/auth/magic-link/verify?token=preview-token&callbackURL=%2Fdashboard",
-  logoUrl: "https://ycaptcha.xyspg.moe/ycaptcha.webp",
+  loginUrl: `${previewSiteUrl}/api/auth/magic-link/verify?token=preview-token&callbackURL=%2Fdashboard`,
+  logoUrl: `${previewSiteUrl}/ycaptcha.webp`,
   messages: {
     preview: "You already have a yCAPTCHA account — one-click sign in",
     heading: "You already have an account",

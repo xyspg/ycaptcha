@@ -11,7 +11,7 @@ It is **not a serious bot-detection service**: there is no ML, no fingerprinting
 
 ## Getting your API Key
 
-Create a site and get API key in [Dashboard](https://ycaptcha.xyspg.moe/dashboard).
+Create a site and get API key in [Dashboard](/dashboard).
 
 <Callout title="Security" type="warn">
   Never expose your Secret Key (`sk_...`) in client-side code.
@@ -21,13 +21,13 @@ Create a site and get API key in [Dashboard](https://ycaptcha.xyspg.moe/dashboar
 
 ```html
 <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
-<script src="https://ycaptcha.xyspg.moe/captcha.js" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
 ```
 
 ## Work with LLMs
 
 ```
-https://ycaptcha.xyspg.moe/llms-full.txt
+${NEXT_PUBLIC_SITE_URL}/llms-full.txt
 ```
 
 ## Next steps

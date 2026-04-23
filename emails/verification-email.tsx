@@ -20,6 +20,10 @@ type VerificationEmailProps = {
   messages: VerificationEmailMessages;
 };
 
+const previewSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ??
+  "http://localhost:3000";
+
 export function VerificationEmail({
   userName,
   url,
@@ -70,8 +74,8 @@ export function VerificationEmail({
 
 VerificationEmail.PreviewProps = {
   userName: "Alex",
-  url: "https://ycaptcha.xyspg.moe/api/auth/verify-email?token=preview-token",
-  logoUrl: "https://ycaptcha.xyspg.moe/ycaptcha.webp",
+  url: `${previewSiteUrl}/api/auth/verify-email?token=preview-token`,
+  logoUrl: `${previewSiteUrl}/ycaptcha.webp`,
   messages: {
     preview: "Confirm your email to finish setting up yCAPTCHA",
     heading: "Verify your email",

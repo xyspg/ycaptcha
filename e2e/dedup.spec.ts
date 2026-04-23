@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
 import { importSampleSet } from "./helpers";
 
+const imageHost = new URL(
+  process.env.NEXT_PUBLIC_R2_PUBLIC_URL ?? "https://example.com",
+).hostname;
+const imageSelector = `img[src*="${imageHost}"]`;
+
 /**
  * Image dedup & R2 orphan protection:
  *   - Two sets with same content hashes share R2 files
@@ -23,7 +28,7 @@ test.describe
       await expect(page.getByText("(13)")).toBeVisible({ timeout: 10_000 });
 
       // Extract image URLs from Set A
-      const imgs = page.locator('img[src*="ycaptcha.xyspg.moe"]');
+      const imgs = page.locator(imageSelector);
       expect(await imgs.count()).toBe(13);
       for (let i = 0; i < 13; i++) {
         const src = await imgs.nth(i).getAttribute("src");
@@ -91,13 +96,13 @@ test.describe
       await page.goto(setCUrl);
       await expect(page.getByText("(13)")).toBeVisible({ timeout: 10_000 });
 
-      const firstImg = page.locator('img[src*="ycaptcha.xyspg.moe"]').first();
+      const firstImg = page.locator(imageSelector).first();
       deletedImageUrl = (await firstImg.getAttribute("src")) ?? "";
       expect(deletedImageUrl).toBeTruthy();
 
       const firstCard = page
         .locator("div.group")
-        .filter({ has: page.locator('img[src*="ycaptcha.xyspg.moe"]') })
+        .filter({ has: page.locator(imageSelector) })
         .first();
       await firstCard.hover();
       await firstCard.locator('button[type="submit"]').click({ force: true });

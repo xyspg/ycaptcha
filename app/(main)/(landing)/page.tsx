@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { getSession } from "@/lib/auth/session";
+import { config } from "@/lib/config";
 import { env } from "@/lib/env";
 import { DemoShowcase } from "./demo-showcase";
 
@@ -27,7 +28,7 @@ const highlight = cache(async (code: string, lang: string) =>
 );
 
 const EMBED_SNIPPET = `<script
-  src="https://ycaptcha.xyspg.moe/captcha.js"
+  src="${config.getSiteUrl("/captcha.js")}"
   async
   defer
 ></script>
@@ -38,7 +39,7 @@ const EMBED_SNIPPET = `<script
 ></div>`;
 
 const VERIFY_SNIPPET = `const res = await fetch(
-  "https://ycaptcha.xyspg.moe/api/v0/captcha/siteverify",
+  "${config.getSiteUrl("/api/v0/captcha/siteverify")}",
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
