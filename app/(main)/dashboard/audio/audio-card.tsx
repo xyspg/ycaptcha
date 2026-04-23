@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -34,6 +35,44 @@ interface AudioCardProps {
   name: string;
   durationMs: number | null;
   createdAt: string;
+}
+
+const WAVEFORM_BARS = 50;
+const WAVEFORM_COLORS = [
+  "bg-violet-300",
+  "bg-violet-400",
+  "bg-violet-500",
+  "bg-purple-500",
+  "bg-purple-600",
+  "bg-indigo-500",
+];
+
+function Waveform({ seed }: { seed: string }) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = (hash * 31 + seed.charCodeAt(i)) | 0;
+  }
+  const offset = ((hash % 1000) + 1000) / 160;
+
+  return (
+    <div aria-hidden className="flex h-7 items-center gap-[2px]">
+      {Array.from({ length: WAVEFORM_BARS }).map((_, j) => {
+        const height = 20 + Math.abs(Math.sin(j * 0.6 + offset)) * 80;
+        const opacity = 0.35 + Math.abs(Math.cos(j * 0.4 + offset)) * 0.55;
+        const colorIndex =
+          (Math.floor(Math.abs(Math.sin(j * 1.3 + offset * 0.7)) * 100) +
+            Math.abs(hash)) %
+          WAVEFORM_COLORS.length;
+        return (
+          <div
+            key={j}
+            className={`flex-1 rounded-[1px] ${WAVEFORM_COLORS[colorIndex]}`}
+            style={{ height: `${height}%`, opacity }}
+          />
+        );
+      })}
+    </div>
+  );
 }
 
 export function AudioCard({ id, name, durationMs, createdAt }: AudioCardProps) {
@@ -65,6 +104,9 @@ export function AudioCard({ id, name, durationMs, createdAt }: AudioCardProps) {
                   {createdAt}
                 </CardDescription>
               </CardHeader>
+              <CardContent>
+                <Waveform seed={id} />
+              </CardContent>
             </Card>
           </Link>
         </ContextMenuTrigger>
