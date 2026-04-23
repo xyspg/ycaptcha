@@ -6,6 +6,7 @@ import { magicLink } from "better-auth/plugins";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 import { sendExistingAccountEmail } from "@/lib/email/send-existing-account-email";
+import { sendResetPasswordEmail } from "@/lib/email/send-reset-password-email";
 import { sendVerificationEmail } from "@/lib/email/send-verification-email";
 import { env } from "@/lib/env";
 import { redis } from "@/lib/redis";
@@ -38,12 +39,18 @@ export const auth = betterAuth({
       "/sign-up/email": { window: 600, max: 5 },
       "/sign-in/email": { window: 60, max: 10 },
       "/forget-password": { window: 600, max: 3 },
+      "/request-password-reset": { window: 600, max: 3 },
     },
   },
 
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
+    sendResetPassword: async ({ user, url }, request) => {
+      void sendResetPasswordEmail({ user, url, request }).catch((error) => {
+        console.error("[auth] failed to send password reset email", error);
+      });
+    },
     onExistingUserSignUp: async ({ user }, request) => {
       await auth.api.signInMagicLink({
         body: { email: user.email, callbackURL: "/dashboard" },

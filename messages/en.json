@@ -72,6 +72,7 @@
       "description": "Sign in to your account",
       "emailPlaceholder": "you@example.com",
       "passwordPlaceholder": "••••••••",
+      "forgotPassword": "Forgot your password?",
       "signingIn": "Signing in...",
       "signIn": "Sign In",
       "signInWithPasskey": "Sign in with Passkey",
@@ -104,6 +105,34 @@
       "resendTooMany": "Too many attempts. Try again in {seconds}s.",
       "resendDaily": "Daily limit reached. Try again in {hours}h.",
       "backToLogin": "Back to sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot your password?",
+      "description": "Enter your email and we'll send you a reset link.",
+      "emailPlaceholder": "you@example.com",
+      "sending": "Sending reset link...",
+      "submit": "Send reset link",
+      "successTitle": "Check your inbox",
+      "successDescription": "If an account exists for {email}, we sent a password reset link.",
+      "backToLogin": "Back to sign in",
+      "genericError": "Unable to send reset email. Please try again."
+    },
+    "resetPassword": {
+      "title": "Set a new password",
+      "description": "Choose a new password for your yCAPTCHA account.",
+      "newPassword": "New Password",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "Confirm Password",
+      "submit": "Reset password",
+      "resetting": "Resetting password...",
+      "passwordsMismatch": "Passwords do not match",
+      "invalidTitle": "This reset link is invalid",
+      "invalidDescription": "This reset link is invalid or expired. Request a new one to keep going.",
+      "requestNewLink": "Request a new link",
+      "successTitle": "Password updated",
+      "successDescription": "Your password has been reset. You can sign in with your new password now.",
+      "backToLogin": "Back to sign in",
+      "genericError": "Unable to reset password. Please try again."
     }
   },
   "sidebar": {
@@ -483,6 +512,18 @@
       "button": "Sign in instantly",
       "fallbackHint": "If the button doesn't work, copy this link:",
       "ignoreNote": "If this wasn't you, you can safely ignore this email — the link will expire on its own. Your account is secure.",
+      "footer": "© yCAPTCHA"
+    },
+    "resetPassword": {
+      "subject": "Reset your yCAPTCHA password",
+      "preview": "Reset your yCAPTCHA password",
+      "heading": "Reset your password",
+      "greeting": "Hi {name},",
+      "body": "We received a request to reset your yCAPTCHA password. Click the button below to choose a new one.",
+      "button": "Reset password",
+      "fallbackHint": "If the button doesn't work, copy and paste this link into your browser:",
+      "expiresNote": "This link expires in 1 hour.",
+      "ignoreNote": "If you didn't request a password reset, you can safely ignore this email.",
       "footer": "© yCAPTCHA"
     }
   }

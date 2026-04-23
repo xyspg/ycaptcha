@@ -72,6 +72,7 @@
       "description": "アカウントにサインインしてください",
       "emailPlaceholder": "you@example.com",
       "passwordPlaceholder": "••••••••",
+      "forgotPassword": "パスワードをお忘れですか?",
       "signingIn": "サインイン中...",
       "signIn": "サインイン",
       "signInWithPasskey": "パスキーでサインイン",
@@ -104,6 +105,34 @@
       "resendTooMany": "操作が多すぎます。{seconds} 秒後にお試しください。",
       "resendDaily": "本日の送信上限に達しました。{hours} 時間後にお試しください。",
       "backToLogin": "サインインに戻る"
+    },
+    "forgotPassword": {
+      "title": "パスワードをお忘れですか?",
+      "description": "メールアドレスを入力すると、再設定用のリンクを送信します。",
+      "emailPlaceholder": "you@example.com",
+      "sending": "再設定リンクを送信中...",
+      "submit": "再設定リンクを送信",
+      "successTitle": "メールをご確認ください",
+      "successDescription": "{email} に対応するアカウントが存在する場合、パスワード再設定リンクを送信しました。",
+      "backToLogin": "サインインに戻る",
+      "genericError": "再設定メールを送信できませんでした。時間をおいて再度お試しください。"
+    },
+    "resetPassword": {
+      "title": "新しいパスワードを設定",
+      "description": "yCAPTCHA アカウントの新しいパスワードを設定してください。",
+      "newPassword": "新しいパスワード",
+      "passwordPlaceholder": "••••••••",
+      "confirmPassword": "パスワードの確認",
+      "submit": "パスワードを再設定",
+      "resetting": "パスワードを再設定中...",
+      "passwordsMismatch": "パスワードが一致しません",
+      "invalidTitle": "この再設定リンクは無効です",
+      "invalidDescription": "この再設定リンクは無効か、有効期限が切れています。新しいリンクをリクエストしてください。",
+      "requestNewLink": "新しいリンクをリクエスト",
+      "successTitle": "パスワードを更新しました",
+      "successDescription": "パスワードを再設定しました。新しいパスワードでサインインできます。",
+      "backToLogin": "サインインに戻る",
+      "genericError": "パスワードを再設定できませんでした。時間をおいて再度お試しください。"
     }
   },
   "sidebar": {
@@ -483,6 +512,18 @@
       "button": "ワンクリックでサインイン",
       "fallbackHint": "ボタンが動作しない場合は、下のリンクをコピーしてください：",
       "ignoreNote": "心当たりがない場合は、このメールを無視して問題ありません。リンクは自動的に失効します。アカウントは安全です。",
+      "footer": "© yCAPTCHA"
+    },
+    "resetPassword": {
+      "subject": "yCAPTCHA のパスワードを再設定",
+      "preview": "yCAPTCHA のパスワードを再設定",
+      "heading": "パスワードを再設定",
+      "greeting": "{name} さん、",
+      "body": "yCAPTCHA のパスワード再設定リクエストを受け付けました。下のボタンをクリックして新しいパスワードを設定してください。",
+      "button": "パスワードを再設定",
+      "fallbackHint": "ボタンが動作しない場合は、下のリンクをブラウザにコピーしてください：",
+      "expiresNote": "このリンクは 1 時間で失効します。",
+      "ignoreNote": "パスワード再設定をリクエストしていない場合は、このメールを無視して問題ありません。",
       "footer": "© yCAPTCHA"
     }
   }

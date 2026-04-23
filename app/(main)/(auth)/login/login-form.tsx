@@ -147,6 +147,14 @@ function LoginForm() {
                 autoComplete="current-password"
                 required
               />
+              <div className="flex justify-end">
+                <Link
+                  href="/forgot-password"
+                  className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  {t("forgotPassword")}
+                </Link>
+              </div>
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}
