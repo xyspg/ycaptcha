@@ -78,7 +78,9 @@
       "continueWithGitHub": "使用 GitHub 继续",
       "noAccount": "还没有账户？",
       "signUp": "注册",
-      "passkeyFailed": "通行密钥登录失败"
+      "passkeyFailed": "通行密钥登录失败",
+      "emailNotVerified": "请先验证邮箱后再登录。",
+      "resendVerification": "重新发送验证邮件"
     },
     "signup": {
       "title": "创建账户",
@@ -92,7 +94,16 @@
       "continueWithGitHub": "使用 GitHub 继续",
       "hasAccount": "已有账户？",
       "signIn": "登录",
-      "passwordsMismatch": "两次密码输入不一致"
+      "passwordsMismatch": "两次密码输入不一致",
+      "checkEmailTitle": "请查收邮件",
+      "checkEmailDescription": "我们已向 {email} 发送了一封验证邮件，请点击邮件中的链接激活你的账户。",
+      "resend": "重新发送邮件",
+      "resending": "发送中...",
+      "resent": "已发送，请再次查收邮件。",
+      "resendIn": "{seconds} 秒后可重发",
+      "resendTooMany": "操作过于频繁，请 {seconds} 秒后重试。",
+      "resendDaily": "今日重发次数已达上限，请 {hours} 小时后再试。",
+      "backToLogin": "返回登录"
     }
   },
   "sidebar": {
@@ -449,5 +460,30 @@
     "termsExplainer": "我理解这些图片可能会永久公开,并可被图库中任何人重复使用。",
     "publishCta": "发布到图库",
     "publishing": "正在发布…"
+  },
+  "email": {
+    "verification": {
+      "subject": "验证你的 yCAPTCHA 邮箱",
+      "preview": "确认邮箱以完成 yCAPTCHA 账户激活",
+      "heading": "验证你的邮箱",
+      "greeting": "你好 {name}，",
+      "body": "欢迎使用 yCAPTCHA。请点击下方按钮确认你的邮箱地址，激活账户。",
+      "button": "验证邮箱",
+      "fallbackHint": "如果按钮无法打开，请复制以下链接到浏览器：",
+      "expiresNote": "该链接将在 24 小时后失效。",
+      "ignoreNote": "如果你并未创建账户，可以直接忽略这封邮件。",
+      "footer": "© yCAPTCHA"
+    },
+    "existingAccount": {
+      "subject": "有人尝试用你的邮箱注册 yCAPTCHA",
+      "preview": "你已有 yCAPTCHA 账户 —— 一键登录",
+      "heading": "你已经有一个账户",
+      "greeting": "你好 {name}，",
+      "body": "有人刚才尝试用你的邮箱创建新的 yCAPTCHA 账户。由于你已经拥有账户，系统未创建新账户。点击下方按钮一键登录，无需密码。该链接 15 分钟内有效。",
+      "button": "一键登录",
+      "fallbackHint": "如果按钮无法打开，请复制以下链接：",
+      "ignoreNote": "如果这不是你本人操作，直接忽略即可，链接会自动失效，你的账户是安全的。",
+      "footer": "© yCAPTCHA"
+    }
   }
 }

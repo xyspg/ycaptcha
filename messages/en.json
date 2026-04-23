@@ -78,7 +78,9 @@
       "continueWithGitHub": "Continue with GitHub",
       "noAccount": "Don't have an account?",
       "signUp": "Sign up",
-      "passkeyFailed": "Passkey sign-in failed"
+      "passkeyFailed": "Passkey sign-in failed",
+      "emailNotVerified": "Please verify your email before signing in.",
+      "resendVerification": "Resend verification email"
     },
     "signup": {
       "title": "Create an account",
@@ -92,7 +94,16 @@
       "continueWithGitHub": "Continue with GitHub",
       "hasAccount": "Already have an account?",
       "signIn": "Sign in",
-      "passwordsMismatch": "Passwords do not match"
+      "passwordsMismatch": "Passwords do not match",
+      "checkEmailTitle": "Check your inbox",
+      "checkEmailDescription": "We sent a verification link to {email}. Click the link to activate your account.",
+      "resend": "Resend email",
+      "resending": "Sending...",
+      "resent": "Sent. Check your inbox again.",
+      "resendIn": "Resend in {seconds}s",
+      "resendTooMany": "Too many attempts. Try again in {seconds}s.",
+      "resendDaily": "Daily limit reached. Try again in {hours}h.",
+      "backToLogin": "Back to sign in"
     }
   },
   "sidebar": {
@@ -449,5 +460,30 @@
     "termsExplainer": "I understand these images may become permanently public and reusable by anyone in the Gallery.",
     "publishCta": "Publish to gallery",
     "publishing": "Publishing…"
+  },
+  "email": {
+    "verification": {
+      "subject": "Verify your email for yCAPTCHA",
+      "preview": "Confirm your email to finish setting up yCAPTCHA",
+      "heading": "Verify your email",
+      "greeting": "Hi {name},",
+      "body": "Welcome to yCAPTCHA. Click the button below to confirm your email address and activate your account.",
+      "button": "Verify email",
+      "fallbackHint": "If the button doesn't work, copy and paste this link into your browser:",
+      "expiresNote": "This link expires in 24 hours.",
+      "ignoreNote": "If you didn't create an account, you can safely ignore this email.",
+      "footer": "© yCAPTCHA"
+    },
+    "existingAccount": {
+      "subject": "Someone tried to sign up with your email",
+      "preview": "You already have a yCAPTCHA account — one-click sign in",
+      "heading": "You already have an account",
+      "greeting": "Hi {name},",
+      "body": "Someone just tried to create a new yCAPTCHA account with your email. You already have one, so no new account was created. Click below to sign in instantly — no password needed. This link expires in 15 minutes.",
+      "button": "Sign in instantly",
+      "fallbackHint": "If the button doesn't work, copy this link:",
+      "ignoreNote": "If this wasn't you, you can safely ignore this email — the link will expire on its own. Your account is secure.",
+      "footer": "© yCAPTCHA"
+    }
   }
 }

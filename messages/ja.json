@@ -78,7 +78,9 @@
       "continueWithGitHub": "GitHubで続行",
       "noAccount": "アカウントをお持ちでない方",
       "signUp": "新規登録",
-      "passkeyFailed": "パスキーでのサインインに失敗しました"
+      "passkeyFailed": "パスキーでのサインインに失敗しました",
+      "emailNotVerified": "サインインの前にメールアドレスをご確認ください。",
+      "resendVerification": "認証メールを再送信"
     },
     "signup": {
       "title": "アカウントを作成",
@@ -92,7 +94,16 @@
       "continueWithGitHub": "GitHubで続行",
       "hasAccount": "すでにアカウントをお持ちの方",
       "signIn": "サインイン",
-      "passwordsMismatch": "パスワードが一致しません"
+      "passwordsMismatch": "パスワードが一致しません",
+      "checkEmailTitle": "メールをご確認ください",
+      "checkEmailDescription": "{email} 宛に認証リンクをお送りしました。リンクをクリックしてアカウントを有効化してください。",
+      "resend": "メールを再送信",
+      "resending": "送信中...",
+      "resent": "送信しました。メールを再度ご確認ください。",
+      "resendIn": "{seconds} 秒後に再送信できます",
+      "resendTooMany": "操作が多すぎます。{seconds} 秒後にお試しください。",
+      "resendDaily": "本日の送信上限に達しました。{hours} 時間後にお試しください。",
+      "backToLogin": "サインインに戻る"
     }
   },
   "sidebar": {
@@ -449,5 +460,30 @@
     "termsExplainer": "これらの画像が永続的に公開され、ギャラリーの他のユーザーが自由に再利用できる可能性があることを理解しています。",
     "publishCta": "ギャラリーに公開",
     "publishing": "公開中…"
+  },
+  "email": {
+    "verification": {
+      "subject": "yCAPTCHA のメールアドレス認証",
+      "preview": "メールアドレスを確認して yCAPTCHA のセットアップを完了しましょう",
+      "heading": "メールアドレスを認証",
+      "greeting": "{name} さん、",
+      "body": "yCAPTCHA へようこそ。下のボタンをクリックしてメールアドレスを確認し、アカウントを有効化してください。",
+      "button": "メールアドレスを認証",
+      "fallbackHint": "ボタンが動作しない場合は、下のリンクをブラウザにコピーしてください：",
+      "expiresNote": "このリンクは 24 時間で失効します。",
+      "ignoreNote": "心当たりがない場合は、このメールを無視して問題ありません。",
+      "footer": "© yCAPTCHA"
+    },
+    "existingAccount": {
+      "subject": "yCAPTCHA へのサインアップ試行がありました",
+      "preview": "yCAPTCHA のアカウントは既にお持ちです — ワンクリックでサインイン",
+      "heading": "既にアカウントをお持ちです",
+      "greeting": "{name} さん、",
+      "body": "あなたのメールアドレスで yCAPTCHA の新規アカウント作成が試みられました。既にアカウントをお持ちのため、新しいアカウントは作成されていません。下のボタンからパスワード不要で即座にサインインできます。このリンクは 15 分間有効です。",
+      "button": "ワンクリックでサインイン",
+      "fallbackHint": "ボタンが動作しない場合は、下のリンクをコピーしてください：",
+      "ignoreNote": "心当たりがない場合は、このメールを無視して問題ありません。リンクは自動的に失効します。アカウントは安全です。",
+      "footer": "© yCAPTCHA"
+    }
   }
 }

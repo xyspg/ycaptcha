@@ -15,6 +15,7 @@ export const env = createEnv({
     UPSTASH_REDIS_REST_URL: z.url(),
     UPSTASH_REDIS_REST_TOKEN: z.string(),
     RESEND_API_KEY: z.string(),
+    EMAIL_FROM: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_SITE_URL: z.url(),

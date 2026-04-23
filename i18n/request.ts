@@ -2,7 +2,7 @@ import { cookies, headers } from "next/headers";
 import { getRequestConfig } from "next-intl/server";
 import { defaultLocale, type Locale, locales } from "./config";
 
-function parseAcceptLanguage(header: string | null): Locale {
+export function parseAcceptLanguage(header: string | null): Locale {
   if (!header) return defaultLocale;
 
   const entries = header
