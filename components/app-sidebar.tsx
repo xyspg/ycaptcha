@@ -6,6 +6,7 @@ import {
   Home,
   Images,
   KeyRound,
+  LayoutDashboard,
   LogOut,
   Settings,
   Sparkles,
@@ -38,6 +39,7 @@ export function AppSidebar() {
   const { data: session, isPending } = authClient.useSession();
 
   const navItems = [
+    { title: t("overview"), href: "/dashboard", icon: LayoutDashboard },
     { title: t("sites"), href: "/dashboard/sites", icon: Globe },
     { title: t("puzzles"), href: "/dashboard/puzzles", icon: KeyRound },
     { title: t("imageSets"), href: "/dashboard/image-sets", icon: Images },
@@ -63,19 +65,22 @@ export function AppSidebar() {
           <SidebarGroupLabel>{t("manage")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith(item.href)}
-                  >
-                    <Link href={item.href}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item) => {
+                const isActive =
+                  item.href === "/dashboard"
+                    ? pathname === "/dashboard"
+                    : pathname.startsWith(item.href);
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <Link href={item.href}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

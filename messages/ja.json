@@ -137,6 +137,7 @@
   },
   "sidebar": {
     "manage": "管理",
+    "overview": "概要",
     "sites": "サイト",
     "puzzles": "パズル",
     "imageSets": "画像セット",
@@ -150,6 +151,26 @@
     "errorTitle": "問題が発生しました",
     "genericError": "予期しないエラーが発生しました。",
     "tryAgain": "もう一度試す"
+  },
+  "analytics": {
+    "title": "概要",
+    "window": "過去30日間",
+    "verifies": "認証数",
+    "verifiesHint": "バックエンドが消費したトークン",
+    "passRate": "通過率",
+    "passRateHint": "通過した試行の割合",
+    "activePuzzles": "有効なパズル",
+    "activePuzzlesHint": "{count} サイトにわたって",
+    "activePuzzlesOnSiteHint": "このサイトで有効",
+    "verifiesOverTime": "認証数の推移",
+    "attemptsOverTime": "成功した解答の推移",
+    "topPuzzles": "人気パズル",
+    "solves": "解答数",
+    "fails": "失敗数",
+    "passes": "通過",
+    "solvesShort": "{count} 解答",
+    "failsShort": "{count} 失敗",
+    "noDataYet": "データなし"
   },
   "sites": {
     "title": "サイト",

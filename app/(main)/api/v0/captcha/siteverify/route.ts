@@ -1,4 +1,6 @@
 import { and, eq } from "drizzle-orm";
+import { after } from "next/server";
+import { recordEvent } from "@/lib/analytics";
 import {
   consumeVerifiedSession,
   createVerifiedSessionWithToken,
@@ -49,6 +51,15 @@ export async function POST(request: Request) {
   if (!owner) {
     return Response.json({ success: false, error: "Invalid secretKey" });
   }
+
+  after(() =>
+    recordEvent({
+      userId: session.userId,
+      siteId: session.siteId,
+      puzzleId: session.puzzleId,
+      eventType: "siteverify",
+    }),
+  );
 
   return Response.json({ success: true });
 }

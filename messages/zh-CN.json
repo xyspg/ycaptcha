@@ -137,6 +137,7 @@
   },
   "sidebar": {
     "manage": "管理",
+    "overview": "概览",
     "sites": "站点",
     "puzzles": "验证题目",
     "imageSets": "图片集",
@@ -150,6 +151,26 @@
     "errorTitle": "出错了",
     "genericError": "发生了意外错误。",
     "tryAgain": "重试"
+  },
+  "analytics": {
+    "title": "概览",
+    "window": "近 30 天",
+    "verifies": "验证次数",
+    "verifiesHint": "后端消费的 token 数",
+    "passRate": "通过率",
+    "passRateHint": "通过的尝试占比",
+    "activePuzzles": "启用的题目",
+    "activePuzzlesHint": "覆盖 {count} 个站点",
+    "activePuzzlesOnSiteHint": "本站已启用",
+    "verifiesOverTime": "验证趋势",
+    "attemptsOverTime": "成功解答趋势",
+    "topPuzzles": "热门题目",
+    "solves": "解答数",
+    "fails": "失败数",
+    "passes": "通过",
+    "solvesShort": "{count} 次解答",
+    "failsShort": "{count} 次失败",
+    "noDataYet": "暂无数据"
   },
   "sites": {
     "title": "站点",

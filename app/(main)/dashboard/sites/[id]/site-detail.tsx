@@ -319,9 +319,11 @@ function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
 export function SiteDetail({
   site: s,
   puzzles,
+  analyticsSlot,
 }: {
   site: InferSelectModel<typeof site>;
   puzzles: InferSelectModel<typeof puzzle>[];
+  analyticsSlot?: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -333,6 +335,8 @@ export function SiteDetail({
         </Button>
         <h1 className="text-2xl font-semibold">{s.name}</h1>
       </div>
+
+      {analyticsSlot}
 
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-2">
         <div className="flex flex-col gap-6">
