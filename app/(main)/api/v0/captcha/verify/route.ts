@@ -29,8 +29,9 @@ export async function POST(request: Request) {
     );
   }
 
-  // Validate image indices BEFORE consuming the session — malformed requests
-  // shouldn't burn a legit user's token.
+  // Validate request shape BEFORE consuming the session — malformed or empty
+  // submissions shouldn't burn a legit user's token, and they aren't worth
+  // recording as analytics events either.
   let uniqueIndices: number[] | null = null;
   if (isImageMode) {
     const { selectedIndices } = body as { selectedIndices: number[] };
@@ -44,6 +45,15 @@ export async function POST(request: Request) {
       )
     ) {
       return Response.json({ error: "Invalid indices" }, { status: 400 });
+    }
+    if (uniqueIndices.length === 0) {
+      return Response.json({ success: false });
+    }
+  }
+
+  if (isAudioMode) {
+    if ((body.textAnswer as string).trim().length === 0) {
+      return Response.json({ success: false });
     }
   }
 
@@ -73,7 +83,6 @@ export async function POST(request: Request) {
     }
 
     const correct =
-      textAnswer.length > 0 &&
       textAnswer.toLowerCase() === session.audioAnswer.toLowerCase();
 
     if (!correct) {
@@ -98,11 +107,6 @@ export async function POST(request: Request) {
   // anti-bot: selecting every tile is never legitimate
   if (indices.length === CAPTCHA_GRID_SIZE) {
     after(() => recordEvent({ ...eventBase, eventType: "auto_fail" }));
-    return Response.json({ success: false });
-  }
-
-  if (indices.length === 0) {
-    after(() => recordEvent({ ...eventBase, eventType: "fail" }));
     return Response.json({ success: false });
   }
 

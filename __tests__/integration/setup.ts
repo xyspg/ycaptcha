@@ -1,4 +1,41 @@
+import { eq } from "drizzle-orm";
 import { vi } from "vitest";
+import { db } from "@/lib/db";
+import { verificationEvent } from "@/lib/db/app-schema";
+import { TEST_USER_ID } from "./seed";
+
+// `server-only` is a Next.js build-time marker; not installed at runtime.
+vi.mock("server-only", () => ({}));
+
+// `after()` needs a Next.js request context. In tests we queue the callbacks
+// and expose `flushAfter()` so individual tests can await post-response side
+// effects (analytics writes) before asserting DB state.
+const { afterQueue } = vi.hoisted(() => ({
+  afterQueue: [] as Promise<unknown>[],
+}));
+
+vi.mock("next/server", async (importOriginal) => {
+  const mod = await importOriginal<typeof import("next/server")>();
+  return {
+    ...mod,
+    after: (fn: () => unknown | Promise<unknown>) => {
+      afterQueue.push(Promise.resolve().then(() => fn()));
+    },
+  };
+});
+
+export async function flushAfter(): Promise<void> {
+  if (afterQueue.length === 0) return;
+  await Promise.allSettled(afterQueue.splice(0));
+}
+
+/** Wait for pending after() callbacks, then wipe the test user's events. */
+export async function resetTestUserEvents(): Promise<void> {
+  await flushAfter();
+  await db
+    .delete(verificationEvent)
+    .where(eq(verificationEvent.userId, TEST_USER_ID));
+}
 
 // Mock @/lib/env — provide real DB/Redis values from process.env, fake for the rest
 vi.mock("@/lib/env", () => ({
