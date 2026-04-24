@@ -17,6 +17,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import type { OnboardingProgress } from "@/app/(main)/dashboard/onboarding-progress";
+import { SidebarOnboardingChecklist } from "@/components/sidebar-onboarding";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
@@ -33,7 +35,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth/client";
 
-export function AppSidebar() {
+export function AppSidebar({
+  onboarding,
+}: {
+  onboarding?: OnboardingProgress | null;
+}) {
   const pathname = usePathname();
   const t = useTranslations("sidebar");
   const { data: session, isPending } = authClient.useSession();
@@ -84,6 +90,7 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {onboarding && <SidebarOnboardingChecklist progress={onboarding} />}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

@@ -172,6 +172,23 @@
     "failsShort": "{count} 失敗",
     "noDataYet": "データなし"
   },
+  "onboarding": {
+    "title": "はじめに",
+    "progressLabel": "{completed}/{total}",
+    "dismiss": "閉じる",
+    "expand": "展開",
+    "collapse": "折りたたむ",
+    "step1Title": "サイトを作成",
+    "step1Cta": "サイトを追加",
+    "step2Title": "コンテンツを追加",
+    "step2CtaImages": "画像",
+    "step2CtaAudio": "オーディオ",
+    "step3Title": "パズルを作成",
+    "step3LockedHint": "まずサイトを作成してください",
+    "step4Title": "ウィジェットを埋め込む",
+    "step4LockedHint": "上記のステップを完了してください",
+    "step4Cta": "スニペットを表示"
+  },
   "sites": {
     "title": "サイト",
     "addSite": "サイトを追加",

@@ -172,6 +172,23 @@
     "failsShort": "{count} 次失败",
     "noDataYet": "暂无数据"
   },
+  "onboarding": {
+    "title": "开始使用",
+    "progressLabel": "{completed}/{total}",
+    "dismiss": "关闭",
+    "expand": "展开",
+    "collapse": "收起",
+    "step1Title": "创建站点",
+    "step1Cta": "添加站点",
+    "step2Title": "添加内容",
+    "step2CtaImages": "图片",
+    "step2CtaAudio": "音频",
+    "step3Title": "创建题目",
+    "step3LockedHint": "请先创建站点",
+    "step4Title": "嵌入组件",
+    "step4LockedHint": "请先完成上面的步骤",
+    "step4Cta": "查看代码"
+  },
   "sites": {
     "title": "站点",
     "addSite": "添加站点",
