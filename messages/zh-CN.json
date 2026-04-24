@@ -186,8 +186,7 @@
     "step3Title": "创建题目",
     "step3LockedHint": "请先创建站点",
     "step4Title": "嵌入组件",
-    "step4LockedHint": "请先完成上面的步骤",
-    "step4Cta": "查看代码"
+    "step4LockedHint": "请先完成上面的步骤"
   },
   "sites": {
     "title": "站点",

@@ -145,7 +145,6 @@ export function SidebarOnboardingChecklist({
             locked={!readyForEmbed}
             label={t("step4Title")}
             hint={!readyForEmbed ? t("step4LockedHint") : undefined}
-            ctaLabel={t("step4Cta")}
             ctaHref={
               firstSiteId ? `/dashboard/sites/${firstSiteId}` : undefined
             }

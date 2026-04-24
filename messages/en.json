@@ -186,8 +186,7 @@
     "step3Title": "Create a puzzle",
     "step3LockedHint": "Create a site first",
     "step4Title": "Embed widget",
-    "step4LockedHint": "Finish the steps above",
-    "step4Cta": "Show snippet"
+    "step4LockedHint": "Finish the steps above"
   },
   "sites": {
     "title": "Sites",
