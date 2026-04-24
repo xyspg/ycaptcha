@@ -5,6 +5,7 @@ import { CAPTCHA_SESSION_TTL_S } from "@/lib/types";
 export interface ChallengeSession {
   puzzleId: string;
   siteId: string;
+  userId: string; // site owner — denormalized so analytics writes don't need a join
   imageUrls: string[];
   imageIds: string[]; // display order — indices match the grid
   correctImageIds: string[];
@@ -17,6 +18,7 @@ export interface ChallengeSession {
 export interface VerifiedSession {
   puzzleId: string;
   siteId: string;
+  userId: string;
 }
 
 function challengeKey(token: string) {

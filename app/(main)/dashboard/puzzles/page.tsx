@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { listPuzzleStatsForUser } from "@/lib/analytics";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { site } from "@/lib/db/app-schema";
@@ -20,14 +21,19 @@ export default async function Page() {
 
   const siteIds = userSites.map((s) => s.id);
 
-  const puzzles =
+  const puzzlesPromise =
     siteIds.length > 0
-      ? await db.query.puzzle.findMany({
+      ? db.query.puzzle.findMany({
           where: (p, { inArray }) => inArray(p.siteId, siteIds),
           with: { site: true, imageSet: true },
           orderBy: (p, { desc }) => desc(p.createdAt),
         })
-      : [];
+      : null;
+
+  const [puzzles, puzzleStats] = await Promise.all([
+    puzzlesPromise ?? [],
+    listPuzzleStatsForUser(session.user.id),
+  ]);
 
   const hasPrereqs = userSites.length > 0;
 
@@ -75,18 +81,24 @@ export default async function Page() {
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {puzzles.map((p) => (
-            <PuzzleCard
-              key={p.id}
-              id={p.id}
-              prompt={p.prompt}
-              siteName={p.site.name}
-              difficulty={p.difficulty}
-              imageSetName={p.imageSet?.name ?? null}
-              correctCount={p.correctCount}
-              enabled={p.enabled}
-            />
-          ))}
+          {puzzles.map((p) => {
+            const s = puzzleStats.get(p.id);
+            return (
+              <PuzzleCard
+                key={p.id}
+                id={p.id}
+                prompt={p.prompt}
+                siteName={p.site.name}
+                difficulty={p.difficulty}
+                imageSetName={p.imageSet?.name ?? null}
+                correctCount={p.correctCount}
+                enabled={p.enabled}
+                solves={s?.solves ?? 0}
+                fails={s?.fails ?? 0}
+                passRate={s?.passRate ?? null}
+              />
+            );
+          })}
         </div>
       )}
     </div>

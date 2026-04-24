@@ -58,6 +58,7 @@ interface PuzzleDetailProps {
   siteName: string;
   imageSets: ImageSetData[];
   audioClips: AudioClipData[];
+  analyticsSlot?: React.ReactNode;
 }
 
 export function PuzzleDetail({
@@ -65,6 +66,7 @@ export function PuzzleDetail({
   siteName,
   imageSets,
   audioClips,
+  analyticsSlot,
 }: PuzzleDetailProps) {
   const t = useTranslations("puzzles.edit");
   const tp = useTranslations("puzzles");
@@ -94,6 +96,8 @@ export function PuzzleDetail({
           <p className="text-sm text-muted-foreground">{siteName}</p>
         </div>
       </div>
+
+      {analyticsSlot}
 
       <PuzzleEditForm
         key={formKey}

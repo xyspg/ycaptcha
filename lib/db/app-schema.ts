@@ -215,3 +215,59 @@ export const galleryItemRelations = relations(galleryItem, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+// Append-only telemetry of widget verification flow. Written fire-and-forget
+// from the captcha endpoints; aggregated in lib/analytics.ts. Volume on Neon
+// is fine well into millions of rows — do not pre-build a rollup table.
+export const verificationEvent = pgTable(
+  "verification_event",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    siteId: text("site_id")
+      .notNull()
+      .references(() => site.id, { onDelete: "cascade" }),
+    // set null on puzzle delete so site/user-level history survives
+    puzzleId: text("puzzle_id").references(() => puzzle.id, {
+      onDelete: "set null",
+    }),
+    eventType: text("event_type").notNull(), // 'challenge' | 'pass' | 'fail' | 'auto_fail' | 'siteverify'
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("verificationEvent_userId_createdAt_idx").on(
+      table.userId,
+      table.createdAt,
+    ),
+    index("verificationEvent_siteId_createdAt_idx").on(
+      table.siteId,
+      table.createdAt,
+    ),
+    index("verificationEvent_puzzleId_createdAt_idx").on(
+      table.puzzleId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const verificationEventRelations = relations(
+  verificationEvent,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [verificationEvent.userId],
+      references: [user.id],
+    }),
+    site: one(site, {
+      fields: [verificationEvent.siteId],
+      references: [site.id],
+    }),
+    puzzle: one(puzzle, {
+      fields: [verificationEvent.puzzleId],
+      references: [puzzle.id],
+    }),
+  }),
+);

@@ -97,6 +97,7 @@
   },
   "sidebar": {
     "manage": "Manage",
+    "overview": "Overview",
     "sites": "Sites",
     "puzzles": "Puzzles",
     "imageSets": "Image Sets",
@@ -110,6 +111,26 @@
     "errorTitle": "Something went wrong",
     "genericError": "An unexpected error occurred.",
     "tryAgain": "Try again"
+  },
+  "analytics": {
+    "title": "Overview",
+    "window": "Last 30 days",
+    "verifies": "Verifies",
+    "verifiesHint": "tokens consumed by your backend",
+    "passRate": "Pass rate",
+    "passRateHint": "of attempts that passed",
+    "activePuzzles": "Active puzzles",
+    "activePuzzlesHint": "across {count, plural, one {# site} other {# sites}}",
+    "activePuzzlesOnSiteHint": "enabled on this site",
+    "verifiesOverTime": "Verifies over time",
+    "attemptsOverTime": "Successful solves over time",
+    "topPuzzles": "Top puzzles by volume",
+    "solves": "Solves",
+    "fails": "Fails",
+    "passes": "Passes",
+    "solvesShort": "{count} solves",
+    "failsShort": "{count} fails",
+    "noDataYet": "No data yet"
   },
   "sites": {
     "title": "Sites",

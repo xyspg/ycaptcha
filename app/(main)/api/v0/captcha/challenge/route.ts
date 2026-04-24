@@ -1,4 +1,6 @@
 import { and, eq, inArray, notInArray, sql } from "drizzle-orm";
+import { after } from "next/server";
+import { recordEvent } from "@/lib/analytics";
 import { createChallengeSession } from "@/lib/captcha-session";
 import { db } from "@/lib/db";
 import { audio, image, puzzle, site } from "@/lib/db/app-schema";
@@ -162,6 +164,7 @@ export async function POST(request: Request) {
   const token = await createChallengeSession({
     puzzleId: puzzleData.id,
     siteId: siteData.id,
+    userId: siteData.userId,
     imageUrls: allImages.map((img) => img.url),
     imageIds: allImages.map((img) => img.id),
     correctImageIds: correctImages.map((img) => img.id),
@@ -170,6 +173,15 @@ export async function POST(request: Request) {
     ...(audioUrl && { audioUrl }),
     ...(audioAnswer && { audioAnswer }),
   });
+
+  after(() =>
+    recordEvent({
+      userId: siteData.userId,
+      siteId: siteData.id,
+      puzzleId: puzzleData.id,
+      eventType: "challenge",
+    }),
+  );
 
   // proxy URLs only — no image IDs exposed to client
   return Response.json({

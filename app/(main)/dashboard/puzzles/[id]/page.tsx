@@ -1,5 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
+import { PuzzleAnalyticsSection } from "@/components/puzzle-analytics-section";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { audio, puzzle, site } from "@/lib/db/app-schema";
@@ -67,6 +68,7 @@ export default async function Page({
         })),
       }))}
       audioClips={audioClips}
+      analyticsSlot={<PuzzleAnalyticsSection puzzleId={puzzleData.puzzle.id} />}
     />
   );
 }

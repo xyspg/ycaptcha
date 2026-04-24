@@ -29,6 +29,18 @@ export function formatDuration(ms: number | null | undefined): string {
   return min > 0 ? `${min}:${String(sec).padStart(2, "0")}` : `${sec}s`;
 }
 
+/** Format an integer with a short `k` suffix past 1,000. */
+export function formatCompactNumber(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return n.toLocaleString();
+}
+
+/** Format a 0–1 ratio as `XX.X%`, or `—` when null. */
+export function formatPercent(ratio: number | null): string {
+  if (ratio === null) return "—";
+  return `${(ratio * 100).toFixed(1)}%`;
+}
+
 /** Format a byte count as KB / MB / GB with one decimal. */
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
