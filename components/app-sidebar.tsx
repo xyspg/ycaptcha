@@ -31,6 +31,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth/client";
@@ -43,6 +44,8 @@ export function AppSidebar({
   const pathname = usePathname();
   const t = useTranslations("sidebar");
   const { data: session, isPending } = authClient.useSession();
+  const { setOpenMobile } = useSidebar();
+  const closeOnMobile = () => setOpenMobile(false);
 
   const navItems = [
     { title: t("overview"), href: "/dashboard", icon: LayoutDashboard },
@@ -55,7 +58,11 @@ export function AppSidebar({
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link href="/dashboard" className="flex justify-center py-1">
+        <Link
+          href="/dashboard"
+          onClick={closeOnMobile}
+          className="flex justify-center py-1"
+        >
           <Image
             src="/ycaptcha.webp"
             alt="yCAPTCHA"
@@ -79,7 +86,7 @@ export function AppSidebar({
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton asChild isActive={isActive}>
-                      <Link href={item.href}>
+                      <Link href={item.href} onClick={closeOnMobile}>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>
@@ -96,7 +103,7 @@ export function AppSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href="/home">
+              <Link href="/home" onClick={closeOnMobile}>
                 <Home />
                 <span>{t("homePage")}</span>
               </Link>
@@ -123,7 +130,7 @@ export function AppSidebar({
               asChild
               isActive={pathname.startsWith("/dashboard/settings")}
             >
-              <Link href="/dashboard/settings">
+              <Link href="/dashboard/settings" onClick={closeOnMobile}>
                 <Settings />
                 <span>{t("settings")}</span>
               </Link>

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { dismissOnboarding } from "@/app/(main)/dashboard/onboarding-actions";
 import type { OnboardingProgress } from "@/app/(main)/dashboard/onboarding-progress";
 import { Button } from "@/components/ui/button";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const TOTAL_STEPS = 4;
 
@@ -27,6 +28,7 @@ function StepRow({
   ctaLabel,
   ctaHref,
 }: StepRowProps) {
+  const { setOpenMobile } = useSidebar();
   return (
     <div
       className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs ${
@@ -56,7 +58,7 @@ function StepRow({
       </div>
       {!done && ctaHref && !locked && (
         <Button asChild size="xs" variant="outline">
-          <Link href={ctaHref}>
+          <Link href={ctaHref} onClick={() => setOpenMobile(false)}>
             {ctaLabel}
             <ArrowUpRight className="size-3" />
           </Link>
