@@ -28,7 +28,7 @@ export default async function Layout({
   return (
     <SidebarProvider>
       <AppSidebar onboarding={onboarding} />
-      <main className="flex-1 bg-background [--card:var(--background)]">
+      <main className="flex-1 min-w-0 bg-background [--card:var(--background)]">
         <div className="sticky top-0 z-10 flex items-center border-b bg-background p-2 md:hidden">
           <SidebarTrigger />
         </div>

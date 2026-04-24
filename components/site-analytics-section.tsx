@@ -21,8 +21,8 @@ export async function SiteAnalyticsSection({
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+    <div className="@container flex flex-col gap-6">
+      <div className="grid gap-3 grid-cols-1 @sm:grid-cols-3">
         <StatCard
           label={t("verifies")}
           value={formatCompactNumber(stats.verifies)}

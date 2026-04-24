@@ -17,8 +17,8 @@ export async function PuzzleAnalyticsSection({
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-3 grid-cols-3">
+    <div className="@container flex flex-col gap-6">
+      <div className="grid gap-3 grid-cols-1 @sm:grid-cols-3">
         <StatCard
           label={t("solves")}
           value={formatCompactNumber(stats.solves)}

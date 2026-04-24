@@ -55,13 +55,13 @@ export default async function Page() {
     .slice(0, 5);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="@container flex flex-col gap-6">
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <p className="text-sm text-muted-foreground">{t("window")}</p>
       </div>
 
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+      <div className="grid gap-3 grid-cols-1 @sm:grid-cols-3">
         <StatCard
           label={t("verifies")}
           value={formatCompactNumber(stats.verifies)}
