@@ -7,8 +7,17 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getClientIP(request: Request): string {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return !ip || ip === "::1" ? "127.0.0.1" : ip;
+  // Vercel appends the real client IP at the right of x-forwarded-for; the
+  // leftmost entry is client-controlled and easy to spoof. Prefer the headers
+  // Vercel sets directly, then fall back to the rightmost xff entry.
+  const norm = (v: string) => (v === "::1" ? "127.0.0.1" : v);
+  const direct =
+    request.headers.get("x-vercel-forwarded-for")?.trim() ||
+    request.headers.get("x-real-ip")?.trim();
+  if (direct) return norm(direct);
+
+  const ip = request.headers.get("x-forwarded-for")?.split(",").pop()?.trim();
+  return ip ? norm(ip) : "127.0.0.1";
 }
 
 export function shuffle<T>(arr: T[]): T[] {

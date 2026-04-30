@@ -281,11 +281,17 @@ function PuzzlesSection({
   );
 }
 
-function EmbedSection({ s }: { s: InferSelectModel<typeof site> }) {
+function EmbedSection({
+  s,
+  captchaJsIntegrity,
+}: {
+  s: InferSelectModel<typeof site>;
+  captchaJsIntegrity: string;
+}) {
   const t = useTranslations("sites.detail");
   const widgetUrl = config.getSiteUrl(`/widget/${s.siteKey}`);
   const snippet = `<div class="y-captcha" data-sitekey="${s.siteKey}"></div>
-<script src="${config.getSiteUrl("/captcha.js")}" integrity="${process.env.CAPTCHA_JS_INTEGRITY}" crossorigin="anonymous" async defer></script>`;
+<script src="${config.getSiteUrl("/captcha.js")}" integrity="${captchaJsIntegrity}" crossorigin="anonymous" async defer></script>`;
 
   return (
     <Card>
@@ -320,10 +326,12 @@ export function SiteDetail({
   site: s,
   puzzles,
   analyticsSlot,
+  captchaJsIntegrity,
 }: {
   site: InferSelectModel<typeof site>;
   puzzles: InferSelectModel<typeof puzzle>[];
   analyticsSlot?: React.ReactNode;
+  captchaJsIntegrity: string;
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -346,7 +354,9 @@ export function SiteDetail({
         </div>
         <div className="flex flex-col gap-6">
           <PuzzlesSection s={s} puzzles={puzzles} />
-          {puzzles.length > 0 && <EmbedSection s={s} />}
+          {puzzles.length > 0 && (
+            <EmbedSection s={s} captchaJsIntegrity={captchaJsIntegrity} />
+          )}
         </div>
       </div>
     </div>

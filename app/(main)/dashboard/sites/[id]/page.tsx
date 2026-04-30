@@ -4,6 +4,7 @@ import { SiteAnalyticsSection } from "@/components/site-analytics-section";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { puzzle, site } from "@/lib/db/app-schema";
+import { env } from "@/lib/env";
 import { SiteDetail } from "./site-detail";
 
 export default async function Page({
@@ -27,6 +28,7 @@ export default async function Page({
     <SiteDetail
       site={siteData}
       puzzles={puzzles}
+      captchaJsIntegrity={env.CAPTCHA_JS_INTEGRITY ?? ""}
       analyticsSlot={
         <SiteAnalyticsSection siteId={siteData.id} userId={session.user.id} />
       }

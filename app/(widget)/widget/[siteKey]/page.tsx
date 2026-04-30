@@ -20,7 +20,15 @@ function getTargetOrigin(): string {
 
 function postToParent(data: Record<string, unknown>) {
   const target = getTargetOrigin();
-  if (target === "*" && "token" in data) return;
+  if (target === "*" && "token" in data) {
+    // Refusing to broadcast a verification token to "*" — but tell the parent
+    // why so it can surface a real error instead of a silently stuck widget.
+    window.parent.postMessage(
+      { source: "ycaptcha", event: "error", code: "NO_REFERRER" },
+      "*",
+    );
+    return;
+  }
   window.parent.postMessage({ source: "ycaptcha", ...data }, target);
 }
 
@@ -32,7 +40,9 @@ export default function WidgetPage() {
   const { siteKey } = useParams<{ siteKey: string }>();
   const [phase, setPhase] = useState<Phase>("idle");
   const [mode, setMode] = useState<WidgetMode>("image");
-  const [captchaMode, setCaptchaMode] = useState<string>("image");
+  const [captchaMode, setCaptchaMode] = useState<
+    "image" | "audio" | "combined"
+  >("image");
   const [images, setImages] = useState<{ url: string }[]>([]);
   const [prompt, setPrompt] = useState("");
   const [sessionToken, setSessionToken] = useState<string | null>(null);
@@ -85,44 +95,37 @@ export default function WidgetPage() {
         setPhase("error");
         setErrorText(msg);
         postToParent({ event: "error", code: res.status, message: msg });
-        return false;
+        return { ok: false as const };
       }
 
       const data = await res.json();
+      const nextMode: WidgetMode =
+        data.captchaMode === "audio" ? "audio" : "image";
       setImages(data.images ?? []);
       setPrompt(data.prompt);
       setSessionToken(data.sessionToken);
       setCaptchaMode(data.captchaMode ?? "image");
       setAudioEnabled(!!data.audioEnabled);
-      // For audio-only puzzles, go directly to audio mode
-      if (data.captchaMode === "audio") {
-        setMode("audio");
-      } else {
-        setMode("image");
-      }
+      setMode(nextMode);
       setErrorText(null);
       startExpiryTimer();
-      return true;
+      return { ok: true as const, mode: nextMode };
     } catch {
       setPhase("error");
       setErrorText("Network error");
       postToParent({ event: "error", code: 0, message: "Network error" });
-      return false;
+      return { ok: false as const };
     }
   }, [siteKey, startExpiryTimer]);
 
   const handleRequestChallenge = async () => {
     setPhase("loading");
-    const ok = await fetchChallenge();
-    if (ok) {
+    const result = await fetchChallenge();
+    if (result.ok) {
       setTimeout(() => {
         setPhase("challenge");
-        // Audio-only is shorter than the image grid
-        if (captchaMode === "audio") {
-          postResize(300, 320);
-        } else {
-          postResize(350, 520);
-        }
+        const [w, h] = result.mode === "audio" ? [300, 320] : [350, 520];
+        postResize(w, h);
       }, 600);
     }
   };

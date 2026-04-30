@@ -2,4 +2,5 @@
 import { type EffectCallback, useEffect } from "react";
 
 export const useMountEffect = (callback: EffectCallback) =>
-  useEffect(callback, [callback]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only by design
+  useEffect(callback, []);

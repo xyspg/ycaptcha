@@ -61,21 +61,12 @@ export async function createVerifiedSession(
   return token;
 }
 
-export async function createVerifiedSessionWithToken(
-  token: string,
-  data: VerifiedSession,
-): Promise<void> {
-  await redis.setex(verifiedKey(token), CAPTCHA_SESSION_TTL_S, data);
-}
-
 export async function getVerifiedSession(
   token: string,
 ): Promise<VerifiedSession | null> {
   return redis.get<VerifiedSession>(verifiedKey(token));
 }
 
-export async function consumeVerifiedSession(
-  token: string,
-): Promise<VerifiedSession | null> {
-  return redis.getdel<VerifiedSession>(verifiedKey(token));
+export async function deleteVerifiedSession(token: string): Promise<void> {
+  await redis.del(verifiedKey(token));
 }

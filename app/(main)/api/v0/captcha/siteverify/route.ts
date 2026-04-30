@@ -2,8 +2,8 @@ import { and, eq } from "drizzle-orm";
 import { after } from "next/server";
 import { recordEvent } from "@/lib/analytics";
 import {
-  consumeVerifiedSession,
-  createVerifiedSessionWithToken,
+  deleteVerifiedSession,
+  getVerifiedSession,
 } from "@/lib/captcha-session";
 import { db } from "@/lib/db";
 import { puzzle, site } from "@/lib/db/app-schema";
@@ -23,8 +23,10 @@ export async function POST(request: Request) {
 
   const { token, secretKey } = body as { token: string; secretKey: string };
 
-  const session = await consumeVerifiedSession(token);
-
+  // Validate the token + secretKey BEFORE consuming. Consuming first means a
+  // wrong secretKey (e.g. submitted by a malicious script that intercepted the
+  // postMessage) would burn the legitimate site owner's token permanently.
+  const session = await getVerifiedSession(token);
   if (!session) {
     return Response.json({ success: false, error: "Invalid token" });
   }
@@ -40,8 +42,6 @@ export async function POST(request: Request) {
       )
       .where(eq(puzzle.id, session.puzzleId));
   } catch {
-    // DB failure — restore the token so the caller can retry
-    await createVerifiedSessionWithToken(token, session);
     return Response.json(
       { success: false, error: "Internal error, please retry" },
       { status: 500 },
@@ -51,6 +51,8 @@ export async function POST(request: Request) {
   if (!owner) {
     return Response.json({ success: false, error: "Invalid secretKey" });
   }
+
+  await deleteVerifiedSession(token);
 
   after(() =>
     recordEvent({

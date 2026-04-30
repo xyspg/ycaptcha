@@ -200,7 +200,10 @@ export async function deleteAudio(
       siteName: site.name,
     })
     .from(puzzle)
-    .innerJoin(site, eq(site.id, puzzle.siteId))
+    .innerJoin(
+      site,
+      and(eq(site.id, puzzle.siteId), eq(site.userId, session.user.id)),
+    )
     .where(eq(puzzle.audioId, audioId));
 
   if (referencingPuzzles.length > 0) {

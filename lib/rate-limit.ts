@@ -1,4 +1,5 @@
 import { Ratelimit } from "@upstash/ratelimit";
+import { env } from "@/lib/env";
 import { redis } from "@/lib/redis";
 import { getClientIP } from "@/lib/utils";
 
@@ -39,7 +40,7 @@ export async function checkRateLimit(
   limiter: Ratelimit,
   request: Request,
 ): Promise<Response | null> {
-  if (process.env.DISABLE_RATE_LIMIT === "true") return null;
+  if (env.DISABLE_RATE_LIMIT === "true") return null;
 
   const ip = getClientIP(request);
   const { success, reset } = await limiter.limit(ip);

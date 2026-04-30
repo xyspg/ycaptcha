@@ -375,10 +375,14 @@ export async function deleteImage(
   const set = await requireOwnedSet(setId, session.user.id);
   if (!set) return { errors: { setId: ["Image set not found"] } };
 
-  // can't delete images that puzzles depend on
+  // can't delete images that the user's own puzzles depend on
   const [ref] = await db
     .select({ id: puzzle.id })
     .from(puzzle)
+    .innerJoin(
+      site,
+      and(eq(site.id, puzzle.siteId), eq(site.userId, session.user.id)),
+    )
     .where(
       sql`${puzzle.correctImageIds}::jsonb @> ${JSON.stringify([imageId])}::jsonb
         OR (${puzzle.incorrectImageIds} IS NOT NULL AND ${puzzle.incorrectImageIds}::jsonb @> ${JSON.stringify([imageId])}::jsonb)`,
@@ -461,7 +465,10 @@ export async function deleteImageSet(
       siteName: site.name,
     })
     .from(puzzle)
-    .innerJoin(site, eq(site.id, puzzle.siteId))
+    .innerJoin(
+      site,
+      and(eq(site.id, puzzle.siteId), eq(site.userId, session.user.id)),
+    )
     .where(eq(puzzle.imageSetId, setId));
 
   if (referencingPuzzles.length > 0) {

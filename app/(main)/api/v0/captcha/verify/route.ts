@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { after } from "next/server";
 import { recordEvent } from "@/lib/analytics";
 import {
@@ -82,8 +83,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const correct =
-      textAnswer.toLowerCase() === session.audioAnswer.toLowerCase();
+    const a = Buffer.from(textAnswer.toLowerCase());
+    const b = Buffer.from(session.audioAnswer.toLowerCase());
+    const correct = a.length === b.length && timingSafeEqual(a, b);
 
     if (!correct) {
       after(() => recordEvent({ ...eventBase, eventType: "fail" }));

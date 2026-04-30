@@ -1,4 +1,5 @@
 import { getChallengeSession } from "@/lib/captcha-session";
+import { env } from "@/lib/env";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
@@ -33,6 +34,13 @@ export async function GET(
   const imageUrls = session.imageUrls;
   if (index >= imageUrls.length) {
     return new Response("Index out of range", { status: 400 });
+  }
+
+  // Belt-and-braces: URLs come from the DB and should always be R2 public
+  // URLs, but assert before fetching so a bad row can't turn this proxy into
+  // an SSRF vector.
+  if (!imageUrls[index].startsWith(`${env.NEXT_PUBLIC_R2_PUBLIC_URL}/`)) {
+    return new Response("Invalid image source", { status: 403 });
   }
 
   const imageRes = await fetch(imageUrls[index]);

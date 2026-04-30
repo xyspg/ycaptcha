@@ -31,10 +31,11 @@ export async function proxy(request: NextRequest) {
 
       if (siteData?.domain) {
         const localhost = "http://localhost:* http://127.0.0.1:*";
+        const isDev = process.env.NODE_ENV !== "production";
         if (siteData.domain === "localhost") {
           frameAncestors = `'self' ${localhost}`;
         } else {
-          frameAncestors = `'self' https://*.${siteData.domain} https://${siteData.domain} ${localhost}`;
+          frameAncestors = `'self' https://*.${siteData.domain} https://${siteData.domain}${isDev ? ` ${localhost}` : ""}`;
         }
       }
     } catch (e) {
