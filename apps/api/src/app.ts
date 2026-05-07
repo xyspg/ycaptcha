@@ -3,6 +3,8 @@ import { cors } from "hono/cors";
 import { env } from "./env";
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/error";
+import { audioRoute } from "./routes/audio";
+import { imageSets } from "./routes/image-sets";
 import { onboarding } from "./routes/onboarding";
 import { puzzles } from "./routes/puzzles";
 import { sites } from "./routes/sites";
@@ -25,6 +27,8 @@ export const app = new Hono()
   .on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw))
   .route("/api/sites", sites)
   .route("/api/puzzles", puzzles)
+  .route("/api/image-sets", imageSets)
+  .route("/api/audio", audioRoute)
   .route("/api/onboarding", onboarding);
 
 app.onError(errorHandler);
