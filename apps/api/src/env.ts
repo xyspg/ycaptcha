@@ -11,6 +11,7 @@ const envSchema = z.object({
 
   BETTER_AUTH_SECRET: z.string().min(1),
   BETTER_AUTH_URL: z.url(),
+  WEB_APP_URL: z.url(),
   AUTH_COOKIE_DOMAIN: z.string().optional(),
   AUTH_TRUSTED_ORIGINS: z.string().optional(),
   PASSKEY_RP_ID: z.string().optional(),

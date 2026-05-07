@@ -73,8 +73,14 @@ export const auth = betterAuth({
       });
     },
     onExistingUserSignUp: async ({ user }, request) => {
+      // The magic-link redirect resolves against the API origin, so a relative
+      // path lands on the Hono service (which doesn't serve `/dashboard`).
+      // Use the absolute frontend URL so users end up on the SPA after login.
       await auth.api.signInMagicLink({
-        body: { email: user.email, callbackURL: "/dashboard" },
+        body: {
+          email: user.email,
+          callbackURL: `${env.WEB_APP_URL}/dashboard`,
+        },
         headers: request?.headers ?? new Headers(),
       });
     },
@@ -84,6 +90,9 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     expiresIn: 60 * 60 * 24,
+    // Default redirect after the API verifies the token. Without this, the
+    // post-verification redirect resolves against the API origin and 404s.
+    callbackURL: `${env.WEB_APP_URL}/dashboard`,
     sendVerificationEmail: async ({ user, url }, request) => {
       await sendVerificationEmail({ user, url, request });
     },

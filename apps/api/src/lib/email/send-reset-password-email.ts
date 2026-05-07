@@ -44,15 +44,32 @@ export async function sendResetPasswordEmail({
 
   const logoUrl = config.getSiteUrl("/ycaptcha.webp");
 
+  // better-auth emits the URL against `BETTER_AUTH_URL` (the API origin), but
+  // the reset-password page lives in the frontend app. Swap the host so users
+  // land on the SPA, not a 404 on the API container.
+  const resetUrl = rewriteToWebApp(url);
+
   await resend.emails.send({
     from: env.EMAIL_FROM,
     to: user.email,
     subject: messages.subject,
     react: ResetPasswordEmail({
       userName: user.name ?? user.email,
-      resetUrl: url,
+      resetUrl,
       logoUrl,
       messages,
     }),
   });
+}
+
+function rewriteToWebApp(rawUrl: string): string {
+  try {
+    const u = new URL(rawUrl);
+    const web = new URL(env.WEB_APP_URL);
+    u.protocol = web.protocol;
+    u.host = web.host;
+    return u.toString();
+  } catch {
+    return rawUrl;
+  }
 }
