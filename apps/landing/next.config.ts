@@ -10,7 +10,9 @@ const nextConfig: NextConfig = {
   output: "standalone",
   devIndicators: false,
   turbopack: {
-    root: path.resolve(import.meta.dirname),
+    // Workspace root. In Docker the build context only includes apps/landing
+    // (no monolith proxy.ts at the workspace root), so this is safe.
+    root: path.resolve(import.meta.dirname, "../.."),
   },
   async rewrites() {
     return [
