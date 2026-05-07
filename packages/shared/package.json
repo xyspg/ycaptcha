@@ -1,0 +1,21 @@
+{
+  "name": "@ycaptcha/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./rpc-types": "./src/rpc-types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ycaptcha/api": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

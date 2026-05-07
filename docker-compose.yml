@@ -1,11 +1,73 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ycaptcha-postgres-local
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ycaptcha
+      POSTGRES_PASSWORD: ycaptcha_dev
+      POSTGRES_DB: ycaptcha
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ycaptcha"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ycaptcha-redis-local
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Kept for backward compatibility with old @upstash/redis code on main branch.
+  # Refactor branch's apps use ioredis directly against the redis service above.
   srh:
     image: hiett/serverless-redis-http:latest
     container_name: ycaptcha-srh-local
+    depends_on:
+      redis:
+        condition: service_healthy
     ports:
       - "8079:80"
     environment:
       SRH_MODE: env
       SRH_TOKEN: local_dev_srh_token
-      SRH_CONNECTION_STRING: redis://host.docker.internal:6379
+      SRH_CONNECTION_STRING: redis://redis:6379
     restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    container_name: ycaptcha-minio-local
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test:
+        ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
