@@ -13,6 +13,7 @@
       "!**/.next",
       "!**/public/captcha.js",
       "!captcha.js",
+      "!apps/widget/src/loader/loader.js",
       "!**/*.css",
       "!**/routeTree.gen.ts",
       "!**/dist/**"
