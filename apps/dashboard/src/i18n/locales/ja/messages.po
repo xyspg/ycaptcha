@@ -1,0 +1,1935 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: \n"
+#. Active puzzles
+msgid "analytics.activePuzzles"
+msgstr "有効なパズル"
+
+#. across {count, plural, one {# site} other {# sites}}
+msgid "analytics.activePuzzlesHint"
+msgstr "{count} サイトにわたって"
+
+#. enabled on this site
+msgid "analytics.activePuzzlesOnSiteHint"
+msgstr "このサイトで有効"
+
+#. Successful solves over time
+msgid "analytics.attemptsOverTime"
+msgstr "成功した解答の推移"
+
+#. Fails
+msgid "analytics.fails"
+msgstr "失敗数"
+
+#. {count} fails
+msgid "analytics.failsShort"
+msgstr "{count} 失敗"
+
+#. No data yet
+msgid "analytics.noDataYet"
+msgstr "データなし"
+
+#. Pass rate
+msgid "analytics.passRate"
+msgstr "通過率"
+
+#. of attempts that passed
+msgid "analytics.passRateHint"
+msgstr "通過した試行の割合"
+
+#. Passes
+msgid "analytics.passes"
+msgstr "通過"
+
+#. Solves
+msgid "analytics.solves"
+msgstr "解答数"
+
+#. {count} solves
+msgid "analytics.solvesShort"
+msgstr "{count} 解答"
+
+#. Overview
+msgid "analytics.title"
+msgstr "概要"
+
+#. Top puzzles by volume
+msgid "analytics.topPuzzles"
+msgstr "人気パズル"
+
+#. Verifies
+msgid "analytics.verifies"
+msgstr "認証数"
+
+#. tokens consumed by your backend
+msgid "analytics.verifiesHint"
+msgstr "バックエンドが消費したトークン"
+
+#. Verifies over time
+msgid "analytics.verifiesOverTime"
+msgstr "認証数の推移"
+
+#. Last 30 days
+msgid "analytics.window"
+msgstr "過去30日間"
+
+#. Answer
+msgid "audio.answer"
+msgstr "回答"
+
+#. This audio is referenced by the following puzzles. Remove it first.
+msgid "audio.cannotDeleteDescription"
+msgstr "このオーディオは以下のパズルで使用されています。先に削除してください。"
+
+#. Cannot delete audio
+msgid "audio.cannotDeleteTitle"
+msgstr "オーディオを削除できません"
+
+#. Delete Audio
+msgid "audio.deleteAudio"
+msgstr "オーディオを削除"
+
+#. This will permanently delete this audio clip. You must remove it from any puzzles first.
+msgid "audio.deleteAudioDescription"
+msgstr "このオーディオクリップを完全に削除します。先にパズルから削除してください。"
+
+#. Deleting this audio clip will remove it from storage. You must remove it from any puzzles first.
+msgid "audio.detail.dangerDescription"
+msgstr "このオーディオクリップを削除するとストレージから削除されます。先にパズルから削除してください。"
+
+#. Danger Zone
+msgid "audio.detail.dangerZone"
+msgstr "危険ゾーン"
+
+#. Playback
+msgid "audio.detail.playback"
+msgstr "再生"
+
+#. Settings
+msgid "audio.detail.settings"
+msgstr "設定"
+
+#. Update the name and correct answer for this audio clip.
+msgid "audio.detail.settingsDescription"
+msgstr "このオーディオクリップの名前と正解を更新します。"
+
+#. Upload audio clips to use as alternative CAPTCHA verification.
+msgid "audio.noAudioDescription"
+msgstr "CAPTCHA の代替認証としてオーディオクリップをアップロードしてください。"
+
+#. No audio clips yet
+msgid "audio.noAudioYet"
+msgstr "オーディオクリップがありません"
+
+#. Audio Clips
+msgid "audio.title"
+msgstr "オーディオクリップ"
+
+#. The text answer users must type to pass the audio CAPTCHA.
+msgid "audio.upload.answerHint"
+msgstr "ユーザーがオーディオCAPTCHAに合格するために入力するテキスト回答。"
+
+#. Correct Answer
+msgid "audio.upload.answerLabel"
+msgstr "正解"
+
+#. e.g. Describe the city you live in
+msgid "audio.upload.answerPlaceholder"
+msgstr "例: Describe the city you live in"
+
+#. Change file
+msgid "audio.upload.changeFile"
+msgstr "ファイルを変更"
+
+#. Drop an audio file here or click to browse
+msgid "audio.upload.dropOrBrowse"
+msgstr "ここにオーディオファイルをドロップするか、クリックして選択"
+
+#. e.g. Spoken digits
+msgid "audio.upload.namePlaceholder"
+msgstr "例: 音声数字"
+
+#. Pause
+msgid "audio.upload.pause"
+msgstr "一時停止"
+
+#. Play
+msgid "audio.upload.preview"
+msgstr "再生"
+
+#. Upload Audio Clip
+msgid "audio.upload.title"
+msgstr "オーディオクリップをアップロード"
+
+#. Upload Audio
+msgid "audio.uploadAudio"
+msgstr "オーディオをアップロード"
+
+#. Back to sign in
+msgid "auth.forgotPassword.backToLogin"
+msgstr "サインインに戻る"
+
+#. Enter your email and we'll send you a reset link.
+msgid "auth.forgotPassword.description"
+msgstr "メールアドレスを入力すると、再設定用のリンクを送信します。"
+
+#. you@example.com
+msgid "auth.forgotPassword.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Unable to send reset email. Please try again.
+msgid "auth.forgotPassword.genericError"
+msgstr "再設定メールを送信できませんでした。時間をおいて再度お試しください。"
+
+#. Sending reset link...
+msgid "auth.forgotPassword.sending"
+msgstr "再設定リンクを送信中..."
+
+#. Send reset link
+msgid "auth.forgotPassword.submit"
+msgstr "再設定リンクを送信"
+
+#. If an account exists for {email}, we sent a password reset link.
+msgid "auth.forgotPassword.successDescription"
+msgstr "{email} に対応するアカウントが存在する場合、パスワード再設定リンクを送信しました。"
+
+#. Check your inbox
+msgid "auth.forgotPassword.successTitle"
+msgstr "メールをご確認ください"
+
+#. Forgot your password?
+msgid "auth.forgotPassword.title"
+msgstr "パスワードをお忘れですか?"
+
+#. Continue with GitHub
+msgid "auth.login.continueWithGitHub"
+msgstr "GitHubで続行"
+
+#. Sign in to your account
+msgid "auth.login.description"
+msgstr "アカウントにサインインしてください"
+
+#. Please verify your email before signing in.
+msgid "auth.login.emailNotVerified"
+msgstr "サインインの前にメールアドレスをご確認ください。"
+
+#. you@example.com
+msgid "auth.login.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Forgot your password?
+msgid "auth.login.forgotPassword"
+msgstr "パスワードをお忘れですか?"
+
+#. Don't have an account?
+msgid "auth.login.noAccount"
+msgstr "アカウントをお持ちでない方"
+
+#. Passkey sign-in failed
+msgid "auth.login.passkeyFailed"
+msgstr "パスキーでのサインインに失敗しました"
+
+#. ••••••••
+msgid "auth.login.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Resend verification email
+msgid "auth.login.resendVerification"
+msgstr "認証メールを再送信"
+
+#. Sign In
+msgid "auth.login.signIn"
+msgstr "サインイン"
+
+#. Sign in with Passkey
+msgid "auth.login.signInWithPasskey"
+msgstr "パスキーでサインイン"
+
+#. Sign up
+msgid "auth.login.signUp"
+msgstr "新規登録"
+
+#. Signing in...
+msgid "auth.login.signingIn"
+msgstr "サインイン中..."
+
+#. Welcome back
+msgid "auth.login.title"
+msgstr "おかえりなさい"
+
+#. Back to sign in
+msgid "auth.resetPassword.backToLogin"
+msgstr "サインインに戻る"
+
+#. Confirm Password
+msgid "auth.resetPassword.confirmPassword"
+msgstr "パスワードの確認"
+
+#. Choose a new password for your yCAPTCHA account.
+msgid "auth.resetPassword.description"
+msgstr "yCAPTCHA アカウントの新しいパスワードを設定してください。"
+
+#. Unable to reset password. Please try again.
+msgid "auth.resetPassword.genericError"
+msgstr "パスワードを再設定できませんでした。時間をおいて再度お試しください。"
+
+#. This reset link is invalid or expired. Request a new one to keep going.
+msgid "auth.resetPassword.invalidDescription"
+msgstr "この再設定リンクは無効か、有効期限が切れています。新しいリンクをリクエストしてください。"
+
+#. This reset link is invalid
+msgid "auth.resetPassword.invalidTitle"
+msgstr "この再設定リンクは無効です"
+
+#. New Password
+msgid "auth.resetPassword.newPassword"
+msgstr "新しいパスワード"
+
+#. ••••••••
+msgid "auth.resetPassword.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Passwords do not match
+msgid "auth.resetPassword.passwordsMismatch"
+msgstr "パスワードが一致しません"
+
+#. Request a new link
+msgid "auth.resetPassword.requestNewLink"
+msgstr "新しいリンクをリクエスト"
+
+#. Resetting password...
+msgid "auth.resetPassword.resetting"
+msgstr "パスワードを再設定中..."
+
+#. Reset password
+msgid "auth.resetPassword.submit"
+msgstr "パスワードを再設定"
+
+#. Your password has been reset. You can sign in with your new password now.
+msgid "auth.resetPassword.successDescription"
+msgstr "パスワードを再設定しました。新しいパスワードでサインインできます。"
+
+#. Password updated
+msgid "auth.resetPassword.successTitle"
+msgstr "パスワードを更新しました"
+
+#. Set a new password
+msgid "auth.resetPassword.title"
+msgstr "新しいパスワードを設定"
+
+#. Back to sign in
+msgid "auth.signup.backToLogin"
+msgstr "サインインに戻る"
+
+#. We sent a verification link to {email}. Click the link to activate your account.
+msgid "auth.signup.checkEmailDescription"
+msgstr "{email} 宛に認証リンクをお送りしました。リンクをクリックしてアカウントを有効化してください。"
+
+#. Check your inbox
+msgid "auth.signup.checkEmailTitle"
+msgstr "メールをご確認ください"
+
+#. Confirm Password
+msgid "auth.signup.confirmPassword"
+msgstr "パスワードの確認"
+
+#. Continue with GitHub
+msgid "auth.signup.continueWithGitHub"
+msgstr "GitHubで続行"
+
+#. Creating account...
+msgid "auth.signup.creatingAccount"
+msgstr "アカウント作成中..."
+
+#. Get started with yCAPTCHA
+msgid "auth.signup.description"
+msgstr "yCAPTCHAを始めましょう"
+
+#. you@example.com
+msgid "auth.signup.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Already have an account?
+msgid "auth.signup.hasAccount"
+msgstr "すでにアカウントをお持ちの方"
+
+#. Your name
+msgid "auth.signup.namePlaceholder"
+msgstr "お名前"
+
+#. ••••••••
+msgid "auth.signup.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Passwords do not match
+msgid "auth.signup.passwordsMismatch"
+msgstr "パスワードが一致しません"
+
+#. Resend email
+msgid "auth.signup.resend"
+msgstr "メールを再送信"
+
+#. Daily limit reached. Try again in {hours}h.
+msgid "auth.signup.resendDaily"
+msgstr "本日の送信上限に達しました。{hours} 時間後にお試しください。"
+
+#. Resend in {seconds}s
+msgid "auth.signup.resendIn"
+msgstr "{seconds} 秒後に再送信できます"
+
+#. Too many attempts. Try again in {seconds}s.
+msgid "auth.signup.resendTooMany"
+msgstr "操作が多すぎます。{seconds} 秒後にお試しください。"
+
+#. Sending...
+msgid "auth.signup.resending"
+msgstr "送信中..."
+
+#. Sent. Check your inbox again.
+msgid "auth.signup.resent"
+msgstr "送信しました。メールを再度ご確認ください。"
+
+#. Sign in
+msgid "auth.signup.signIn"
+msgstr "サインイン"
+
+#. Sign Up
+msgid "auth.signup.signUp"
+msgstr "新規登録"
+
+#. Create an account
+msgid "auth.signup.title"
+msgstr "アカウントを作成"
+
+#. Cancel
+msgid "common.cancel"
+msgstr "キャンセル"
+
+#. Clear
+msgid "common.clear"
+msgstr "クリア"
+
+#. Close
+msgid "common.close"
+msgstr "閉じる"
+
+#. Copied to clipboard
+msgid "common.copiedToClipboard"
+msgstr "クリップボードにコピーしました"
+
+#. Creating...
+msgid "common.creating"
+msgstr "作成中..."
+
+#. Delete
+msgid "common.delete"
+msgstr "削除"
+
+#. Deleting...
+msgid "common.deleting"
+msgstr "削除中..."
+
+#. Domain
+msgid "common.domain"
+msgstr "ドメイン"
+
+#. Email
+msgid "common.email"
+msgstr "メールアドレス"
+
+#. Failed to copy
+msgid "common.failedToCopy"
+msgstr "コピーに失敗しました"
+
+#. Loading...
+msgid "common.loading"
+msgstr "読み込み中..."
+
+#. Manage
+msgid "common.manage"
+msgstr "管理"
+
+#. Name
+msgid "common.name"
+msgstr "名前"
+
+#. or
+msgid "common.or"
+msgstr "または"
+
+#. Password
+msgid "common.password"
+msgstr "パスワード"
+
+#. Save
+msgid "common.save"
+msgstr "保存"
+
+#. Save Changes
+msgid "common.saveChanges"
+msgstr "変更を保存"
+
+#. Saving...
+msgid "common.saving"
+msgstr "保存中..."
+
+#. Type <bold>{text}</bold> to confirm.
+msgid "confirmDelete.typeToConfirm"
+msgstr "確認のため <bold>{text}</bold> と入力してください。"
+
+#. Something went wrong
+msgid "dashboard.errorTitle"
+msgstr "問題が発生しました"
+
+#. An unexpected error occurred.
+msgid "dashboard.genericError"
+msgstr "予期しないエラーが発生しました。"
+
+#. Try again
+msgid "dashboard.tryAgain"
+msgstr "もう一度試す"
+
+#. Easy
+msgid "difficulty.easy"
+msgstr "簡単"
+
+#. Hard
+msgid "difficulty.hard"
+msgstr "難しい"
+
+#. Medium
+msgid "difficulty.medium"
+msgstr "普通"
+
+#. Someone just tried to create a new yCAPTCHA account with your email. You already have one, so no new account was created. Click below to sign in instantly — no password needed. This link expires in 15 minutes.
+msgid "email.existingAccount.body"
+msgstr "あなたのメールアドレスで yCAPTCHA の新規アカウント作成が試みられました。既にアカウントをお持ちのため、新しいアカウントは作成されていません。下のボタンからパスワード不要で即座にサインインできます。このリンクは 15 分間有効です。"
+
+#. Sign in instantly
+msgid "email.existingAccount.button"
+msgstr "ワンクリックでサインイン"
+
+#. If the button doesn't work, copy this link:
+msgid "email.existingAccount.fallbackHint"
+msgstr "ボタンが動作しない場合は、下のリンクをコピーしてください："
+
+#. © yCAPTCHA
+msgid "email.existingAccount.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.existingAccount.greeting"
+msgstr "{name} さん、"
+
+#. You already have an account
+msgid "email.existingAccount.heading"
+msgstr "既にアカウントをお持ちです"
+
+#. If this wasn't you, you can safely ignore this email — the link will expire on its own. Your account is secure.
+msgid "email.existingAccount.ignoreNote"
+msgstr "心当たりがない場合は、このメールを無視して問題ありません。リンクは自動的に失効します。アカウントは安全です。"
+
+#. You already have a yCAPTCHA account — one-click sign in
+msgid "email.existingAccount.preview"
+msgstr "yCAPTCHA のアカウントは既にお持ちです — ワンクリックでサインイン"
+
+#. Someone tried to sign up with your email
+msgid "email.existingAccount.subject"
+msgstr "yCAPTCHA へのサインアップ試行がありました"
+
+#. We received a request to reset your yCAPTCHA password. Click the button below to choose a new one.
+msgid "email.resetPassword.body"
+msgstr "yCAPTCHA のパスワード再設定リクエストを受け付けました。下のボタンをクリックして新しいパスワードを設定してください。"
+
+#. Reset password
+msgid "email.resetPassword.button"
+msgstr "パスワードを再設定"
+
+#. This link expires in 1 hour.
+msgid "email.resetPassword.expiresNote"
+msgstr "このリンクは 1 時間で失効します。"
+
+#. If the button doesn't work, copy and paste this link into your browser:
+msgid "email.resetPassword.fallbackHint"
+msgstr "ボタンが動作しない場合は、下のリンクをブラウザにコピーしてください："
+
+#. © yCAPTCHA
+msgid "email.resetPassword.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.resetPassword.greeting"
+msgstr "{name} さん、"
+
+#. Reset your password
+msgid "email.resetPassword.heading"
+msgstr "パスワードを再設定"
+
+#. If you didn't request a password reset, you can safely ignore this email.
+msgid "email.resetPassword.ignoreNote"
+msgstr "パスワード再設定をリクエストしていない場合は、このメールを無視して問題ありません。"
+
+#. Reset your yCAPTCHA password
+msgid "email.resetPassword.preview"
+msgstr "yCAPTCHA のパスワードを再設定"
+
+#. Reset your yCAPTCHA password
+msgid "email.resetPassword.subject"
+msgstr "yCAPTCHA のパスワードを再設定"
+
+#. Welcome to yCAPTCHA. Click the button below to confirm your email address and activate your account.
+msgid "email.verification.body"
+msgstr "yCAPTCHA へようこそ。下のボタンをクリックしてメールアドレスを確認し、アカウントを有効化してください。"
+
+#. Verify email
+msgid "email.verification.button"
+msgstr "メールアドレスを認証"
+
+#. This link expires in 24 hours.
+msgid "email.verification.expiresNote"
+msgstr "このリンクは 24 時間で失効します。"
+
+#. If the button doesn't work, copy and paste this link into your browser:
+msgid "email.verification.fallbackHint"
+msgstr "ボタンが動作しない場合は、下のリンクをブラウザにコピーしてください："
+
+#. © yCAPTCHA
+msgid "email.verification.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.verification.greeting"
+msgstr "{name} さん、"
+
+#. Verify your email
+msgid "email.verification.heading"
+msgstr "メールアドレスを認証"
+
+#. If you didn't create an account, you can safely ignore this email.
+msgid "email.verification.ignoreNote"
+msgstr "心当たりがない場合は、このメールを無視して問題ありません。"
+
+#. Confirm your email to finish setting up yCAPTCHA
+msgid "email.verification.preview"
+msgstr "メールアドレスを確認して yCAPTCHA のセットアップを完了しましょう"
+
+#. Verify your email for yCAPTCHA
+msgid "email.verification.subject"
+msgstr "yCAPTCHA のメールアドレス認証"
+
+#. Acceptable Use Policy
+msgid "gallery.acceptableUseLink"
+msgstr "Acceptable Use Policy"
+
+#. Publish anonymously
+msgid "gallery.anonymousCheckbox"
+msgstr "匿名で公開"
+
+#. Otherwise you'll be credited as <credit>{name}</credit>.
+msgid "gallery.anonymousCreditedAs"
+msgstr "そうしない場合は <credit>{name}</credit> として表示されます。"
+
+#. ← All image sets
+msgid "gallery.backToAll"
+msgstr "← 画像セット一覧に戻る"
+
+#. Before you publish
+msgid "gallery.beforeYouPublish"
+msgstr "公開する前に"
+
+#. Gallery
+msgid "gallery.browseEyebrow"
+msgstr "ギャラリー"
+
+#. Image sets,
+msgid "gallery.browseHeadlineA"
+msgstr "画像セット、"
+
+#. from the community.
+msgid "gallery.browseHeadlineB"
+msgstr "コミュニティから。"
+
+#. Fork a shared image set into your account, then wire up your own prompt and correct images on top.
+msgid "gallery.browseTagline"
+msgstr "コミュニティの画像セットをアカウントにフォークして、独自のプロンプトと正解画像を上乗せしましょう。"
+
+#. anonymous
+msgid "gallery.cardAnonymous"
+msgstr "匿名"
+
+#. by
+msgid "gallery.cardBy"
+msgstr "作者:"
+
+#. (empty preview)
+msgid "gallery.cardEmptyPreview"
+msgstr "(プレビューなし)"
+
+#. {count} {count, plural, one {fork} other {forks}}
+msgid "gallery.cardForks"
+msgstr "{count} フォーク"
+
+#. {count} {count, plural, one {image} other {images}}
+msgid "gallery.cardImages"
+msgstr "{count} 枚"
+
+#. Clear filter
+msgid "gallery.clearFilter"
+msgstr "フィルターをクリア"
+
+#. This is permanent. The images are removed from storage; forks made by other users stay intact.
+msgid "gallery.deleteDialogDescription"
+msgstr "この操作は元に戻せません。画像はストレージから削除されますが、他のユーザーがフォークしたものは残ります。"
+
+#. Delete gallery item?
+msgid "gallery.deleteDialogTitle"
+msgstr "ギャラリーアイテムを削除しますか?"
+
+#. Delete
+msgid "gallery.deleteItem"
+msgstr "削除"
+
+#. Description (optional)
+msgid "gallery.descriptionLabel"
+msgstr "説明 (任意)"
+
+#. Image set
+msgid "gallery.detailEyebrow"
+msgstr "画像セット"
+
+#. No items published yet. Be the first — publish from one of your image sets.
+msgid "gallery.emptyBody"
+msgstr "まだ公開されたアイテムはありません。画像セットから最初の1つを公開してみましょう。"
+
+#. Gallery's just opening
+msgid "gallery.emptyHeadline"
+msgstr "ギャラリーはオープンしたばかりです"
+
+#. Try another tag, or clear the filter to see everything.
+msgid "gallery.emptyTagBody"
+msgstr "別のタグを試すか、フィルターをクリアしてすべて表示してください。"
+
+#. Nothing under that tag yet
+msgid "gallery.emptyTagHeadline"
+msgstr "このタグのアイテムはまだありません"
+
+#. Filter:
+msgid "gallery.filterLabel"
+msgstr "フィルター:"
+
+#. Acceptable use
+msgid "gallery.footerAcceptableUse"
+msgstr "Acceptable use"
+
+#. © 2026 yCAPTCHA Gallery
+msgid "gallery.footerCopyright"
+msgstr "© 2026 yCAPTCHA ギャラリー"
+
+#. Docs
+msgid "gallery.footerDocs"
+msgstr "ドキュメント"
+
+#. Privacy
+msgid "gallery.footerPrivacy"
+msgstr "Privacy"
+
+#. source
+msgid "gallery.footerSource"
+msgstr "ソース"
+
+#. Forking copies every image into your account as a new image set. From there, wire it to a site and set your own prompt + correct images.
+msgid "gallery.forkHint"
+msgstr "フォークするとすべての画像が新しい画像セットとしてアカウントにコピーされます。その後、サイトに接続して独自のプロンプトと正解画像を設定できます。"
+
+#. Fork to my account
+msgid "gallery.forkToMyAccount"
+msgstr "アカウントにフォーク"
+
+#. Forking…
+msgid "gallery.forking"
+msgstr "フォーク中…"
+
+#. Gallery
+msgid "gallery.galleryLabel"
+msgstr "ギャラリー"
+
+#. Go to image sets
+msgid "gallery.goToImageSets"
+msgstr "画像セットへ"
+
+#. Images in this set
+msgid "gallery.imagesInSet"
+msgstr "このセットの画像"
+
+#. Item deleted
+msgid "gallery.itemDeleted"
+msgstr "アイテムを削除しました"
+
+#. Manage in My items
+msgid "gallery.manageInMine"
+msgstr "マイアイテムで管理"
+
+#. This is your image set. Manage it from My items to edit, unpublish, or wire it to a site.
+msgid "gallery.manageInMineHint"
+msgstr "これはあなたの画像セットです。マイアイテムから編集・非公開化・サイトへの連携ができます。"
+
+#. Head to your image sets and pick one to publish. You'll confirm the images before anything goes public.
+msgid "gallery.mineEmptyBody"
+msgstr "画像セットへ移動して、公開するものを選びましょう。公開前に画像を確認できます。"
+
+#. Nothing published yet
+msgid "gallery.mineEmptyHeadline"
+msgstr "まだ何も公開していません"
+
+#. Your gallery items
+msgid "gallery.mineEyebrow"
+msgstr "あなたのギャラリーアイテム"
+
+#. Everything you've published.
+msgid "gallery.mineHeadline"
+msgstr "あなたが公開したすべて。"
+
+#. Browse
+msgid "gallery.navBrowse"
+msgstr "一覧"
+
+#. Dashboard
+msgid "gallery.navDashboard"
+msgstr "ダッシュボード"
+
+#. ← Main site
+msgid "gallery.navMainSite"
+msgstr "← メインサイト"
+
+#. My items
+msgid "gallery.navMine"
+msgstr "マイアイテム"
+
+#. Sign in
+msgid "gallery.navSignIn"
+msgstr "サインイン"
+
+#. Privacy Policy
+msgid "gallery.privacyLink"
+msgstr "Privacy Policy"
+
+#. Back to {name}
+msgid "gallery.publishBackTo"
+msgstr "{name} に戻る"
+
+#. Publish to gallery
+msgid "gallery.publishCta"
+msgstr "ギャラリーに公開"
+
+#. Publish to gallery
+msgid "gallery.publishEyebrow"
+msgstr "ギャラリーに公開"
+
+#. Share <em>{name}</em> as an image set
+msgid "gallery.publishHeadline"
+msgstr "<em>{name}</em> を画像セットとして共有"
+
+#. You're sharing the below <strong>image pool</strong>. Be advised that others can use your images freely on their sites.
+msgid "gallery.publishIntroA"
+msgstr "以下の<strong>画像プール</strong>を共有します。他のユーザーが自分のサイトで自由に利用できることをご承知ください。"
+
+#. Gallery items are <strong>frozen snapshots</strong>. Editing or deleting this image set afterwards won't change what's public.
+msgid "gallery.publishIntroB"
+msgstr "ギャラリーアイテムは<strong>スナップショット</strong>として固定されます。後からこの画像セットを編集・削除しても公開内容は変わりません。"
+
+#. Publish one of yours
+msgid "gallery.publishOneOfYours"
+msgstr "自分の画像セットを公開"
+
+#. Publishing…
+msgid "gallery.publishing"
+msgstr "公開中…"
+
+#. Sign in to fork
+msgid "gallery.signInToFork"
+msgstr "サインインしてフォーク"
+
+#. Forking copies this set into your account so you can build a puzzle around it.
+msgid "gallery.signInToForkHint"
+msgstr "フォークするとこのセットがアカウントにコピーされ、パズルを組み立てられるようになります。"
+
+#. Popular
+msgid "gallery.sortPopular"
+msgstr "人気"
+
+#. Recent
+msgid "gallery.sortRecent"
+msgstr "新着"
+
+#. I have read and agree to the
+msgid "gallery.termsAgree"
+msgstr "以下に同意します:"
+
+#. and
+msgid "gallery.termsAnd"
+msgstr "および"
+
+#. I understand these images may become permanently public and reusable by anyone in the Gallery.
+msgid "gallery.termsExplainer"
+msgstr "これらの画像が永続的に公開され、ギャラリーの他のユーザーが自由に再利用できる可能性があることを理解しています。"
+
+#. Title
+msgid "gallery.titleLabel"
+msgstr "タイトル"
+
+#. This set has {count} {count, plural, one {image} other {images}}. Gallery items need at least 9 images (3×3 grid). Add more before publishing.
+msgid "gallery.tooFewImages"
+msgstr "このセットには {count} 枚の画像があります。ギャラリーアイテムには最低 9 枚 (3×3 グリッド) 必要です。公開前に追加してください。"
+
+#. {count} total
+msgid "gallery.totalCount"
+msgstr "合計 {count} 枚"
+
+#. What's going out ({count} {count, plural, one {image} other {images}})
+msgid "gallery.whatsGoingOut"
+msgstr "公開される内容 ({count} 枚)"
+
+#. Every image below will be copied to the gallery and made public.
+msgid "gallery.whatsGoingOutDesc"
+msgstr "以下の画像すべてがギャラリーにコピーされて公開されます。"
+
+#. This image set is referenced by the following puzzles. Remove them first.
+msgid "imageSets.cannotDeleteDescription"
+msgstr "この画像セットは以下のパズルから参照されています。先にそれらを削除してください。"
+
+#. Cannot delete image set
+msgid "imageSets.cannotDeleteTitle"
+msgstr "画像セットを削除できません"
+
+#. Give your image set a name. You can upload images after creating it.
+msgid "imageSets.create.description"
+msgstr "画像セットに名前を付けてください。作成後に画像をアップロードできます。"
+
+#. e.g. NYC Subway Signs
+msgid "imageSets.create.namePlaceholder"
+msgstr "例: NYCの地下鉄標識"
+
+#. Create Image Set
+msgid "imageSets.create.title"
+msgstr "画像セットを作成"
+
+#. Create Image Set
+msgid "imageSets.createImageSet"
+msgstr "画像セットを作成"
+
+#. Delete Image Set
+msgid "imageSets.deleteImageSet"
+msgstr "画像セットを削除"
+
+#. This will permanently delete this image set and all its images. You must remove any puzzles using this set first.
+msgid "imageSets.deleteImageSetDescription"
+msgstr "この画像セットとすべての画像を完全に削除します。先にこのセットを使用しているパズルを削除してください。"
+
+#. Deleting this image set will also remove all images from storage. You must remove any puzzles using this set first.
+msgid "imageSets.detail.dangerDescription"
+msgstr "この画像セットを削除すると、ストレージからすべての画像も削除されます。先にこのセットを使用しているパズルを削除してください。"
+
+#. Danger Zone
+msgid "imageSets.detail.dangerZone"
+msgstr "危険ゾーン"
+
+#. This will permanently delete this image set and all its images from storage. You must remove any puzzles using this set first.
+msgid "imageSets.detail.deleteConfirmDescription"
+msgstr "この画像セットとストレージ内のすべての画像を完全に削除します。先にこのセットを使用しているパズルを削除してください。"
+
+#. Drop images here or click to browse
+msgid "imageSets.detail.dropOrBrowse"
+msgstr "ここに画像をドロップするか、クリックして選択"
+
+#. Exceeds 20MB
+msgid "imageSets.detail.errorExceedsSize"
+msgstr "20MBを超えています"
+
+#. HEIC not supported by this browser. Please use Safari
+msgid "imageSets.detail.errorHeicUnsupported"
+msgstr "このブラウザはHEICをサポートしていません。Safariをご使用ください"
+
+#. Maximum {count} files at a time.
+msgid "imageSets.detail.errorMaxFiles"
+msgstr "一度にアップロードできるのは最大 {count} ファイルです。"
+
+#. Not an image
+msgid "imageSets.detail.errorNotAnImage"
+msgstr "画像ではありません"
+
+#. Storage quota exceeded
+msgid "imageSets.detail.errorOverQuota"
+msgstr "ストレージ容量を超えています"
+
+#. Unsupported format
+msgid "imageSets.detail.errorUnsupportedFormat"
+msgstr "サポートされていない形式です"
+
+#. Upload failed
+msgid "imageSets.detail.errorUploadFailed"
+msgstr "アップロードに失敗しました"
+
+#. Images
+msgid "imageSets.detail.images"
+msgstr "画像"
+
+#. No images yet. Upload some above.
+msgid "imageSets.detail.noImagesYet"
+msgstr "画像がまだありません。上からアップロードしてください。"
+
+#. Compressing...
+msgid "imageSets.detail.statusCompressing"
+msgstr "圧縮中..."
+
+#. Done
+msgid "imageSets.detail.statusDone"
+msgstr "完了"
+
+#. Duplicate
+msgid "imageSets.detail.statusDuplicate"
+msgstr "重複"
+
+#. Uploading...
+msgid "imageSets.detail.statusUploading"
+msgstr "アップロード中..."
+
+#. Waiting...
+msgid "imageSets.detail.statusWaiting"
+msgstr "待機中..."
+
+#. Drag and drop or click to select. Non-standard formats (HEIC, TIFF) are auto-converted.
+msgid "imageSets.detail.uploadDescription"
+msgstr "ドラッグ＆ドロップするか、クリックして選択してください。非標準形式（HEIC、TIFF）は自動変換されます。"
+
+#. Upload Images
+msgid "imageSets.detail.uploadImages"
+msgstr "画像をアップロード"
+
+#. Uploading...
+msgid "imageSets.detail.uploading"
+msgstr "アップロード中..."
+
+#. {count} {count, plural, one {image} other {images}}
+msgid "imageSets.imageCount"
+msgstr "{count} {count, plural, one {枚の画像} other {枚の画像}}"
+
+#. Create an image set and upload images to use in puzzles.
+msgid "imageSets.noImageSetsDescription"
+msgstr "画像セットを作成し、画像をアップロードしてパズルで使用しましょう。"
+
+#. No image sets yet
+msgid "imageSets.noImageSetsYet"
+msgstr "画像セットがまだありません"
+
+#. Image Sets
+msgid "imageSets.title"
+msgstr "画像セット"
+
+#. + bring your own
+msgid "landing.bringYourOwn"
+msgstr "+ 自分の画像で"
+
+#. Themes shipping today
+msgid "landing.communityThemesLabel"
+msgstr "今すぐ使えるテーマ"
+
+#. Get started
+msgid "landing.ctaButton"
+msgstr "はじめる"
+
+#. Drop in the widget, pick your images, ship.
+msgid "landing.ctaSub"
+msgstr "ウィジェットを入れて、画像を選んで、リリース。"
+
+#. One Line, Your Styles. Go.
+msgid "landing.ctaTitle"
+msgstr "一行で、あなたのスタイル。行こう。"
+
+#. Not really. yCAPTCHA has no ML, no fingerprinting, no behavioral analysis — any bot with off-the-shelf image recognition will walk straight through it. If you need real bot protection, use Cloudflare Turnstile or hCaptcha. yCAPTCHA is for the vibe: your community, your puzzles.
+msgid "landing.faqA1"
+msgstr "止められません。yCAPTCHA には機械学習も指紋認識も行動分析もありません——既成の画像認識を積んだボットならそのまま素通りします。本気でボット対策したいなら Cloudflare Turnstile や hCaptcha をどうぞ。yCAPTCHA は空気感のためのもの——あなたのコミュニティの、あなたのパズルです。"
+
+#. That's the whole point. Upload your images, mark which images are correct, and your CAPTCHA becomes an inside joke only your community gets — subway lines, rhythm game charts, dev tools, niche memes.
+msgid "landing.faqA2"
+msgstr "それが全部です。画像をアップロードして「正解」を印づけすれば、あなたの CAPTCHA はあなたのコミュニティだけが分かる内輪ネタになります——路線図、音ゲー譜面、開発ツール、ニッチなミーム。"
+
+#. No, but you can self-host it.
+msgid "landing.faqA4"
+msgstr "ありません。ただ、セルフホストは可能です。"
+
+#. Yes. 200 MB upload cap per account, no paid tier, no credit card.
+msgid "landing.faqA5"
+msgstr "はい。アカウントごとに 200 MB のアップロード上限、有料プランなし、クレジットカード不要。"
+
+#. FAQ
+msgid "landing.faqEyebrow"
+msgstr "FAQ"
+
+#. Does this actually stop bots?
+msgid "landing.faqQ1"
+msgstr "これって本当にボットを止められるの？"
+
+#. Can I use my own images?
+msgid "landing.faqQ2"
+msgstr "自分の画像を使えますか？"
+
+#. Is there a SLA?
+msgid "landing.faqQ4"
+msgstr "SLA はありますか？"
+
+#. Is it really free?
+msgid "landing.faqQ5"
+msgstr "本当に無料？"
+
+#. Questions, answered.
+msgid "landing.faqTitle"
+msgstr "よくある質問。"
+
+#. Get Started
+msgid "landing.getStarted"
+msgstr "はじめる"
+
+#. Stop Picking Traffic Lights
+msgid "landing.heroHeadline"
+msgstr "信号機を選ぶのはもうやめよう"
+
+#. Your community,
+msgid "landing.heroHeadlineA"
+msgstr "あなたのコミュニティの、"
+
+#. your CAPTCHA.
+msgid "landing.heroHeadlineB"
+msgstr "あなたの CAPTCHA。"
+
+#. How it works
+msgid "landing.howItWorksEyebrow"
+msgstr "使い方"
+
+#. Three steps. One page of code.
+msgid "landing.howItWorksTitle"
+msgstr "3ステップ、コード1ページ。"
+
+#. Dashboard
+msgid "landing.navDashboard"
+msgstr "ダッシュボード"
+
+#. Docs
+msgid "landing.navDocs"
+msgstr "ドキュメント"
+
+#. Gallery
+msgid "landing.navGallery"
+msgstr "ギャラリー"
+
+#. GitHub
+msgid "landing.navGitHub"
+msgstr "GitHub"
+
+#. Next demo
+msgid "landing.nextDemo"
+msgstr "次のデモ"
+
+#. Please try again.
+msgid "landing.pleaseRetry"
+msgstr "もう一度お試しください。"
+
+#. Previous demo
+msgid "landing.previousDemo"
+msgstr "前のデモ"
+
+#. Read Docs
+msgid "landing.readDocs"
+msgstr "ドキュメントを読む"
+
+#. See the gallery
+msgid "landing.seeGallery"
+msgstr "ギャラリーを見る"
+
+#. Show demo {number}
+msgid "landing.showDemo"
+msgstr "デモ {number} を表示"
+
+#. Start free
+msgid "landing.startFree"
+msgstr "無料ではじめる"
+
+#. Drag a folder into the dashboard, or fork one of the sample sets. Mark the images that count as correct.
+msgid "landing.step1Body"
+msgstr "フォルダをダッシュボードにドラッグ、またはサンプルセットをフォーク。どれが「正解」か印をつけるだけ。"
+
+#. Upload an image set
+msgid "landing.step1Title"
+msgstr "画像セットをアップロード"
+
+#. Drop one script tag and one div into your page. Tie it to a puzzle with your site key.
+msgid "landing.step2Body"
+msgstr "script タグひとつと div ひとつ。サイトキーを設定すれば完了です。"
+
+#. Embed the widget
+msgid "landing.step2Title"
+msgstr "ウィジェットを埋め込む"
+
+#. POST the token and your secret key to /api/v0/captcha/siteverify.
+msgid "landing.step3Body"
+msgstr "トークンとシークレットキーを /api/v0/captcha/siteverify に POST。"
+
+#. Verify on the server
+msgid "landing.step3Title"
+msgstr "サーバーで検証"
+
+#. Stop picking traffic lights. Pick your own images, audios, and challenges.
+msgid "landing.tagline"
+msgstr "信号機を選ぶのはもうやめよう。画像も音声も問題も、自分で選ぼう。"
+
+#. Try it out!
+msgid "landing.tryItOut"
+msgstr "Try it out"
+
+#. Verification passed!
+msgid "landing.verificationPassed"
+msgstr "認証に成功しました！"
+
+#. English
+msgid "languageSwitcher.en"
+msgstr "English"
+
+#. 日本語
+msgid "languageSwitcher.ja"
+msgstr "日本語"
+
+#. Language
+msgid "languageSwitcher.label"
+msgstr "言語"
+
+#. 简体中文
+msgid "languageSwitcher.zh-CN"
+msgstr "简体中文"
+
+#. Your community's inside-joke CAPTCHA — upload your own images and build challenges around shared references instead of traffic lights.
+msgid "metadata.description"
+msgstr "コミュニティの内輪ネタで作る CAPTCHA——信号機の代わりに、仲間だけが分かる画像で挑戦しよう。"
+
+#. yCAPTCHA
+msgid "metadata.title"
+msgstr "yCAPTCHA"
+
+#. Collapse
+msgid "onboarding.collapse"
+msgstr "折りたたむ"
+
+#. Dismiss
+msgid "onboarding.dismiss"
+msgstr "閉じる"
+
+#. Expand
+msgid "onboarding.expand"
+msgstr "展開"
+
+#. {completed}/{total}
+msgid "onboarding.progressLabel"
+msgstr "{completed}/{total}"
+
+#. Add site
+msgid "onboarding.step1Cta"
+msgstr "サイトを追加"
+
+#. Create a site
+msgid "onboarding.step1Title"
+msgstr "サイトを作成"
+
+#. Audio
+msgid "onboarding.step2CtaAudio"
+msgstr "オーディオ"
+
+#. Images
+msgid "onboarding.step2CtaImages"
+msgstr "画像"
+
+#. Add content
+msgid "onboarding.step2Title"
+msgstr "コンテンツを追加"
+
+#. Create a site first
+msgid "onboarding.step3LockedHint"
+msgstr "まずサイトを作成してください"
+
+#. Create a puzzle
+msgid "onboarding.step3Title"
+msgstr "パズルを作成"
+
+#. Finish the steps above
+msgid "onboarding.step4LockedHint"
+msgstr "上記のステップを完了してください"
+
+#. Embed widget
+msgid "onboarding.step4Title"
+msgstr "ウィジェットを埋め込む"
+
+#. Get started
+msgid "onboarding.title"
+msgstr "はじめに"
+
+#. Copy Markdown
+msgid "pageActions.copyMarkdown"
+msgstr "Markdownをコピー"
+
+#. Open
+msgid "pageActions.open"
+msgstr "開く"
+
+#. Open in ChatGPT
+msgid "pageActions.openInChatGPT"
+msgstr "ChatGPTで開く"
+
+#. Open in Claude
+msgid "pageActions.openInClaude"
+msgstr "Claudeで開く"
+
+#. Open in Cursor
+msgid "pageActions.openInCursor"
+msgstr "Cursorで開く"
+
+#. Open in GitHub
+msgid "pageActions.openInGitHub"
+msgstr "GitHubで開く"
+
+#. Open in Scira AI
+msgid "pageActions.openInSciraAI"
+msgstr "Scira AIで開く"
+
+#. View as Markdown
+msgid "pageActions.viewAsMarkdown"
+msgstr "Markdownとして表示"
+
+#. Test how this puzzle works for users.
+msgid "puzzlePreview.description"
+msgstr "このパズルがユーザーにどう見えるかテストします。"
+
+#. Refresh preview
+msgid "puzzlePreview.refreshPreview"
+msgstr "プレビューを更新"
+
+#. Select an audio clip and answer to see preview
+msgid "puzzlePreview.selectAudioClip"
+msgstr "音声クリップと回答を選択するとプレビューが表示されます"
+
+#. Select correct images to see preview
+msgid "puzzlePreview.selectCorrectImages"
+msgstr "正解の画像を選択するとプレビューが表示されます"
+
+#. Preview
+msgid "puzzlePreview.title"
+msgstr "プレビュー"
+
+#. {count} correct per challenge
+msgid "puzzles.correctPerChallenge"
+msgstr "1回の課題につき正解 {count} 個"
+
+#. Advanced Settings
+msgid "puzzles.create.advancedSettings"
+msgstr "詳細設定"
+
+#. The text users must type after hearing the audio to pass.
+msgid "puzzles.create.audioAnswerHint"
+msgstr "ユーザーがオーディオを聞いた後に入力するテキスト回答。"
+
+#. Correct Answer
+msgid "puzzles.create.audioAnswerLabel"
+msgstr "正解"
+
+#. e.g. Describe the city you live in
+msgid "puzzles.create.audioAnswerPlaceholder"
+msgstr "例: Describe the city you live in"
+
+#. Audio CAPTCHA
+msgid "puzzles.create.audioCaptcha"
+msgstr "オーディオCAPTCHA"
+
+#. Select an audio clip and set the correct answer users must type.
+msgid "puzzles.create.audioCaptchaDescription"
+msgstr "オーディオクリップを選択し、ユーザーが入力する正解を設定します。"
+
+#. Verification Mode
+msgid "puzzles.create.captchaMode"
+msgstr "認証モード"
+
+#. Choose how users verify: image grid, audio clip, or both.
+msgid "puzzles.create.captchaModeDescription"
+msgstr "ユーザーの認証方法を選択：画像グリッド、オーディオクリップ、または両方。"
+
+#. Correct Images per Challenge
+msgid "puzzles.create.correctPerChallenge"
+msgstr "1回の課題あたりの正解画像数"
+
+#. How many correct images to show in each 3×3 grid.
+msgid "puzzles.create.correctPerChallengeHelp"
+msgstr "3×3グリッドに表示する正解画像の数です。"
+
+#. Create one first
+msgid "puzzles.create.createOneFirst"
+msgstr "先にサイトを作成してください"
+
+#. User must select at least {required} of {total} correct {count, plural, one {image} other {images}} to pass.
+msgid "puzzles.create.difficultyHelp"
+msgstr "合格するには {total} 枚の正解{count, plural, one {画像} other {画像}}のうち少なくとも {required} 枚を選択する必要があります。"
+
+#. Difficulty
+msgid "puzzles.create.difficultyLabel"
+msgstr "難易度"
+
+#. Exact number
+msgid "puzzles.create.exactNumber"
+msgstr "固定数"
+
+#. Hand-pick Incorrect Images
+msgid "puzzles.create.handPickIncorrect"
+msgstr "不正解画像を手動選択"
+
+#. If off, wrong answers are randomly drawn from remaining images.
+msgid "puzzles.create.handPickIncorrectHelp"
+msgstr "オフにすると、不正解は残りの画像からランダムに選ばれます。"
+
+#. Image Set
+msgid "puzzles.create.imageSet"
+msgstr "画像セット"
+
+#. Choose the image pool for this puzzle.
+msgid "puzzles.create.imageSetDescription"
+msgstr "このパズルで使用する画像プールを選択してください。"
+
+#. {name} ({count} images)
+msgid "puzzles.create.imageSetOption"
+msgstr "{name}（{count} 枚の画像）"
+
+#. {count} incorrect {count, plural, one {image} other {images}} selected
+msgid "puzzles.create.incorrectSelected"
+msgstr "{count} 枚の不正解{count, plural, one {画像} other {画像}}が選択されました"
+
+#. Max
+msgid "puzzles.create.max"
+msgstr "最大"
+
+#. Min
+msgid "puzzles.create.min"
+msgstr "最小"
+
+#. Audio only
+msgid "puzzles.create.modeAudio"
+msgstr "オーディオのみ"
+
+#. Combined (image + audio toggle)
+msgid "puzzles.create.modeCombined"
+msgstr "コンビネーション（画像 + オーディオ切替）"
+
+#. Image only
+msgid "puzzles.create.modeImage"
+msgstr "画像のみ"
+
+#. No audio clips yet.
+msgid "puzzles.create.noAudioYet"
+msgstr "オーディオクリップがありません。"
+
+#. No image sets yet.
+msgid "puzzles.create.noImageSetsYet"
+msgstr "画像セットがまだありません。"
+
+#. No sites yet.
+msgid "puzzles.create.noSitesYet"
+msgstr "サイトがまだありません。"
+
+#. Prompt
+msgid "puzzles.create.prompt"
+msgstr "プロンプト"
+
+#. The word shown to users after \"Select all images with\".
+msgid "puzzles.create.promptDescription"
+msgstr "「以下のものを含む画像をすべて選択」の後に表示される単語です。"
+
+#. e.g. trains, buses, crosswalks
+msgid "puzzles.create.promptPlaceholder"
+msgstr "例: 電車、バス、横断歩道"
+
+#. Random range
+msgid "puzzles.create.randomRange"
+msgstr "ランダム範囲"
+
+#. Audio Clip
+msgid "puzzles.create.selectAudio"
+msgstr "オーディオクリップ"
+
+#. Select an audio clip...
+msgid "puzzles.create.selectAudioPlaceholder"
+msgstr "オーディオクリップを選択..."
+
+#. Select Correct Images
+msgid "puzzles.create.selectCorrectImages"
+msgstr "正解の画像を選択"
+
+#. Select an image set...
+msgid "puzzles.create.selectImageSet"
+msgstr "画像セットを選択..."
+
+#. Select a site...
+msgid "puzzles.create.selectSite"
+msgstr "サイトを選択..."
+
+#. Site
+msgid "puzzles.create.site"
+msgstr "サイト"
+
+#. Which site will this puzzle be used on?
+msgid "puzzles.create.siteDescription"
+msgstr "このパズルをどのサイトで使用しますか？"
+
+#. Tag all images that are correct answers. Each challenge will randomly show {count} of them.
+msgid "puzzles.create.tagDescription"
+msgstr "正解となる画像をすべてタグ付けしてください。各課題ではその中からランダムに {count} 枚が表示されます。"
+
+#. ({count} tagged)
+msgid "puzzles.create.tagged"
+msgstr "（{count} 枚タグ付け済み）"
+
+#. Create Puzzle
+msgid "puzzles.create.title"
+msgstr "パズルを作成"
+
+#. Upload one first
+msgid "puzzles.create.uploadFirst"
+msgstr "先にアップロードしてください"
+
+#. Create Puzzle
+msgid "puzzles.createPuzzle"
+msgstr "パズルを作成"
+
+#. Create a site
+msgid "puzzles.createSiteFirst"
+msgstr "サイトを作成"
+
+#.  first, then add puzzles to it.
+msgid "puzzles.createSiteFirstSuffix"
+msgstr "してから、パズルを追加してください。"
+
+#. Delete Puzzle
+msgid "puzzles.deletePuzzle"
+msgstr "パズルを削除"
+
+#. This will permanently delete this puzzle. Existing captcha sessions using it will stop working.
+msgid "puzzles.deletePuzzleDescription"
+msgstr "このパズルを完全に削除します。使用中のCAPTCHAセッションは動作しなくなります。"
+
+#. difficulty {value}
+msgid "puzzles.difficulty"
+msgstr "難易度 {value}"
+
+#. (disabled)
+msgid "puzzles.disabled"
+msgstr "（無効）"
+
+#. Correct Images
+msgid "puzzles.edit.correctImages"
+msgstr "正解の画像"
+
+#. Deleting this puzzle will remove it from the site. Existing captcha sessions using this puzzle will stop working.
+msgid "puzzles.edit.dangerDescription"
+msgstr "このパズルを削除するとサイトから除外されます。このパズルを使用中のCAPTCHAセッションは動作しなくなります。"
+
+#. Danger Zone
+msgid "puzzles.edit.dangerZone"
+msgstr "危険ゾーン"
+
+#. If off, wrong answers are randomly drawn.
+msgid "puzzles.edit.handPickIncorrectHelp"
+msgstr "オフにすると、不正解はランダムに選ばれます。"
+
+#. Prompt
+msgid "puzzles.edit.prompt"
+msgstr "プロンプト"
+
+#. The word shown after \"Select all images with\".
+msgid "puzzles.edit.promptDescription"
+msgstr "「以下のものを含む画像をすべて選択」の後に表示される単語です。"
+
+#. Edit Puzzle
+msgid "puzzles.edit.title"
+msgstr "パズルを編集"
+
+#. Image set: {name}
+msgid "puzzles.imageSet"
+msgstr "画像セット: {name}"
+
+#. Create a puzzle to start using yCAPTCHA.
+msgid "puzzles.noPuzzlesDescription"
+msgstr "パズルを作成してyCAPTCHAを使い始めましょう。"
+
+#. No puzzles yet
+msgid "puzzles.noPuzzlesYet"
+msgstr "パズルがまだありません"
+
+#. Puzzles
+msgid "puzzles.title"
+msgstr "パズル"
+
+#. Dark theme
+msgid "settings.appearance.darkTheme"
+msgstr "ダークテーマ"
+
+#. Choose your preferred color theme.
+msgid "settings.appearance.description"
+msgstr "お好みのカラーテーマを選択してください。"
+
+#. Light theme
+msgid "settings.appearance.lightTheme"
+msgstr "ライトテーマ"
+
+#. System theme
+msgid "settings.appearance.systemTheme"
+msgstr "システムテーマ"
+
+#. Appearance
+msgid "settings.appearance.title"
+msgstr "外観"
+
+#. Delete Account
+msgid "settings.deleteAccount.deleteButton"
+msgstr "アカウントを削除"
+
+#. Permanently delete your account and all associated data including sites, puzzles, image sets, and uploaded images.
+msgid "settings.deleteAccount.description"
+msgstr "サイト、パズル、画像セット、アップロードした画像を含む、あなたのアカウントとすべての関連データを完全に削除します。"
+
+#. Failed to delete account
+msgid "settings.deleteAccount.failedToDelete"
+msgstr "アカウントの削除に失敗しました"
+
+#. This action is permanent and irreversible. All your sites, puzzles, image sets, and uploaded images will be permanently destroyed. Active CAPTCHA widgets on your sites will stop working immediately.
+msgid "settings.deleteAccount.step2Body"
+msgstr "この操作は永続的で取り消せません。あなたのすべてのサイト、パズル、画像セット、アップロードした画像が完全に破棄されます。サイト上でアクティブなCAPTCHAウィジェットは直ちに動作しなくなります。"
+
+#. I understand, continue
+msgid "settings.deleteAccount.step2Continue"
+msgstr "理解しました、続行します"
+
+#. Are you sure you want to do this?
+msgid "settings.deleteAccount.step2Title"
+msgstr "本当に実行してもよろしいですか？"
+
+#. Continue
+msgid "settings.deleteAccount.step3Continue"
+msgstr "続行"
+
+#. Your email
+msgid "settings.deleteAccount.step3Email"
+msgstr "メールアドレス"
+
+#. To verify, type your email <email></email> and the phrase <phrase></phrase> below.
+msgid "settings.deleteAccount.step3Instruction"
+msgstr "確認のため、メールアドレス <email></email> とフレーズ <phrase></phrase> を以下に入力してください。"
+
+#. Type \"{phrase}\"
+msgid "settings.deleteAccount.step3Phrase"
+msgstr "\"{phrase}\" と入力"
+
+#. This is your last chance. After this, there is no going back.
+msgid "settings.deleteAccount.step4Body"
+msgstr "これが最後のチャンスです。この後は元に戻せません。"
+
+#. Permanently delete my account
+msgid "settings.deleteAccount.step4Confirm"
+msgstr "アカウントを完全に削除する"
+
+#. Deleting everything...
+msgid "settings.deleteAccount.step4Deleting"
+msgstr "すべてを削除しています..."
+
+#. Enter your password to permanently delete your account
+msgid "settings.deleteAccount.step4Label"
+msgstr "アカウントを完全に削除するにはパスワードを入力してください"
+
+#. Your password
+msgid "settings.deleteAccount.step4Placeholder"
+msgstr "パスワード"
+
+#. FINAL WARNING
+msgid "settings.deleteAccount.step4Title"
+msgstr "最終警告"
+
+#. Delete Account
+msgid "settings.deleteAccount.title"
+msgstr "アカウントを削除"
+
+#. Choose your preferred language.
+msgid "settings.language.description"
+msgstr "お好みの言語を選択してください。"
+
+#. Language
+msgid "settings.language.title"
+msgstr "言語"
+
+#. Add passkey
+msgid "settings.passkeys.addPasskey"
+msgstr "パスキーを追加"
+
+#. Added {date}
+msgid "settings.passkeys.added"
+msgstr "{date} に追加"
+
+#. Sign in without a password using biometrics, security keys, or your device.
+msgid "settings.passkeys.description"
+msgstr "生体認証、セキュリティキー、またはお使いのデバイスを使って、パスワードなしでサインインできます。"
+
+#. Failed to add passkey
+msgid "settings.passkeys.failedToAdd"
+msgstr "パスキーの追加に失敗しました"
+
+#. Failed to delete passkey
+msgid "settings.passkeys.failedToDelete"
+msgstr "パスキーの削除に失敗しました"
+
+#. Failed to rename passkey
+msgid "settings.passkeys.failedToRename"
+msgstr "パスキーの名前変更に失敗しました"
+
+#. No passkeys registered.
+msgid "settings.passkeys.noPasskeys"
+msgstr "登録されているパスキーはありません。"
+
+#. Registering...
+msgid "settings.passkeys.registering"
+msgstr "登録中..."
+
+#. Passkeys
+msgid "settings.passkeys.title"
+msgstr "パスキー"
+
+#. Unnamed passkey
+msgid "settings.passkeys.unnamedPasskey"
+msgstr "名前のないパスキー"
+
+#. Update your display name.
+msgid "settings.profile.description"
+msgstr "表示名を更新します。"
+
+#. Failed to update
+msgid "settings.profile.failedToUpdate"
+msgstr "更新に失敗しました"
+
+#. Name updated
+msgid "settings.profile.nameUpdated"
+msgstr "名前を更新しました"
+
+#. Save Changes
+msgid "settings.profile.saveChanges"
+msgstr "変更を保存"
+
+#. Profile
+msgid "settings.profile.title"
+msgstr "プロフィール"
+
+#. Audio
+msgid "settings.storage.audioBytes"
+msgstr "音声"
+
+#. Images
+msgid "settings.storage.imageBytes"
+msgstr "画像"
+
+#. Storage
+msgid "settings.storage.title"
+msgstr "ストレージ"
+
+#. {used} of {quota} used ({percent}%)
+msgid "settings.storage.used"
+msgstr "{used} / {quota} 使用中（{percent}%）"
+
+#. Settings
+msgid "settings.title"
+msgstr "設定"
+
+#. Audio
+msgid "sidebar.audio"
+msgstr "オーディオ"
+
+#. Docs
+msgid "sidebar.docs"
+msgstr "ドキュメント"
+
+#. Gallery
+msgid "sidebar.gallery"
+msgstr "ギャラリー"
+
+#. Home Page
+msgid "sidebar.homePage"
+msgstr "ホームページ"
+
+#. Image Sets
+msgid "sidebar.imageSets"
+msgstr "画像セット"
+
+#. Manage
+msgid "sidebar.manage"
+msgstr "管理"
+
+#. Overview
+msgid "sidebar.overview"
+msgstr "概要"
+
+#. Puzzles
+msgid "sidebar.puzzles"
+msgstr "パズル"
+
+#. Settings
+msgid "sidebar.settings"
+msgstr "設定"
+
+#. Sites
+msgid "sidebar.sites"
+msgstr "サイト"
+
+#. Add Site
+msgid "sites.addSite"
+msgstr "サイトを追加"
+
+#. Create Site
+msgid "sites.createSheet.createSite"
+msgstr "サイトを作成"
+
+#. Add a site to get your API keys for embedding the CAPTCHA widget.
+msgid "sites.createSheet.description"
+msgstr "サイトを追加してCAPTCHAウィジェット埋め込み用のAPIキーを取得します。"
+
+#. example.com
+msgid "sites.createSheet.domainPlaceholder"
+msgstr "example.com"
+
+#. My Website
+msgid "sites.createSheet.namePlaceholder"
+msgstr "マイウェブサイト"
+
+#. Create a new site
+msgid "sites.createSheet.title"
+msgstr "新しいサイトを作成"
+
+#. Delete Site
+msgid "sites.deleteSite"
+msgstr "サイトを削除"
+
+#. This will permanently delete this site and all its puzzles. This action cannot be undone.
+msgid "sites.deleteSiteDescription"
+msgstr "このサイトとすべてのパズルを完全に削除します。この操作は取り消せません。"
+
+#. API Keys
+msgid "sites.detail.apiKeys"
+msgstr "APIキー"
+
+#. Use these keys to integrate yCAPTCHA with your site.
+msgid "sites.detail.apiKeysDescription"
+msgstr "これらのキーを使ってyCAPTCHAをサイトに統合します。"
+
+#. Create Puzzle
+msgid "sites.detail.createPuzzle"
+msgstr "パズルを作成"
+
+#. Deleting this site will permanently remove all its puzzles and active CAPTCHA widgets will stop working.
+msgid "sites.detail.dangerDescription"
+msgstr "このサイトを削除すると、すべてのパズルが完全に削除され、アクティブなCAPTCHAウィジェットは動作しなくなります。"
+
+#. Danger Zone
+msgid "sites.detail.dangerZone"
+msgstr "危険ゾーン"
+
+#. Delete Puzzle
+msgid "sites.detail.deletePuzzle"
+msgstr "パズルを削除"
+
+#. This will permanently delete this puzzle. Existing captcha sessions using it will stop working.
+msgid "sites.detail.deletePuzzleDescription"
+msgstr "このパズルを完全に削除します。使用中のCAPTCHAセッションは動作しなくなります。"
+
+#. This will permanently delete this site and all its puzzles. Active CAPTCHA widgets will stop working.
+msgid "sites.detail.deleteSiteConfirmDescription"
+msgstr "このサイトとすべてのパズルを完全に削除します。アクティブなCAPTCHAウィジェットは動作しなくなります。"
+
+#. difficulty: {value}
+msgid "sites.detail.difficulty"
+msgstr "難易度: {value}"
+
+#. example.com
+msgid "sites.detail.domainPlaceholder"
+msgstr "example.com"
+
+#. Copy the code below and paste it into your website.
+msgid "sites.detail.embedDescription"
+msgstr "以下のコードをコピーしてウェブサイトに貼り付けてください。"
+
+#. Embed Widget
+msgid "sites.detail.embedWidget"
+msgstr "ウィジェットを埋め込む"
+
+#. No puzzles yet. Create one to start using yCAPTCHA on this site.
+msgid "sites.detail.noPuzzlesYet"
+msgstr "パズルがまだありません。このサイトでyCAPTCHAを使い始めるには作成してください。"
+
+#. Preview
+msgid "sites.detail.previewLabel"
+msgstr "プレビュー"
+
+#. {count, plural, one {# puzzle} other {# puzzles}}
+msgid "sites.detail.puzzleCount"
+msgstr "{count, plural, one {# 個のパズル} other {# 個のパズル}}"
+
+#. Puzzles
+msgid "sites.detail.puzzles"
+msgstr "パズル"
+
+#. Regenerate
+msgid "sites.detail.regenerate"
+msgstr "再生成"
+
+#. This will invalidate your current keys. Any existing widget embeds using the old site key will stop working until you update them.
+msgid "sites.detail.regenerateConfirmDescription"
+msgstr "現在のキーが無効になります。古いサイトキーを使用している既存のウィジェット埋め込みは、更新するまで動作しなくなります。"
+
+#. Regenerate API Keys
+msgid "sites.detail.regenerateConfirmTitle"
+msgstr "APIキーを再生成"
+
+#. Regenerate Keys
+msgid "sites.detail.regenerateKeys"
+msgstr "キーを再生成"
+
+#. Regenerating...
+msgid "sites.detail.regenerating"
+msgstr "再生成中..."
+
+#. Save Changes
+msgid "sites.detail.saveChanges"
+msgstr "変更を保存"
+
+#. Secret Key (private)
+msgid "sites.detail.secretKeyPrivate"
+msgstr "シークレットキー（非公開）"
+
+#. Site Key (public)
+msgid "sites.detail.siteKeyPublic"
+msgstr "サイトキー（公開）"
+
+#. Site Settings
+msgid "sites.detail.siteSettings"
+msgstr "サイト設定"
+
+#. CAPTCHA widget preview
+msgid "sites.detail.widgetPreviewTitle"
+msgstr "CAPTCHAウィジェットのプレビュー"
+
+#. Create your first site to get started with yCAPTCHA.
+msgid "sites.noSitesDescription"
+msgstr "最初のサイトを作成してyCAPTCHAを始めましょう。"
+
+#. No sites yet
+msgid "sites.noSitesYet"
+msgstr "サイトがまだありません"
+
+#. Sites
+msgid "sites.title"
+msgstr "サイト"

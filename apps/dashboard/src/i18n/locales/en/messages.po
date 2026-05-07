@@ -1,0 +1,1935 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: \n"
+#. Active puzzles
+msgid "analytics.activePuzzles"
+msgstr "Active puzzles"
+
+#. across {count, plural, one {# site} other {# sites}}
+msgid "analytics.activePuzzlesHint"
+msgstr "across {count, plural, one {# site} other {# sites}}"
+
+#. enabled on this site
+msgid "analytics.activePuzzlesOnSiteHint"
+msgstr "enabled on this site"
+
+#. Successful solves over time
+msgid "analytics.attemptsOverTime"
+msgstr "Successful solves over time"
+
+#. Fails
+msgid "analytics.fails"
+msgstr "Fails"
+
+#. {count} fails
+msgid "analytics.failsShort"
+msgstr "{count} fails"
+
+#. No data yet
+msgid "analytics.noDataYet"
+msgstr "No data yet"
+
+#. Pass rate
+msgid "analytics.passRate"
+msgstr "Pass rate"
+
+#. of attempts that passed
+msgid "analytics.passRateHint"
+msgstr "of attempts that passed"
+
+#. Passes
+msgid "analytics.passes"
+msgstr "Passes"
+
+#. Solves
+msgid "analytics.solves"
+msgstr "Solves"
+
+#. {count} solves
+msgid "analytics.solvesShort"
+msgstr "{count} solves"
+
+#. Overview
+msgid "analytics.title"
+msgstr "Overview"
+
+#. Top puzzles by volume
+msgid "analytics.topPuzzles"
+msgstr "Top puzzles by volume"
+
+#. Verifies
+msgid "analytics.verifies"
+msgstr "Verifies"
+
+#. tokens consumed by your backend
+msgid "analytics.verifiesHint"
+msgstr "tokens consumed by your backend"
+
+#. Verifies over time
+msgid "analytics.verifiesOverTime"
+msgstr "Verifies over time"
+
+#. Last 30 days
+msgid "analytics.window"
+msgstr "Last 30 days"
+
+#. Answer
+msgid "audio.answer"
+msgstr "Answer"
+
+#. This audio is referenced by the following puzzles. Remove it first.
+msgid "audio.cannotDeleteDescription"
+msgstr "This audio is referenced by the following puzzles. Remove it first."
+
+#. Cannot delete audio
+msgid "audio.cannotDeleteTitle"
+msgstr "Cannot delete audio"
+
+#. Delete Audio
+msgid "audio.deleteAudio"
+msgstr "Delete Audio"
+
+#. This will permanently delete this audio clip. You must remove it from any puzzles first.
+msgid "audio.deleteAudioDescription"
+msgstr "This will permanently delete this audio clip. You must remove it from any puzzles first."
+
+#. Deleting this audio clip will remove it from storage. You must remove it from any puzzles first.
+msgid "audio.detail.dangerDescription"
+msgstr "Deleting this audio clip will remove it from storage. You must remove it from any puzzles first."
+
+#. Danger Zone
+msgid "audio.detail.dangerZone"
+msgstr "Danger Zone"
+
+#. Playback
+msgid "audio.detail.playback"
+msgstr "Playback"
+
+#. Settings
+msgid "audio.detail.settings"
+msgstr "Settings"
+
+#. Update the name and correct answer for this audio clip.
+msgid "audio.detail.settingsDescription"
+msgstr "Update the name and correct answer for this audio clip."
+
+#. Upload audio clips to use as alternative CAPTCHA verification.
+msgid "audio.noAudioDescription"
+msgstr "Upload audio clips to use as alternative CAPTCHA verification."
+
+#. No audio clips yet
+msgid "audio.noAudioYet"
+msgstr "No audio clips yet"
+
+#. Audio Clips
+msgid "audio.title"
+msgstr "Audio Clips"
+
+#. The text answer users must type to pass the audio CAPTCHA.
+msgid "audio.upload.answerHint"
+msgstr "The text answer users must type to pass the audio CAPTCHA."
+
+#. Correct Answer
+msgid "audio.upload.answerLabel"
+msgstr "Correct Answer"
+
+#. e.g. Describe the city you live in
+msgid "audio.upload.answerPlaceholder"
+msgstr "e.g. Describe the city you live in"
+
+#. Change file
+msgid "audio.upload.changeFile"
+msgstr "Change file"
+
+#. Drop an audio file here or click to browse
+msgid "audio.upload.dropOrBrowse"
+msgstr "Drop an audio file here or click to browse"
+
+#. e.g. Spoken digits
+msgid "audio.upload.namePlaceholder"
+msgstr "e.g. Spoken digits"
+
+#. Pause
+msgid "audio.upload.pause"
+msgstr "Pause"
+
+#. Play
+msgid "audio.upload.preview"
+msgstr "Play"
+
+#. Upload Audio Clip
+msgid "audio.upload.title"
+msgstr "Upload Audio Clip"
+
+#. Upload Audio
+msgid "audio.uploadAudio"
+msgstr "Upload Audio"
+
+#. Back to sign in
+msgid "auth.forgotPassword.backToLogin"
+msgstr "Back to sign in"
+
+#. Enter your email and we'll send you a reset link.
+msgid "auth.forgotPassword.description"
+msgstr "Enter your email and we'll send you a reset link."
+
+#. you@example.com
+msgid "auth.forgotPassword.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Unable to send reset email. Please try again.
+msgid "auth.forgotPassword.genericError"
+msgstr "Unable to send reset email. Please try again."
+
+#. Sending reset link...
+msgid "auth.forgotPassword.sending"
+msgstr "Sending reset link..."
+
+#. Send reset link
+msgid "auth.forgotPassword.submit"
+msgstr "Send reset link"
+
+#. If an account exists for {email}, we sent a password reset link.
+msgid "auth.forgotPassword.successDescription"
+msgstr "If an account exists for {email}, we sent a password reset link."
+
+#. Check your inbox
+msgid "auth.forgotPassword.successTitle"
+msgstr "Check your inbox"
+
+#. Forgot your password?
+msgid "auth.forgotPassword.title"
+msgstr "Forgot your password?"
+
+#. Continue with GitHub
+msgid "auth.login.continueWithGitHub"
+msgstr "Continue with GitHub"
+
+#. Sign in to your account
+msgid "auth.login.description"
+msgstr "Sign in to your account"
+
+#. Please verify your email before signing in.
+msgid "auth.login.emailNotVerified"
+msgstr "Please verify your email before signing in."
+
+#. you@example.com
+msgid "auth.login.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Forgot your password?
+msgid "auth.login.forgotPassword"
+msgstr "Forgot your password?"
+
+#. Don't have an account?
+msgid "auth.login.noAccount"
+msgstr "Don't have an account?"
+
+#. Passkey sign-in failed
+msgid "auth.login.passkeyFailed"
+msgstr "Passkey sign-in failed"
+
+#. ••••••••
+msgid "auth.login.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Resend verification email
+msgid "auth.login.resendVerification"
+msgstr "Resend verification email"
+
+#. Sign In
+msgid "auth.login.signIn"
+msgstr "Sign In"
+
+#. Sign in with Passkey
+msgid "auth.login.signInWithPasskey"
+msgstr "Sign in with Passkey"
+
+#. Sign up
+msgid "auth.login.signUp"
+msgstr "Sign up"
+
+#. Signing in...
+msgid "auth.login.signingIn"
+msgstr "Signing in..."
+
+#. Welcome back
+msgid "auth.login.title"
+msgstr "Welcome back"
+
+#. Back to sign in
+msgid "auth.resetPassword.backToLogin"
+msgstr "Back to sign in"
+
+#. Confirm Password
+msgid "auth.resetPassword.confirmPassword"
+msgstr "Confirm Password"
+
+#. Choose a new password for your yCAPTCHA account.
+msgid "auth.resetPassword.description"
+msgstr "Choose a new password for your yCAPTCHA account."
+
+#. Unable to reset password. Please try again.
+msgid "auth.resetPassword.genericError"
+msgstr "Unable to reset password. Please try again."
+
+#. This reset link is invalid or expired. Request a new one to keep going.
+msgid "auth.resetPassword.invalidDescription"
+msgstr "This reset link is invalid or expired. Request a new one to keep going."
+
+#. This reset link is invalid
+msgid "auth.resetPassword.invalidTitle"
+msgstr "This reset link is invalid"
+
+#. New Password
+msgid "auth.resetPassword.newPassword"
+msgstr "New Password"
+
+#. ••••••••
+msgid "auth.resetPassword.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Passwords do not match
+msgid "auth.resetPassword.passwordsMismatch"
+msgstr "Passwords do not match"
+
+#. Request a new link
+msgid "auth.resetPassword.requestNewLink"
+msgstr "Request a new link"
+
+#. Resetting password...
+msgid "auth.resetPassword.resetting"
+msgstr "Resetting password..."
+
+#. Reset password
+msgid "auth.resetPassword.submit"
+msgstr "Reset password"
+
+#. Your password has been reset. You can sign in with your new password now.
+msgid "auth.resetPassword.successDescription"
+msgstr "Your password has been reset. You can sign in with your new password now."
+
+#. Password updated
+msgid "auth.resetPassword.successTitle"
+msgstr "Password updated"
+
+#. Set a new password
+msgid "auth.resetPassword.title"
+msgstr "Set a new password"
+
+#. Back to sign in
+msgid "auth.signup.backToLogin"
+msgstr "Back to sign in"
+
+#. We sent a verification link to {email}. Click the link to activate your account.
+msgid "auth.signup.checkEmailDescription"
+msgstr "We sent a verification link to {email}. Click the link to activate your account."
+
+#. Check your inbox
+msgid "auth.signup.checkEmailTitle"
+msgstr "Check your inbox"
+
+#. Confirm Password
+msgid "auth.signup.confirmPassword"
+msgstr "Confirm Password"
+
+#. Continue with GitHub
+msgid "auth.signup.continueWithGitHub"
+msgstr "Continue with GitHub"
+
+#. Creating account...
+msgid "auth.signup.creatingAccount"
+msgstr "Creating account..."
+
+#. Get started with yCAPTCHA
+msgid "auth.signup.description"
+msgstr "Get started with yCAPTCHA"
+
+#. you@example.com
+msgid "auth.signup.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Already have an account?
+msgid "auth.signup.hasAccount"
+msgstr "Already have an account?"
+
+#. Your name
+msgid "auth.signup.namePlaceholder"
+msgstr "Your name"
+
+#. ••••••••
+msgid "auth.signup.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Passwords do not match
+msgid "auth.signup.passwordsMismatch"
+msgstr "Passwords do not match"
+
+#. Resend email
+msgid "auth.signup.resend"
+msgstr "Resend email"
+
+#. Daily limit reached. Try again in {hours}h.
+msgid "auth.signup.resendDaily"
+msgstr "Daily limit reached. Try again in {hours}h."
+
+#. Resend in {seconds}s
+msgid "auth.signup.resendIn"
+msgstr "Resend in {seconds}s"
+
+#. Too many attempts. Try again in {seconds}s.
+msgid "auth.signup.resendTooMany"
+msgstr "Too many attempts. Try again in {seconds}s."
+
+#. Sending...
+msgid "auth.signup.resending"
+msgstr "Sending..."
+
+#. Sent. Check your inbox again.
+msgid "auth.signup.resent"
+msgstr "Sent. Check your inbox again."
+
+#. Sign in
+msgid "auth.signup.signIn"
+msgstr "Sign in"
+
+#. Sign Up
+msgid "auth.signup.signUp"
+msgstr "Sign Up"
+
+#. Create an account
+msgid "auth.signup.title"
+msgstr "Create an account"
+
+#. Cancel
+msgid "common.cancel"
+msgstr "Cancel"
+
+#. Clear
+msgid "common.clear"
+msgstr "Clear"
+
+#. Close
+msgid "common.close"
+msgstr "Close"
+
+#. Copied to clipboard
+msgid "common.copiedToClipboard"
+msgstr "Copied to clipboard"
+
+#. Creating...
+msgid "common.creating"
+msgstr "Creating..."
+
+#. Delete
+msgid "common.delete"
+msgstr "Delete"
+
+#. Deleting...
+msgid "common.deleting"
+msgstr "Deleting..."
+
+#. Domain
+msgid "common.domain"
+msgstr "Domain"
+
+#. Email
+msgid "common.email"
+msgstr "Email"
+
+#. Failed to copy
+msgid "common.failedToCopy"
+msgstr "Failed to copy"
+
+#. Loading...
+msgid "common.loading"
+msgstr "Loading..."
+
+#. Manage
+msgid "common.manage"
+msgstr "Manage"
+
+#. Name
+msgid "common.name"
+msgstr "Name"
+
+#. or
+msgid "common.or"
+msgstr "or"
+
+#. Password
+msgid "common.password"
+msgstr "Password"
+
+#. Save
+msgid "common.save"
+msgstr "Save"
+
+#. Save Changes
+msgid "common.saveChanges"
+msgstr "Save Changes"
+
+#. Saving...
+msgid "common.saving"
+msgstr "Saving..."
+
+#. Type <bold>{text}</bold> to confirm.
+msgid "confirmDelete.typeToConfirm"
+msgstr "Type <bold>{text}</bold> to confirm."
+
+#. Something went wrong
+msgid "dashboard.errorTitle"
+msgstr "Something went wrong"
+
+#. An unexpected error occurred.
+msgid "dashboard.genericError"
+msgstr "An unexpected error occurred."
+
+#. Try again
+msgid "dashboard.tryAgain"
+msgstr "Try again"
+
+#. Easy
+msgid "difficulty.easy"
+msgstr "Easy"
+
+#. Hard
+msgid "difficulty.hard"
+msgstr "Hard"
+
+#. Medium
+msgid "difficulty.medium"
+msgstr "Medium"
+
+#. Someone just tried to create a new yCAPTCHA account with your email. You already have one, so no new account was created. Click below to sign in instantly — no password needed. This link expires in 15 minutes.
+msgid "email.existingAccount.body"
+msgstr "Someone just tried to create a new yCAPTCHA account with your email. You already have one, so no new account was created. Click below to sign in instantly — no password needed. This link expires in 15 minutes."
+
+#. Sign in instantly
+msgid "email.existingAccount.button"
+msgstr "Sign in instantly"
+
+#. If the button doesn't work, copy this link:
+msgid "email.existingAccount.fallbackHint"
+msgstr "If the button doesn't work, copy this link:"
+
+#. © yCAPTCHA
+msgid "email.existingAccount.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.existingAccount.greeting"
+msgstr "Hi {name},"
+
+#. You already have an account
+msgid "email.existingAccount.heading"
+msgstr "You already have an account"
+
+#. If this wasn't you, you can safely ignore this email — the link will expire on its own. Your account is secure.
+msgid "email.existingAccount.ignoreNote"
+msgstr "If this wasn't you, you can safely ignore this email — the link will expire on its own. Your account is secure."
+
+#. You already have a yCAPTCHA account — one-click sign in
+msgid "email.existingAccount.preview"
+msgstr "You already have a yCAPTCHA account — one-click sign in"
+
+#. Someone tried to sign up with your email
+msgid "email.existingAccount.subject"
+msgstr "Someone tried to sign up with your email"
+
+#. We received a request to reset your yCAPTCHA password. Click the button below to choose a new one.
+msgid "email.resetPassword.body"
+msgstr "We received a request to reset your yCAPTCHA password. Click the button below to choose a new one."
+
+#. Reset password
+msgid "email.resetPassword.button"
+msgstr "Reset password"
+
+#. This link expires in 1 hour.
+msgid "email.resetPassword.expiresNote"
+msgstr "This link expires in 1 hour."
+
+#. If the button doesn't work, copy and paste this link into your browser:
+msgid "email.resetPassword.fallbackHint"
+msgstr "If the button doesn't work, copy and paste this link into your browser:"
+
+#. © yCAPTCHA
+msgid "email.resetPassword.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.resetPassword.greeting"
+msgstr "Hi {name},"
+
+#. Reset your password
+msgid "email.resetPassword.heading"
+msgstr "Reset your password"
+
+#. If you didn't request a password reset, you can safely ignore this email.
+msgid "email.resetPassword.ignoreNote"
+msgstr "If you didn't request a password reset, you can safely ignore this email."
+
+#. Reset your yCAPTCHA password
+msgid "email.resetPassword.preview"
+msgstr "Reset your yCAPTCHA password"
+
+#. Reset your yCAPTCHA password
+msgid "email.resetPassword.subject"
+msgstr "Reset your yCAPTCHA password"
+
+#. Welcome to yCAPTCHA. Click the button below to confirm your email address and activate your account.
+msgid "email.verification.body"
+msgstr "Welcome to yCAPTCHA. Click the button below to confirm your email address and activate your account."
+
+#. Verify email
+msgid "email.verification.button"
+msgstr "Verify email"
+
+#. This link expires in 24 hours.
+msgid "email.verification.expiresNote"
+msgstr "This link expires in 24 hours."
+
+#. If the button doesn't work, copy and paste this link into your browser:
+msgid "email.verification.fallbackHint"
+msgstr "If the button doesn't work, copy and paste this link into your browser:"
+
+#. © yCAPTCHA
+msgid "email.verification.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.verification.greeting"
+msgstr "Hi {name},"
+
+#. Verify your email
+msgid "email.verification.heading"
+msgstr "Verify your email"
+
+#. If you didn't create an account, you can safely ignore this email.
+msgid "email.verification.ignoreNote"
+msgstr "If you didn't create an account, you can safely ignore this email."
+
+#. Confirm your email to finish setting up yCAPTCHA
+msgid "email.verification.preview"
+msgstr "Confirm your email to finish setting up yCAPTCHA"
+
+#. Verify your email for yCAPTCHA
+msgid "email.verification.subject"
+msgstr "Verify your email for yCAPTCHA"
+
+#. Acceptable Use Policy
+msgid "gallery.acceptableUseLink"
+msgstr "Acceptable Use Policy"
+
+#. Publish anonymously
+msgid "gallery.anonymousCheckbox"
+msgstr "Publish anonymously"
+
+#. Otherwise you'll be credited as <credit>{name}</credit>.
+msgid "gallery.anonymousCreditedAs"
+msgstr "Otherwise you'll be credited as <credit>{name}</credit>."
+
+#. ← All image sets
+msgid "gallery.backToAll"
+msgstr "← All image sets"
+
+#. Before you publish
+msgid "gallery.beforeYouPublish"
+msgstr "Before you publish"
+
+#. Gallery
+msgid "gallery.browseEyebrow"
+msgstr "Gallery"
+
+#. Image sets,
+msgid "gallery.browseHeadlineA"
+msgstr "Image sets,"
+
+#. from the community.
+msgid "gallery.browseHeadlineB"
+msgstr "from the community."
+
+#. Fork a shared image set into your account, then wire up your own prompt and correct images on top.
+msgid "gallery.browseTagline"
+msgstr "Fork a shared image set into your account, then wire up your own prompt and correct images on top."
+
+#. anonymous
+msgid "gallery.cardAnonymous"
+msgstr "anonymous"
+
+#. by
+msgid "gallery.cardBy"
+msgstr "by"
+
+#. (empty preview)
+msgid "gallery.cardEmptyPreview"
+msgstr "(empty preview)"
+
+#. {count} {count, plural, one {fork} other {forks}}
+msgid "gallery.cardForks"
+msgstr "{count} {count, plural, one {fork} other {forks}}"
+
+#. {count} {count, plural, one {image} other {images}}
+msgid "gallery.cardImages"
+msgstr "{count} {count, plural, one {image} other {images}}"
+
+#. Clear filter
+msgid "gallery.clearFilter"
+msgstr "Clear filter"
+
+#. This is permanent. The images are removed from storage; forks made by other users stay intact.
+msgid "gallery.deleteDialogDescription"
+msgstr "This is permanent. The images are removed from storage; forks made by other users stay intact."
+
+#. Delete gallery item?
+msgid "gallery.deleteDialogTitle"
+msgstr "Delete gallery item?"
+
+#. Delete
+msgid "gallery.deleteItem"
+msgstr "Delete"
+
+#. Description (optional)
+msgid "gallery.descriptionLabel"
+msgstr "Description (optional)"
+
+#. Image set
+msgid "gallery.detailEyebrow"
+msgstr "Image set"
+
+#. No items published yet. Be the first — publish from one of your image sets.
+msgid "gallery.emptyBody"
+msgstr "No items published yet. Be the first — publish from one of your image sets."
+
+#. Gallery's just opening
+msgid "gallery.emptyHeadline"
+msgstr "Gallery's just opening"
+
+#. Try another tag, or clear the filter to see everything.
+msgid "gallery.emptyTagBody"
+msgstr "Try another tag, or clear the filter to see everything."
+
+#. Nothing under that tag yet
+msgid "gallery.emptyTagHeadline"
+msgstr "Nothing under that tag yet"
+
+#. Filter:
+msgid "gallery.filterLabel"
+msgstr "Filter:"
+
+#. Acceptable use
+msgid "gallery.footerAcceptableUse"
+msgstr "Acceptable use"
+
+#. © 2026 yCAPTCHA Gallery
+msgid "gallery.footerCopyright"
+msgstr "© 2026 yCAPTCHA Gallery"
+
+#. Docs
+msgid "gallery.footerDocs"
+msgstr "Docs"
+
+#. Privacy
+msgid "gallery.footerPrivacy"
+msgstr "Privacy"
+
+#. source
+msgid "gallery.footerSource"
+msgstr "source"
+
+#. Forking copies every image into your account as a new image set. From there, wire it to a site and set your own prompt + correct images.
+msgid "gallery.forkHint"
+msgstr "Forking copies every image into your account as a new image set. From there, wire it to a site and set your own prompt + correct images."
+
+#. Fork to my account
+msgid "gallery.forkToMyAccount"
+msgstr "Fork to my account"
+
+#. Forking…
+msgid "gallery.forking"
+msgstr "Forking…"
+
+#. Gallery
+msgid "gallery.galleryLabel"
+msgstr "Gallery"
+
+#. Go to image sets
+msgid "gallery.goToImageSets"
+msgstr "Go to image sets"
+
+#. Images in this set
+msgid "gallery.imagesInSet"
+msgstr "Images in this set"
+
+#. Item deleted
+msgid "gallery.itemDeleted"
+msgstr "Item deleted"
+
+#. Manage in My items
+msgid "gallery.manageInMine"
+msgstr "Manage in My items"
+
+#. This is your image set. Manage it from My items to edit, unpublish, or wire it to a site.
+msgid "gallery.manageInMineHint"
+msgstr "This is your image set. Manage it from My items to edit, unpublish, or wire it to a site."
+
+#. Head to your image sets and pick one to publish. You'll confirm the images before anything goes public.
+msgid "gallery.mineEmptyBody"
+msgstr "Head to your image sets and pick one to publish. You'll confirm the images before anything goes public."
+
+#. Nothing published yet
+msgid "gallery.mineEmptyHeadline"
+msgstr "Nothing published yet"
+
+#. Your gallery items
+msgid "gallery.mineEyebrow"
+msgstr "Your gallery items"
+
+#. Everything you've published.
+msgid "gallery.mineHeadline"
+msgstr "Everything you've published."
+
+#. Browse
+msgid "gallery.navBrowse"
+msgstr "Browse"
+
+#. Dashboard
+msgid "gallery.navDashboard"
+msgstr "Dashboard"
+
+#. ← Main site
+msgid "gallery.navMainSite"
+msgstr "← Main site"
+
+#. My items
+msgid "gallery.navMine"
+msgstr "My items"
+
+#. Sign in
+msgid "gallery.navSignIn"
+msgstr "Sign in"
+
+#. Privacy Policy
+msgid "gallery.privacyLink"
+msgstr "Privacy Policy"
+
+#. Back to {name}
+msgid "gallery.publishBackTo"
+msgstr "Back to {name}"
+
+#. Publish to gallery
+msgid "gallery.publishCta"
+msgstr "Publish to gallery"
+
+#. Publish to gallery
+msgid "gallery.publishEyebrow"
+msgstr "Publish to gallery"
+
+#. Share <em>{name}</em> as an image set
+msgid "gallery.publishHeadline"
+msgstr "Share <em>{name}</em> as an image set"
+
+#. You're sharing the below <strong>image pool</strong>. Be advised that others can use your images freely on their sites.
+msgid "gallery.publishIntroA"
+msgstr "You're sharing the below <strong>image pool</strong>. Be advised that others can use your images freely on their sites."
+
+#. Gallery items are <strong>frozen snapshots</strong>. Editing or deleting this image set afterwards won't change what's public.
+msgid "gallery.publishIntroB"
+msgstr "Gallery items are <strong>frozen snapshots</strong>. Editing or deleting this image set afterwards won't change what's public."
+
+#. Publish one of yours
+msgid "gallery.publishOneOfYours"
+msgstr "Publish one of yours"
+
+#. Publishing…
+msgid "gallery.publishing"
+msgstr "Publishing…"
+
+#. Sign in to fork
+msgid "gallery.signInToFork"
+msgstr "Sign in to fork"
+
+#. Forking copies this set into your account so you can build a puzzle around it.
+msgid "gallery.signInToForkHint"
+msgstr "Forking copies this set into your account so you can build a puzzle around it."
+
+#. Popular
+msgid "gallery.sortPopular"
+msgstr "Popular"
+
+#. Recent
+msgid "gallery.sortRecent"
+msgstr "Recent"
+
+#. I have read and agree to the
+msgid "gallery.termsAgree"
+msgstr "I have read and agree to the"
+
+#. and
+msgid "gallery.termsAnd"
+msgstr "and"
+
+#. I understand these images may become permanently public and reusable by anyone in the Gallery.
+msgid "gallery.termsExplainer"
+msgstr "I understand these images may become permanently public and reusable by anyone in the Gallery."
+
+#. Title
+msgid "gallery.titleLabel"
+msgstr "Title"
+
+#. This set has {count} {count, plural, one {image} other {images}}. Gallery items need at least 9 images (3×3 grid). Add more before publishing.
+msgid "gallery.tooFewImages"
+msgstr "This set has {count} {count, plural, one {image} other {images}}. Gallery items need at least 9 images (3×3 grid). Add more before publishing."
+
+#. {count} total
+msgid "gallery.totalCount"
+msgstr "{count} total"
+
+#. What's going out ({count} {count, plural, one {image} other {images}})
+msgid "gallery.whatsGoingOut"
+msgstr "What's going out ({count} {count, plural, one {image} other {images}})"
+
+#. Every image below will be copied to the gallery and made public.
+msgid "gallery.whatsGoingOutDesc"
+msgstr "Every image below will be copied to the gallery and made public."
+
+#. This image set is referenced by the following puzzles. Remove them first.
+msgid "imageSets.cannotDeleteDescription"
+msgstr "This image set is referenced by the following puzzles. Remove them first."
+
+#. Cannot delete image set
+msgid "imageSets.cannotDeleteTitle"
+msgstr "Cannot delete image set"
+
+#. Give your image set a name. You can upload images after creating it.
+msgid "imageSets.create.description"
+msgstr "Give your image set a name. You can upload images after creating it."
+
+#. e.g. NYC Subway Signs
+msgid "imageSets.create.namePlaceholder"
+msgstr "e.g. NYC Subway Signs"
+
+#. Create Image Set
+msgid "imageSets.create.title"
+msgstr "Create Image Set"
+
+#. Create Image Set
+msgid "imageSets.createImageSet"
+msgstr "Create Image Set"
+
+#. Delete Image Set
+msgid "imageSets.deleteImageSet"
+msgstr "Delete Image Set"
+
+#. This will permanently delete this image set and all its images. You must remove any puzzles using this set first.
+msgid "imageSets.deleteImageSetDescription"
+msgstr "This will permanently delete this image set and all its images. You must remove any puzzles using this set first."
+
+#. Deleting this image set will also remove all images from storage. You must remove any puzzles using this set first.
+msgid "imageSets.detail.dangerDescription"
+msgstr "Deleting this image set will also remove all images from storage. You must remove any puzzles using this set first."
+
+#. Danger Zone
+msgid "imageSets.detail.dangerZone"
+msgstr "Danger Zone"
+
+#. This will permanently delete this image set and all its images from storage. You must remove any puzzles using this set first.
+msgid "imageSets.detail.deleteConfirmDescription"
+msgstr "This will permanently delete this image set and all its images from storage. You must remove any puzzles using this set first."
+
+#. Drop images here or click to browse
+msgid "imageSets.detail.dropOrBrowse"
+msgstr "Drop images here or click to browse"
+
+#. Exceeds 20MB
+msgid "imageSets.detail.errorExceedsSize"
+msgstr "Exceeds 20MB"
+
+#. HEIC not supported by this browser. Please use Safari
+msgid "imageSets.detail.errorHeicUnsupported"
+msgstr "HEIC not supported by this browser. Please use Safari"
+
+#. Maximum {count} files at a time.
+msgid "imageSets.detail.errorMaxFiles"
+msgstr "Maximum {count} files at a time."
+
+#. Not an image
+msgid "imageSets.detail.errorNotAnImage"
+msgstr "Not an image"
+
+#. Storage quota exceeded
+msgid "imageSets.detail.errorOverQuota"
+msgstr "Storage quota exceeded"
+
+#. Unsupported format
+msgid "imageSets.detail.errorUnsupportedFormat"
+msgstr "Unsupported format"
+
+#. Upload failed
+msgid "imageSets.detail.errorUploadFailed"
+msgstr "Upload failed"
+
+#. Images
+msgid "imageSets.detail.images"
+msgstr "Images"
+
+#. No images yet. Upload some above.
+msgid "imageSets.detail.noImagesYet"
+msgstr "No images yet. Upload some above."
+
+#. Compressing...
+msgid "imageSets.detail.statusCompressing"
+msgstr "Compressing..."
+
+#. Done
+msgid "imageSets.detail.statusDone"
+msgstr "Done"
+
+#. Duplicate
+msgid "imageSets.detail.statusDuplicate"
+msgstr "Duplicate"
+
+#. Uploading...
+msgid "imageSets.detail.statusUploading"
+msgstr "Uploading..."
+
+#. Waiting...
+msgid "imageSets.detail.statusWaiting"
+msgstr "Waiting..."
+
+#. Drag and drop or click to select. Non-standard formats (HEIC, TIFF) are auto-converted.
+msgid "imageSets.detail.uploadDescription"
+msgstr "Drag and drop or click to select. Non-standard formats (HEIC, TIFF) are auto-converted."
+
+#. Upload Images
+msgid "imageSets.detail.uploadImages"
+msgstr "Upload Images"
+
+#. Uploading...
+msgid "imageSets.detail.uploading"
+msgstr "Uploading..."
+
+#. {count} {count, plural, one {image} other {images}}
+msgid "imageSets.imageCount"
+msgstr "{count} {count, plural, one {image} other {images}}"
+
+#. Create an image set and upload images to use in puzzles.
+msgid "imageSets.noImageSetsDescription"
+msgstr "Create an image set and upload images to use in puzzles."
+
+#. No image sets yet
+msgid "imageSets.noImageSetsYet"
+msgstr "No image sets yet"
+
+#. Image Sets
+msgid "imageSets.title"
+msgstr "Image Sets"
+
+#. + bring your own
+msgid "landing.bringYourOwn"
+msgstr "+ bring your own"
+
+#. Themes shipping today
+msgid "landing.communityThemesLabel"
+msgstr "Themes shipping today"
+
+#. Get started
+msgid "landing.ctaButton"
+msgstr "Get started"
+
+#. Drop in the widget, pick your images, ship.
+msgid "landing.ctaSub"
+msgstr "Drop in the widget, pick your images, ship."
+
+#. One Line, Your Styles. Go.
+msgid "landing.ctaTitle"
+msgstr "One Line, Your Styles. Go."
+
+#. Not really. yCAPTCHA has no ML, no fingerprinting, no behavioral analysis — any bot with off-the-shelf image recognition will walk straight through it. If you need real bot protection, use Cloudflare Turnstile or hCaptcha. yCAPTCHA is for the vibe: your community, your puzzles.
+msgid "landing.faqA1"
+msgstr "Not really. yCAPTCHA has no ML, no fingerprinting, no behavioral analysis — any bot with off-the-shelf image recognition will walk straight through it. If you need real bot protection, use Cloudflare Turnstile or hCaptcha. yCAPTCHA is for the vibe: your community, your puzzles."
+
+#. That's the whole point. Upload your images, mark which images are correct, and your CAPTCHA becomes an inside joke only your community gets — subway lines, rhythm game charts, dev tools, niche memes.
+msgid "landing.faqA2"
+msgstr "That's the whole point. Upload your images, mark which images are correct, and your CAPTCHA becomes an inside joke only your community gets — subway lines, rhythm game charts, dev tools, niche memes."
+
+#. No, but you can self-host it.
+msgid "landing.faqA4"
+msgstr "No, but you can self-host it."
+
+#. Yes. 200 MB upload cap per account, no paid tier, no credit card.
+msgid "landing.faqA5"
+msgstr "Yes. 200 MB upload cap per account, no paid tier, no credit card."
+
+#. FAQ
+msgid "landing.faqEyebrow"
+msgstr "FAQ"
+
+#. Does this actually stop bots?
+msgid "landing.faqQ1"
+msgstr "Does this actually stop bots?"
+
+#. Can I use my own images?
+msgid "landing.faqQ2"
+msgstr "Can I use my own images?"
+
+#. Is there a SLA?
+msgid "landing.faqQ4"
+msgstr "Is there a SLA?"
+
+#. Is it really free?
+msgid "landing.faqQ5"
+msgstr "Is it really free?"
+
+#. Questions, answered.
+msgid "landing.faqTitle"
+msgstr "Questions, answered."
+
+#. Get Started
+msgid "landing.getStarted"
+msgstr "Get Started"
+
+#. Stop Picking Traffic Lights
+msgid "landing.heroHeadline"
+msgstr "Stop Picking Traffic Lights"
+
+#. Your community,
+msgid "landing.heroHeadlineA"
+msgstr "Your community,"
+
+#. your CAPTCHA.
+msgid "landing.heroHeadlineB"
+msgstr "your CAPTCHA."
+
+#. How it works
+msgid "landing.howItWorksEyebrow"
+msgstr "How it works"
+
+#. Three steps. One page of code.
+msgid "landing.howItWorksTitle"
+msgstr "Three steps. One page of code."
+
+#. Dashboard
+msgid "landing.navDashboard"
+msgstr "Dashboard"
+
+#. Docs
+msgid "landing.navDocs"
+msgstr "Docs"
+
+#. Gallery
+msgid "landing.navGallery"
+msgstr "Gallery"
+
+#. GitHub
+msgid "landing.navGitHub"
+msgstr "GitHub"
+
+#. Next demo
+msgid "landing.nextDemo"
+msgstr "Next demo"
+
+#. Please try again.
+msgid "landing.pleaseRetry"
+msgstr "Please try again."
+
+#. Previous demo
+msgid "landing.previousDemo"
+msgstr "Previous demo"
+
+#. Read Docs
+msgid "landing.readDocs"
+msgstr "Read Docs"
+
+#. See the gallery
+msgid "landing.seeGallery"
+msgstr "See the gallery"
+
+#. Show demo {number}
+msgid "landing.showDemo"
+msgstr "Show demo {number}"
+
+#. Start free
+msgid "landing.startFree"
+msgstr "Start free"
+
+#. Drag a folder into the dashboard, or fork one of the sample sets. Mark the images that count as correct.
+msgid "landing.step1Body"
+msgstr "Drag a folder into the dashboard, or fork one of the sample sets. Mark the images that count as correct."
+
+#. Upload an image set
+msgid "landing.step1Title"
+msgstr "Upload an image set"
+
+#. Drop one script tag and one div into your page. Tie it to a puzzle with your site key.
+msgid "landing.step2Body"
+msgstr "Drop one script tag and one div into your page. Tie it to a puzzle with your site key."
+
+#. Embed the widget
+msgid "landing.step2Title"
+msgstr "Embed the widget"
+
+#. POST the token and your secret key to /api/v0/captcha/siteverify.
+msgid "landing.step3Body"
+msgstr "POST the token and your secret key to /api/v0/captcha/siteverify."
+
+#. Verify on the server
+msgid "landing.step3Title"
+msgstr "Verify on the server"
+
+#. Stop picking traffic lights. Pick your own images, audios, and challenges.
+msgid "landing.tagline"
+msgstr "Stop picking traffic lights. Pick your own images, audios, and challenges."
+
+#. Try it out!
+msgid "landing.tryItOut"
+msgstr "Try it out!"
+
+#. Verification passed!
+msgid "landing.verificationPassed"
+msgstr "Verification passed!"
+
+#. English
+msgid "languageSwitcher.en"
+msgstr "English"
+
+#. 日本語
+msgid "languageSwitcher.ja"
+msgstr "日本語"
+
+#. Language
+msgid "languageSwitcher.label"
+msgstr "Language"
+
+#. 简体中文
+msgid "languageSwitcher.zh-CN"
+msgstr "简体中文"
+
+#. Your community's inside-joke CAPTCHA — upload your own images and build challenges around shared references instead of traffic lights.
+msgid "metadata.description"
+msgstr "Your community's inside-joke CAPTCHA — upload your own images and build challenges around shared references instead of traffic lights."
+
+#. yCAPTCHA
+msgid "metadata.title"
+msgstr "yCAPTCHA"
+
+#. Collapse
+msgid "onboarding.collapse"
+msgstr "Collapse"
+
+#. Dismiss
+msgid "onboarding.dismiss"
+msgstr "Dismiss"
+
+#. Expand
+msgid "onboarding.expand"
+msgstr "Expand"
+
+#. {completed}/{total}
+msgid "onboarding.progressLabel"
+msgstr "{completed}/{total}"
+
+#. Add site
+msgid "onboarding.step1Cta"
+msgstr "Add site"
+
+#. Create a site
+msgid "onboarding.step1Title"
+msgstr "Create a site"
+
+#. Audio
+msgid "onboarding.step2CtaAudio"
+msgstr "Audio"
+
+#. Images
+msgid "onboarding.step2CtaImages"
+msgstr "Images"
+
+#. Add content
+msgid "onboarding.step2Title"
+msgstr "Add content"
+
+#. Create a site first
+msgid "onboarding.step3LockedHint"
+msgstr "Create a site first"
+
+#. Create a puzzle
+msgid "onboarding.step3Title"
+msgstr "Create a puzzle"
+
+#. Finish the steps above
+msgid "onboarding.step4LockedHint"
+msgstr "Finish the steps above"
+
+#. Embed widget
+msgid "onboarding.step4Title"
+msgstr "Embed widget"
+
+#. Get started
+msgid "onboarding.title"
+msgstr "Get started"
+
+#. Copy Markdown
+msgid "pageActions.copyMarkdown"
+msgstr "Copy Markdown"
+
+#. Open
+msgid "pageActions.open"
+msgstr "Open"
+
+#. Open in ChatGPT
+msgid "pageActions.openInChatGPT"
+msgstr "Open in ChatGPT"
+
+#. Open in Claude
+msgid "pageActions.openInClaude"
+msgstr "Open in Claude"
+
+#. Open in Cursor
+msgid "pageActions.openInCursor"
+msgstr "Open in Cursor"
+
+#. Open in GitHub
+msgid "pageActions.openInGitHub"
+msgstr "Open in GitHub"
+
+#. Open in Scira AI
+msgid "pageActions.openInSciraAI"
+msgstr "Open in Scira AI"
+
+#. View as Markdown
+msgid "pageActions.viewAsMarkdown"
+msgstr "View as Markdown"
+
+#. Test how this puzzle works for users.
+msgid "puzzlePreview.description"
+msgstr "Test how this puzzle works for users."
+
+#. Refresh preview
+msgid "puzzlePreview.refreshPreview"
+msgstr "Refresh preview"
+
+#. Select an audio clip and answer to see preview
+msgid "puzzlePreview.selectAudioClip"
+msgstr "Select an audio clip and answer to see preview"
+
+#. Select correct images to see preview
+msgid "puzzlePreview.selectCorrectImages"
+msgstr "Select correct images to see preview"
+
+#. Preview
+msgid "puzzlePreview.title"
+msgstr "Preview"
+
+#. {count} correct per challenge
+msgid "puzzles.correctPerChallenge"
+msgstr "{count} correct per challenge"
+
+#. Advanced Settings
+msgid "puzzles.create.advancedSettings"
+msgstr "Advanced Settings"
+
+#. The text users must type after hearing the audio to pass.
+msgid "puzzles.create.audioAnswerHint"
+msgstr "The text users must type after hearing the audio to pass."
+
+#. Correct Answer
+msgid "puzzles.create.audioAnswerLabel"
+msgstr "Correct Answer"
+
+#. e.g. Describe the city you live in
+msgid "puzzles.create.audioAnswerPlaceholder"
+msgstr "e.g. Describe the city you live in"
+
+#. Audio CAPTCHA
+msgid "puzzles.create.audioCaptcha"
+msgstr "Audio CAPTCHA"
+
+#. Select an audio clip and set the correct answer users must type.
+msgid "puzzles.create.audioCaptchaDescription"
+msgstr "Select an audio clip and set the correct answer users must type."
+
+#. Verification Mode
+msgid "puzzles.create.captchaMode"
+msgstr "Verification Mode"
+
+#. Choose how users verify: image grid, audio clip, or both.
+msgid "puzzles.create.captchaModeDescription"
+msgstr "Choose how users verify: image grid, audio clip, or both."
+
+#. Correct Images per Challenge
+msgid "puzzles.create.correctPerChallenge"
+msgstr "Correct Images per Challenge"
+
+#. How many correct images to show in each 3×3 grid.
+msgid "puzzles.create.correctPerChallengeHelp"
+msgstr "How many correct images to show in each 3×3 grid."
+
+#. Create one first
+msgid "puzzles.create.createOneFirst"
+msgstr "Create one first"
+
+#. User must select at least {required} of {total} correct {count, plural, one {image} other {images}} to pass.
+msgid "puzzles.create.difficultyHelp"
+msgstr "User must select at least {required} of {total} correct {count, plural, one {image} other {images}} to pass."
+
+#. Difficulty
+msgid "puzzles.create.difficultyLabel"
+msgstr "Difficulty"
+
+#. Exact number
+msgid "puzzles.create.exactNumber"
+msgstr "Exact number"
+
+#. Hand-pick Incorrect Images
+msgid "puzzles.create.handPickIncorrect"
+msgstr "Hand-pick Incorrect Images"
+
+#. If off, wrong answers are randomly drawn from remaining images.
+msgid "puzzles.create.handPickIncorrectHelp"
+msgstr "If off, wrong answers are randomly drawn from remaining images."
+
+#. Image Set
+msgid "puzzles.create.imageSet"
+msgstr "Image Set"
+
+#. Choose the image pool for this puzzle.
+msgid "puzzles.create.imageSetDescription"
+msgstr "Choose the image pool for this puzzle."
+
+#. {name} ({count} images)
+msgid "puzzles.create.imageSetOption"
+msgstr "{name} ({count} images)"
+
+#. {count} incorrect {count, plural, one {image} other {images}} selected
+msgid "puzzles.create.incorrectSelected"
+msgstr "{count} incorrect {count, plural, one {image} other {images}} selected"
+
+#. Max
+msgid "puzzles.create.max"
+msgstr "Max"
+
+#. Min
+msgid "puzzles.create.min"
+msgstr "Min"
+
+#. Audio only
+msgid "puzzles.create.modeAudio"
+msgstr "Audio only"
+
+#. Combined (image + audio toggle)
+msgid "puzzles.create.modeCombined"
+msgstr "Combined (image + audio toggle)"
+
+#. Image only
+msgid "puzzles.create.modeImage"
+msgstr "Image only"
+
+#. No audio clips yet.
+msgid "puzzles.create.noAudioYet"
+msgstr "No audio clips yet."
+
+#. No image sets yet.
+msgid "puzzles.create.noImageSetsYet"
+msgstr "No image sets yet."
+
+#. No sites yet.
+msgid "puzzles.create.noSitesYet"
+msgstr "No sites yet."
+
+#. Prompt
+msgid "puzzles.create.prompt"
+msgstr "Prompt"
+
+#. The word shown to users after \"Select all images with\".
+msgid "puzzles.create.promptDescription"
+msgstr "The word shown to users after \"Select all images with\"."
+
+#. e.g. trains, buses, crosswalks
+msgid "puzzles.create.promptPlaceholder"
+msgstr "e.g. trains, buses, crosswalks"
+
+#. Random range
+msgid "puzzles.create.randomRange"
+msgstr "Random range"
+
+#. Audio Clip
+msgid "puzzles.create.selectAudio"
+msgstr "Audio Clip"
+
+#. Select an audio clip...
+msgid "puzzles.create.selectAudioPlaceholder"
+msgstr "Select an audio clip..."
+
+#. Select Correct Images
+msgid "puzzles.create.selectCorrectImages"
+msgstr "Select Correct Images"
+
+#. Select an image set...
+msgid "puzzles.create.selectImageSet"
+msgstr "Select an image set..."
+
+#. Select a site...
+msgid "puzzles.create.selectSite"
+msgstr "Select a site..."
+
+#. Site
+msgid "puzzles.create.site"
+msgstr "Site"
+
+#. Which site will this puzzle be used on?
+msgid "puzzles.create.siteDescription"
+msgstr "Which site will this puzzle be used on?"
+
+#. Tag all images that are correct answers. Each challenge will randomly show {count} of them.
+msgid "puzzles.create.tagDescription"
+msgstr "Tag all images that are correct answers. Each challenge will randomly show {count} of them."
+
+#. ({count} tagged)
+msgid "puzzles.create.tagged"
+msgstr "({count} tagged)"
+
+#. Create Puzzle
+msgid "puzzles.create.title"
+msgstr "Create Puzzle"
+
+#. Upload one first
+msgid "puzzles.create.uploadFirst"
+msgstr "Upload one first"
+
+#. Create Puzzle
+msgid "puzzles.createPuzzle"
+msgstr "Create Puzzle"
+
+#. Create a site
+msgid "puzzles.createSiteFirst"
+msgstr "Create a site"
+
+#.  first, then add puzzles to it.
+msgid "puzzles.createSiteFirstSuffix"
+msgstr " first, then add puzzles to it."
+
+#. Delete Puzzle
+msgid "puzzles.deletePuzzle"
+msgstr "Delete Puzzle"
+
+#. This will permanently delete this puzzle. Existing captcha sessions using it will stop working.
+msgid "puzzles.deletePuzzleDescription"
+msgstr "This will permanently delete this puzzle. Existing captcha sessions using it will stop working."
+
+#. difficulty {value}
+msgid "puzzles.difficulty"
+msgstr "difficulty {value}"
+
+#. (disabled)
+msgid "puzzles.disabled"
+msgstr "(disabled)"
+
+#. Correct Images
+msgid "puzzles.edit.correctImages"
+msgstr "Correct Images"
+
+#. Deleting this puzzle will remove it from the site. Existing captcha sessions using this puzzle will stop working.
+msgid "puzzles.edit.dangerDescription"
+msgstr "Deleting this puzzle will remove it from the site. Existing captcha sessions using this puzzle will stop working."
+
+#. Danger Zone
+msgid "puzzles.edit.dangerZone"
+msgstr "Danger Zone"
+
+#. If off, wrong answers are randomly drawn.
+msgid "puzzles.edit.handPickIncorrectHelp"
+msgstr "If off, wrong answers are randomly drawn."
+
+#. Prompt
+msgid "puzzles.edit.prompt"
+msgstr "Prompt"
+
+#. The word shown after \"Select all images with\".
+msgid "puzzles.edit.promptDescription"
+msgstr "The word shown after \"Select all images with\"."
+
+#. Edit Puzzle
+msgid "puzzles.edit.title"
+msgstr "Edit Puzzle"
+
+#. Image set: {name}
+msgid "puzzles.imageSet"
+msgstr "Image set: {name}"
+
+#. Create a puzzle to start using yCAPTCHA.
+msgid "puzzles.noPuzzlesDescription"
+msgstr "Create a puzzle to start using yCAPTCHA."
+
+#. No puzzles yet
+msgid "puzzles.noPuzzlesYet"
+msgstr "No puzzles yet"
+
+#. Puzzles
+msgid "puzzles.title"
+msgstr "Puzzles"
+
+#. Dark theme
+msgid "settings.appearance.darkTheme"
+msgstr "Dark theme"
+
+#. Choose your preferred color theme.
+msgid "settings.appearance.description"
+msgstr "Choose your preferred color theme."
+
+#. Light theme
+msgid "settings.appearance.lightTheme"
+msgstr "Light theme"
+
+#. System theme
+msgid "settings.appearance.systemTheme"
+msgstr "System theme"
+
+#. Appearance
+msgid "settings.appearance.title"
+msgstr "Appearance"
+
+#. Delete Account
+msgid "settings.deleteAccount.deleteButton"
+msgstr "Delete Account"
+
+#. Permanently delete your account and all associated data including sites, puzzles, image sets, and uploaded images.
+msgid "settings.deleteAccount.description"
+msgstr "Permanently delete your account and all associated data including sites, puzzles, image sets, and uploaded images."
+
+#. Failed to delete account
+msgid "settings.deleteAccount.failedToDelete"
+msgstr "Failed to delete account"
+
+#. This action is permanent and irreversible. All your sites, puzzles, image sets, and uploaded images will be permanently destroyed. Active CAPTCHA widgets on your sites will stop working immediately.
+msgid "settings.deleteAccount.step2Body"
+msgstr "This action is permanent and irreversible. All your sites, puzzles, image sets, and uploaded images will be permanently destroyed. Active CAPTCHA widgets on your sites will stop working immediately."
+
+#. I understand, continue
+msgid "settings.deleteAccount.step2Continue"
+msgstr "I understand, continue"
+
+#. Are you sure you want to do this?
+msgid "settings.deleteAccount.step2Title"
+msgstr "Are you sure you want to do this?"
+
+#. Continue
+msgid "settings.deleteAccount.step3Continue"
+msgstr "Continue"
+
+#. Your email
+msgid "settings.deleteAccount.step3Email"
+msgstr "Your email"
+
+#. To verify, type your email <email></email> and the phrase <phrase></phrase> below.
+msgid "settings.deleteAccount.step3Instruction"
+msgstr "To verify, type your email <email></email> and the phrase <phrase></phrase> below."
+
+#. Type \"{phrase}\"
+msgid "settings.deleteAccount.step3Phrase"
+msgstr "Type \"{phrase}\""
+
+#. This is your last chance. After this, there is no going back.
+msgid "settings.deleteAccount.step4Body"
+msgstr "This is your last chance. After this, there is no going back."
+
+#. Permanently delete my account
+msgid "settings.deleteAccount.step4Confirm"
+msgstr "Permanently delete my account"
+
+#. Deleting everything...
+msgid "settings.deleteAccount.step4Deleting"
+msgstr "Deleting everything..."
+
+#. Enter your password to permanently delete your account
+msgid "settings.deleteAccount.step4Label"
+msgstr "Enter your password to permanently delete your account"
+
+#. Your password
+msgid "settings.deleteAccount.step4Placeholder"
+msgstr "Your password"
+
+#. FINAL WARNING
+msgid "settings.deleteAccount.step4Title"
+msgstr "FINAL WARNING"
+
+#. Delete Account
+msgid "settings.deleteAccount.title"
+msgstr "Delete Account"
+
+#. Choose your preferred language.
+msgid "settings.language.description"
+msgstr "Choose your preferred language."
+
+#. Language
+msgid "settings.language.title"
+msgstr "Language"
+
+#. Add passkey
+msgid "settings.passkeys.addPasskey"
+msgstr "Add passkey"
+
+#. Added {date}
+msgid "settings.passkeys.added"
+msgstr "Added {date}"
+
+#. Sign in without a password using biometrics, security keys, or your device.
+msgid "settings.passkeys.description"
+msgstr "Sign in without a password using biometrics, security keys, or your device."
+
+#. Failed to add passkey
+msgid "settings.passkeys.failedToAdd"
+msgstr "Failed to add passkey"
+
+#. Failed to delete passkey
+msgid "settings.passkeys.failedToDelete"
+msgstr "Failed to delete passkey"
+
+#. Failed to rename passkey
+msgid "settings.passkeys.failedToRename"
+msgstr "Failed to rename passkey"
+
+#. No passkeys registered.
+msgid "settings.passkeys.noPasskeys"
+msgstr "No passkeys registered."
+
+#. Registering...
+msgid "settings.passkeys.registering"
+msgstr "Registering..."
+
+#. Passkeys
+msgid "settings.passkeys.title"
+msgstr "Passkeys"
+
+#. Unnamed passkey
+msgid "settings.passkeys.unnamedPasskey"
+msgstr "Unnamed passkey"
+
+#. Update your display name.
+msgid "settings.profile.description"
+msgstr "Update your display name."
+
+#. Failed to update
+msgid "settings.profile.failedToUpdate"
+msgstr "Failed to update"
+
+#. Name updated
+msgid "settings.profile.nameUpdated"
+msgstr "Name updated"
+
+#. Save Changes
+msgid "settings.profile.saveChanges"
+msgstr "Save Changes"
+
+#. Profile
+msgid "settings.profile.title"
+msgstr "Profile"
+
+#. Audio
+msgid "settings.storage.audioBytes"
+msgstr "Audio"
+
+#. Images
+msgid "settings.storage.imageBytes"
+msgstr "Images"
+
+#. Storage
+msgid "settings.storage.title"
+msgstr "Storage"
+
+#. {used} of {quota} used ({percent}%)
+msgid "settings.storage.used"
+msgstr "{used} of {quota} used ({percent}%)"
+
+#. Settings
+msgid "settings.title"
+msgstr "Settings"
+
+#. Audio
+msgid "sidebar.audio"
+msgstr "Audio"
+
+#. Docs
+msgid "sidebar.docs"
+msgstr "Docs"
+
+#. Gallery
+msgid "sidebar.gallery"
+msgstr "Gallery"
+
+#. Home Page
+msgid "sidebar.homePage"
+msgstr "Home Page"
+
+#. Image Sets
+msgid "sidebar.imageSets"
+msgstr "Image Sets"
+
+#. Manage
+msgid "sidebar.manage"
+msgstr "Manage"
+
+#. Overview
+msgid "sidebar.overview"
+msgstr "Overview"
+
+#. Puzzles
+msgid "sidebar.puzzles"
+msgstr "Puzzles"
+
+#. Settings
+msgid "sidebar.settings"
+msgstr "Settings"
+
+#. Sites
+msgid "sidebar.sites"
+msgstr "Sites"
+
+#. Add Site
+msgid "sites.addSite"
+msgstr "Add Site"
+
+#. Create Site
+msgid "sites.createSheet.createSite"
+msgstr "Create Site"
+
+#. Add a site to get your API keys for embedding the CAPTCHA widget.
+msgid "sites.createSheet.description"
+msgstr "Add a site to get your API keys for embedding the CAPTCHA widget."
+
+#. example.com
+msgid "sites.createSheet.domainPlaceholder"
+msgstr "example.com"
+
+#. My Website
+msgid "sites.createSheet.namePlaceholder"
+msgstr "My Website"
+
+#. Create a new site
+msgid "sites.createSheet.title"
+msgstr "Create a new site"
+
+#. Delete Site
+msgid "sites.deleteSite"
+msgstr "Delete Site"
+
+#. This will permanently delete this site and all its puzzles. This action cannot be undone.
+msgid "sites.deleteSiteDescription"
+msgstr "This will permanently delete this site and all its puzzles. This action cannot be undone."
+
+#. API Keys
+msgid "sites.detail.apiKeys"
+msgstr "API Keys"
+
+#. Use these keys to integrate yCAPTCHA with your site.
+msgid "sites.detail.apiKeysDescription"
+msgstr "Use these keys to integrate yCAPTCHA with your site."
+
+#. Create Puzzle
+msgid "sites.detail.createPuzzle"
+msgstr "Create Puzzle"
+
+#. Deleting this site will permanently remove all its puzzles and active CAPTCHA widgets will stop working.
+msgid "sites.detail.dangerDescription"
+msgstr "Deleting this site will permanently remove all its puzzles and active CAPTCHA widgets will stop working."
+
+#. Danger Zone
+msgid "sites.detail.dangerZone"
+msgstr "Danger Zone"
+
+#. Delete Puzzle
+msgid "sites.detail.deletePuzzle"
+msgstr "Delete Puzzle"
+
+#. This will permanently delete this puzzle. Existing captcha sessions using it will stop working.
+msgid "sites.detail.deletePuzzleDescription"
+msgstr "This will permanently delete this puzzle. Existing captcha sessions using it will stop working."
+
+#. This will permanently delete this site and all its puzzles. Active CAPTCHA widgets will stop working.
+msgid "sites.detail.deleteSiteConfirmDescription"
+msgstr "This will permanently delete this site and all its puzzles. Active CAPTCHA widgets will stop working."
+
+#. difficulty: {value}
+msgid "sites.detail.difficulty"
+msgstr "difficulty: {value}"
+
+#. example.com
+msgid "sites.detail.domainPlaceholder"
+msgstr "example.com"
+
+#. Copy the code below and paste it into your website.
+msgid "sites.detail.embedDescription"
+msgstr "Copy the code below and paste it into your website."
+
+#. Embed Widget
+msgid "sites.detail.embedWidget"
+msgstr "Embed Widget"
+
+#. No puzzles yet. Create one to start using yCAPTCHA on this site.
+msgid "sites.detail.noPuzzlesYet"
+msgstr "No puzzles yet. Create one to start using yCAPTCHA on this site."
+
+#. Preview
+msgid "sites.detail.previewLabel"
+msgstr "Preview"
+
+#. {count, plural, one {# puzzle} other {# puzzles}}
+msgid "sites.detail.puzzleCount"
+msgstr "{count, plural, one {# puzzle} other {# puzzles}}"
+
+#. Puzzles
+msgid "sites.detail.puzzles"
+msgstr "Puzzles"
+
+#. Regenerate
+msgid "sites.detail.regenerate"
+msgstr "Regenerate"
+
+#. This will invalidate your current keys. Any existing widget embeds using the old site key will stop working until you update them.
+msgid "sites.detail.regenerateConfirmDescription"
+msgstr "This will invalidate your current keys. Any existing widget embeds using the old site key will stop working until you update them."
+
+#. Regenerate API Keys
+msgid "sites.detail.regenerateConfirmTitle"
+msgstr "Regenerate API Keys"
+
+#. Regenerate Keys
+msgid "sites.detail.regenerateKeys"
+msgstr "Regenerate Keys"
+
+#. Regenerating...
+msgid "sites.detail.regenerating"
+msgstr "Regenerating..."
+
+#. Save Changes
+msgid "sites.detail.saveChanges"
+msgstr "Save Changes"
+
+#. Secret Key (private)
+msgid "sites.detail.secretKeyPrivate"
+msgstr "Secret Key (private)"
+
+#. Site Key (public)
+msgid "sites.detail.siteKeyPublic"
+msgstr "Site Key (public)"
+
+#. Site Settings
+msgid "sites.detail.siteSettings"
+msgstr "Site Settings"
+
+#. CAPTCHA widget preview
+msgid "sites.detail.widgetPreviewTitle"
+msgstr "CAPTCHA widget preview"
+
+#. Create your first site to get started with yCAPTCHA.
+msgid "sites.noSitesDescription"
+msgstr "Create your first site to get started with yCAPTCHA."
+
+#. No sites yet
+msgid "sites.noSitesYet"
+msgstr "No sites yet"
+
+#. Sites
+msgid "sites.title"
+msgstr "Sites"

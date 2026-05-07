@@ -1,0 +1,1935 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: \n"
+#. Active puzzles
+msgid "analytics.activePuzzles"
+msgstr "启用的题目"
+
+#. across {count, plural, one {# site} other {# sites}}
+msgid "analytics.activePuzzlesHint"
+msgstr "覆盖 {count} 个站点"
+
+#. enabled on this site
+msgid "analytics.activePuzzlesOnSiteHint"
+msgstr "本站已启用"
+
+#. Successful solves over time
+msgid "analytics.attemptsOverTime"
+msgstr "成功解答趋势"
+
+#. Fails
+msgid "analytics.fails"
+msgstr "失败数"
+
+#. {count} fails
+msgid "analytics.failsShort"
+msgstr "{count} 次失败"
+
+#. No data yet
+msgid "analytics.noDataYet"
+msgstr "暂无数据"
+
+#. Pass rate
+msgid "analytics.passRate"
+msgstr "通过率"
+
+#. of attempts that passed
+msgid "analytics.passRateHint"
+msgstr "通过的尝试占比"
+
+#. Passes
+msgid "analytics.passes"
+msgstr "通过"
+
+#. Solves
+msgid "analytics.solves"
+msgstr "解答数"
+
+#. {count} solves
+msgid "analytics.solvesShort"
+msgstr "{count} 次解答"
+
+#. Overview
+msgid "analytics.title"
+msgstr "概览"
+
+#. Top puzzles by volume
+msgid "analytics.topPuzzles"
+msgstr "热门题目"
+
+#. Verifies
+msgid "analytics.verifies"
+msgstr "验证次数"
+
+#. tokens consumed by your backend
+msgid "analytics.verifiesHint"
+msgstr "后端消费的 token 数"
+
+#. Verifies over time
+msgid "analytics.verifiesOverTime"
+msgstr "验证趋势"
+
+#. Last 30 days
+msgid "analytics.window"
+msgstr "近 30 天"
+
+#. Answer
+msgid "audio.answer"
+msgstr "答案"
+
+#. This audio is referenced by the following puzzles. Remove it first.
+msgid "audio.cannotDeleteDescription"
+msgstr "以下验证题目引用了此音频，请先移除。"
+
+#. Cannot delete audio
+msgid "audio.cannotDeleteTitle"
+msgstr "无法删除音频"
+
+#. Delete Audio
+msgid "audio.deleteAudio"
+msgstr "删除音频"
+
+#. This will permanently delete this audio clip. You must remove it from any puzzles first.
+msgid "audio.deleteAudioDescription"
+msgstr "这将永久删除此音频片段。你需要先将其从所有验证题目中移除。"
+
+#. Deleting this audio clip will remove it from storage. You must remove it from any puzzles first.
+msgid "audio.detail.dangerDescription"
+msgstr "删除此音频片段将从存储中移除。你需要先将其从所有验证题目中移除。"
+
+#. Danger Zone
+msgid "audio.detail.dangerZone"
+msgstr "危险区域"
+
+#. Playback
+msgid "audio.detail.playback"
+msgstr "播放"
+
+#. Settings
+msgid "audio.detail.settings"
+msgstr "设置"
+
+#. Update the name and correct answer for this audio clip.
+msgid "audio.detail.settingsDescription"
+msgstr "更新此音频片段的名称和正确答案。"
+
+#. Upload audio clips to use as alternative CAPTCHA verification.
+msgid "audio.noAudioDescription"
+msgstr "上传音频片段作为验证码的替代验证方式。"
+
+#. No audio clips yet
+msgid "audio.noAudioYet"
+msgstr "暂无音频片段"
+
+#. Audio Clips
+msgid "audio.title"
+msgstr "音频片段"
+
+#. The text answer users must type to pass the audio CAPTCHA.
+msgid "audio.upload.answerHint"
+msgstr "用户必须输入的文本答案以通过音频验证。"
+
+#. Correct Answer
+msgid "audio.upload.answerLabel"
+msgstr "正确答案"
+
+#. e.g. Describe the city you live in
+msgid "audio.upload.answerPlaceholder"
+msgstr "例如：Describe the city you live in"
+
+#. Change file
+msgid "audio.upload.changeFile"
+msgstr "更换文件"
+
+#. Drop an audio file here or click to browse
+msgid "audio.upload.dropOrBrowse"
+msgstr "将音频文件拖放至此处或点击浏览"
+
+#. e.g. Spoken digits
+msgid "audio.upload.namePlaceholder"
+msgstr "例如：语音数字"
+
+#. Pause
+msgid "audio.upload.pause"
+msgstr "暂停"
+
+#. Play
+msgid "audio.upload.preview"
+msgstr "播放"
+
+#. Upload Audio Clip
+msgid "audio.upload.title"
+msgstr "上传音频片段"
+
+#. Upload Audio
+msgid "audio.uploadAudio"
+msgstr "上传音频"
+
+#. Back to sign in
+msgid "auth.forgotPassword.backToLogin"
+msgstr "返回登录"
+
+#. Enter your email and we'll send you a reset link.
+msgid "auth.forgotPassword.description"
+msgstr "输入你的邮箱，我们会发送一封重置密码邮件。"
+
+#. you@example.com
+msgid "auth.forgotPassword.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Unable to send reset email. Please try again.
+msgid "auth.forgotPassword.genericError"
+msgstr "无法发送重置邮件，请稍后重试。"
+
+#. Sending reset link...
+msgid "auth.forgotPassword.sending"
+msgstr "正在发送重置链接..."
+
+#. Send reset link
+msgid "auth.forgotPassword.submit"
+msgstr "发送重置链接"
+
+#. If an account exists for {email}, we sent a password reset link.
+msgid "auth.forgotPassword.successDescription"
+msgstr "如果 {email} 对应的账户存在，我们已发送密码重置链接。"
+
+#. Check your inbox
+msgid "auth.forgotPassword.successTitle"
+msgstr "请查收邮件"
+
+#. Forgot your password?
+msgid "auth.forgotPassword.title"
+msgstr "忘记密码?"
+
+#. Continue with GitHub
+msgid "auth.login.continueWithGitHub"
+msgstr "使用 GitHub 继续"
+
+#. Sign in to your account
+msgid "auth.login.description"
+msgstr "登录你的账户"
+
+#. Please verify your email before signing in.
+msgid "auth.login.emailNotVerified"
+msgstr "请先验证邮箱后再登录。"
+
+#. you@example.com
+msgid "auth.login.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Forgot your password?
+msgid "auth.login.forgotPassword"
+msgstr "忘记密码?"
+
+#. Don't have an account?
+msgid "auth.login.noAccount"
+msgstr "还没有账户？"
+
+#. Passkey sign-in failed
+msgid "auth.login.passkeyFailed"
+msgstr "通行密钥登录失败"
+
+#. ••••••••
+msgid "auth.login.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Resend verification email
+msgid "auth.login.resendVerification"
+msgstr "重新发送验证邮件"
+
+#. Sign In
+msgid "auth.login.signIn"
+msgstr "登录"
+
+#. Sign in with Passkey
+msgid "auth.login.signInWithPasskey"
+msgstr "使用通行密钥登录"
+
+#. Sign up
+msgid "auth.login.signUp"
+msgstr "注册"
+
+#. Signing in...
+msgid "auth.login.signingIn"
+msgstr "登录中..."
+
+#. Welcome back
+msgid "auth.login.title"
+msgstr "欢迎回来"
+
+#. Back to sign in
+msgid "auth.resetPassword.backToLogin"
+msgstr "返回登录"
+
+#. Confirm Password
+msgid "auth.resetPassword.confirmPassword"
+msgstr "确认密码"
+
+#. Choose a new password for your yCAPTCHA account.
+msgid "auth.resetPassword.description"
+msgstr "为你的 yCAPTCHA 账户设置一个新密码。"
+
+#. Unable to reset password. Please try again.
+msgid "auth.resetPassword.genericError"
+msgstr "无法重置密码，请稍后重试。"
+
+#. This reset link is invalid or expired. Request a new one to keep going.
+msgid "auth.resetPassword.invalidDescription"
+msgstr "此重置链接无效或已过期，请重新申请一个新的链接。"
+
+#. This reset link is invalid
+msgid "auth.resetPassword.invalidTitle"
+msgstr "此重置链接无效"
+
+#. New Password
+msgid "auth.resetPassword.newPassword"
+msgstr "新密码"
+
+#. ••••••••
+msgid "auth.resetPassword.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Passwords do not match
+msgid "auth.resetPassword.passwordsMismatch"
+msgstr "两次密码输入不一致"
+
+#. Request a new link
+msgid "auth.resetPassword.requestNewLink"
+msgstr "申请新链接"
+
+#. Resetting password...
+msgid "auth.resetPassword.resetting"
+msgstr "正在重置密码..."
+
+#. Reset password
+msgid "auth.resetPassword.submit"
+msgstr "重置密码"
+
+#. Your password has been reset. You can sign in with your new password now.
+msgid "auth.resetPassword.successDescription"
+msgstr "你的密码已重置，现在可以使用新密码登录。"
+
+#. Password updated
+msgid "auth.resetPassword.successTitle"
+msgstr "密码已更新"
+
+#. Set a new password
+msgid "auth.resetPassword.title"
+msgstr "设置新密码"
+
+#. Back to sign in
+msgid "auth.signup.backToLogin"
+msgstr "返回登录"
+
+#. We sent a verification link to {email}. Click the link to activate your account.
+msgid "auth.signup.checkEmailDescription"
+msgstr "我们已向 {email} 发送了一封验证邮件，请点击邮件中的链接激活你的账户。"
+
+#. Check your inbox
+msgid "auth.signup.checkEmailTitle"
+msgstr "请查收邮件"
+
+#. Confirm Password
+msgid "auth.signup.confirmPassword"
+msgstr "确认密码"
+
+#. Continue with GitHub
+msgid "auth.signup.continueWithGitHub"
+msgstr "使用 GitHub 继续"
+
+#. Creating account...
+msgid "auth.signup.creatingAccount"
+msgstr "创建账户中..."
+
+#. Get started with yCAPTCHA
+msgid "auth.signup.description"
+msgstr "开始使用 yCAPTCHA"
+
+#. you@example.com
+msgid "auth.signup.emailPlaceholder"
+msgstr "you@example.com"
+
+#. Already have an account?
+msgid "auth.signup.hasAccount"
+msgstr "已有账户？"
+
+#. Your name
+msgid "auth.signup.namePlaceholder"
+msgstr "你的名字"
+
+#. ••••••••
+msgid "auth.signup.passwordPlaceholder"
+msgstr "••••••••"
+
+#. Passwords do not match
+msgid "auth.signup.passwordsMismatch"
+msgstr "两次密码输入不一致"
+
+#. Resend email
+msgid "auth.signup.resend"
+msgstr "重新发送邮件"
+
+#. Daily limit reached. Try again in {hours}h.
+msgid "auth.signup.resendDaily"
+msgstr "今日重发次数已达上限，请 {hours} 小时后再试。"
+
+#. Resend in {seconds}s
+msgid "auth.signup.resendIn"
+msgstr "{seconds} 秒后可重发"
+
+#. Too many attempts. Try again in {seconds}s.
+msgid "auth.signup.resendTooMany"
+msgstr "操作过于频繁，请 {seconds} 秒后重试。"
+
+#. Sending...
+msgid "auth.signup.resending"
+msgstr "发送中..."
+
+#. Sent. Check your inbox again.
+msgid "auth.signup.resent"
+msgstr "已发送，请再次查收邮件。"
+
+#. Sign in
+msgid "auth.signup.signIn"
+msgstr "登录"
+
+#. Sign Up
+msgid "auth.signup.signUp"
+msgstr "注册"
+
+#. Create an account
+msgid "auth.signup.title"
+msgstr "创建账户"
+
+#. Cancel
+msgid "common.cancel"
+msgstr "取消"
+
+#. Clear
+msgid "common.clear"
+msgstr "清除"
+
+#. Close
+msgid "common.close"
+msgstr "关闭"
+
+#. Copied to clipboard
+msgid "common.copiedToClipboard"
+msgstr "已复制到剪贴板"
+
+#. Creating...
+msgid "common.creating"
+msgstr "创建中..."
+
+#. Delete
+msgid "common.delete"
+msgstr "删除"
+
+#. Deleting...
+msgid "common.deleting"
+msgstr "删除中..."
+
+#. Domain
+msgid "common.domain"
+msgstr "域名"
+
+#. Email
+msgid "common.email"
+msgstr "邮箱"
+
+#. Failed to copy
+msgid "common.failedToCopy"
+msgstr "复制失败"
+
+#. Loading...
+msgid "common.loading"
+msgstr "加载中..."
+
+#. Manage
+msgid "common.manage"
+msgstr "管理"
+
+#. Name
+msgid "common.name"
+msgstr "名称"
+
+#. or
+msgid "common.or"
+msgstr "或"
+
+#. Password
+msgid "common.password"
+msgstr "密码"
+
+#. Save
+msgid "common.save"
+msgstr "保存"
+
+#. Save Changes
+msgid "common.saveChanges"
+msgstr "保存更改"
+
+#. Saving...
+msgid "common.saving"
+msgstr "保存中..."
+
+#. Type <bold>{text}</bold> to confirm.
+msgid "confirmDelete.typeToConfirm"
+msgstr "输入 <bold>{text}</bold> 以确认。"
+
+#. Something went wrong
+msgid "dashboard.errorTitle"
+msgstr "出错了"
+
+#. An unexpected error occurred.
+msgid "dashboard.genericError"
+msgstr "发生了意外错误。"
+
+#. Try again
+msgid "dashboard.tryAgain"
+msgstr "重试"
+
+#. Easy
+msgid "difficulty.easy"
+msgstr "简单"
+
+#. Hard
+msgid "difficulty.hard"
+msgstr "困难"
+
+#. Medium
+msgid "difficulty.medium"
+msgstr "中等"
+
+#. Someone just tried to create a new yCAPTCHA account with your email. You already have one, so no new account was created. Click below to sign in instantly — no password needed. This link expires in 15 minutes.
+msgid "email.existingAccount.body"
+msgstr "有人刚才尝试用你的邮箱创建新的 yCAPTCHA 账户。由于你已经拥有账户，系统未创建新账户。点击下方按钮一键登录，无需密码。该链接 15 分钟内有效。"
+
+#. Sign in instantly
+msgid "email.existingAccount.button"
+msgstr "一键登录"
+
+#. If the button doesn't work, copy this link:
+msgid "email.existingAccount.fallbackHint"
+msgstr "如果按钮无法打开，请复制以下链接："
+
+#. © yCAPTCHA
+msgid "email.existingAccount.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.existingAccount.greeting"
+msgstr "你好 {name}，"
+
+#. You already have an account
+msgid "email.existingAccount.heading"
+msgstr "你已经有一个账户"
+
+#. If this wasn't you, you can safely ignore this email — the link will expire on its own. Your account is secure.
+msgid "email.existingAccount.ignoreNote"
+msgstr "如果这不是你本人操作，直接忽略即可，链接会自动失效，你的账户是安全的。"
+
+#. You already have a yCAPTCHA account — one-click sign in
+msgid "email.existingAccount.preview"
+msgstr "你已有 yCAPTCHA 账户 —— 一键登录"
+
+#. Someone tried to sign up with your email
+msgid "email.existingAccount.subject"
+msgstr "有人尝试用你的邮箱注册 yCAPTCHA"
+
+#. We received a request to reset your yCAPTCHA password. Click the button below to choose a new one.
+msgid "email.resetPassword.body"
+msgstr "我们收到了重置 yCAPTCHA 密码的请求。点击下方按钮即可设置新密码。"
+
+#. Reset password
+msgid "email.resetPassword.button"
+msgstr "重置密码"
+
+#. This link expires in 1 hour.
+msgid "email.resetPassword.expiresNote"
+msgstr "该链接将在 1 小时后失效。"
+
+#. If the button doesn't work, copy and paste this link into your browser:
+msgid "email.resetPassword.fallbackHint"
+msgstr "如果按钮无法打开，请复制以下链接到浏览器："
+
+#. © yCAPTCHA
+msgid "email.resetPassword.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.resetPassword.greeting"
+msgstr "你好 {name}，"
+
+#. Reset your password
+msgid "email.resetPassword.heading"
+msgstr "重置密码"
+
+#. If you didn't request a password reset, you can safely ignore this email.
+msgid "email.resetPassword.ignoreNote"
+msgstr "如果这不是你发起的密码重置请求，可以直接忽略这封邮件。"
+
+#. Reset your yCAPTCHA password
+msgid "email.resetPassword.preview"
+msgstr "重置你的 yCAPTCHA 密码"
+
+#. Reset your yCAPTCHA password
+msgid "email.resetPassword.subject"
+msgstr "重置你的 yCAPTCHA 密码"
+
+#. Welcome to yCAPTCHA. Click the button below to confirm your email address and activate your account.
+msgid "email.verification.body"
+msgstr "欢迎使用 yCAPTCHA。请点击下方按钮确认你的邮箱地址，激活账户。"
+
+#. Verify email
+msgid "email.verification.button"
+msgstr "验证邮箱"
+
+#. This link expires in 24 hours.
+msgid "email.verification.expiresNote"
+msgstr "该链接将在 24 小时后失效。"
+
+#. If the button doesn't work, copy and paste this link into your browser:
+msgid "email.verification.fallbackHint"
+msgstr "如果按钮无法打开，请复制以下链接到浏览器："
+
+#. © yCAPTCHA
+msgid "email.verification.footer"
+msgstr "© yCAPTCHA"
+
+#. Hi {name},
+msgid "email.verification.greeting"
+msgstr "你好 {name}，"
+
+#. Verify your email
+msgid "email.verification.heading"
+msgstr "验证你的邮箱"
+
+#. If you didn't create an account, you can safely ignore this email.
+msgid "email.verification.ignoreNote"
+msgstr "如果你并未创建账户，可以直接忽略这封邮件。"
+
+#. Confirm your email to finish setting up yCAPTCHA
+msgid "email.verification.preview"
+msgstr "确认邮箱以完成 yCAPTCHA 账户激活"
+
+#. Verify your email for yCAPTCHA
+msgid "email.verification.subject"
+msgstr "验证你的 yCAPTCHA 邮箱"
+
+#. Acceptable Use Policy
+msgid "gallery.acceptableUseLink"
+msgstr "Acceptable Use Policy"
+
+#. Publish anonymously
+msgid "gallery.anonymousCheckbox"
+msgstr "匿名发布"
+
+#. Otherwise you'll be credited as <credit>{name}</credit>.
+msgid "gallery.anonymousCreditedAs"
+msgstr "否则会以 <credit>{name}</credit> 身份展示。"
+
+#. ← All image sets
+msgid "gallery.backToAll"
+msgstr "← 返回图像集列表"
+
+#. Before you publish
+msgid "gallery.beforeYouPublish"
+msgstr "发布前请确认"
+
+#. Gallery
+msgid "gallery.browseEyebrow"
+msgstr "图库"
+
+#. Image sets,
+msgid "gallery.browseHeadlineA"
+msgstr "图像集,"
+
+#. from the community.
+msgid "gallery.browseHeadlineB"
+msgstr "来自社区。"
+
+#. Fork a shared image set into your account, then wire up your own prompt and correct images on top.
+msgid "gallery.browseTagline"
+msgstr "把社区共享的图像集 fork 到你的账号,再叠加自己的题目和正确答案。"
+
+#. anonymous
+msgid "gallery.cardAnonymous"
+msgstr "匿名"
+
+#. by
+msgid "gallery.cardBy"
+msgstr "作者:"
+
+#. (empty preview)
+msgid "gallery.cardEmptyPreview"
+msgstr "(无预览)"
+
+#. {count} {count, plural, one {fork} other {forks}}
+msgid "gallery.cardForks"
+msgstr "{count} 次 fork"
+
+#. {count} {count, plural, one {image} other {images}}
+msgid "gallery.cardImages"
+msgstr "{count} 张图片"
+
+#. Clear filter
+msgid "gallery.clearFilter"
+msgstr "清除筛选"
+
+#. This is permanent. The images are removed from storage; forks made by other users stay intact.
+msgid "gallery.deleteDialogDescription"
+msgstr "此操作不可恢复。图片将从存储中移除,但其他用户已经 fork 的副本不受影响。"
+
+#. Delete gallery item?
+msgid "gallery.deleteDialogTitle"
+msgstr "删除图库作品?"
+
+#. Delete
+msgid "gallery.deleteItem"
+msgstr "删除"
+
+#. Description (optional)
+msgid "gallery.descriptionLabel"
+msgstr "简介 (可选)"
+
+#. Image set
+msgid "gallery.detailEyebrow"
+msgstr "图像集"
+
+#. No items published yet. Be the first — publish from one of your image sets.
+msgid "gallery.emptyBody"
+msgstr "还没有发布的图像集。来做第一个吧 —— 从你的图像集中挑一个发布。"
+
+#. Gallery's just opening
+msgid "gallery.emptyHeadline"
+msgstr "图库刚刚开放"
+
+#. Try another tag, or clear the filter to see everything.
+msgid "gallery.emptyTagBody"
+msgstr "换个标签试试,或者清除筛选查看全部。"
+
+#. Nothing under that tag yet
+msgid "gallery.emptyTagHeadline"
+msgstr "该标签下暂无内容"
+
+#. Filter:
+msgid "gallery.filterLabel"
+msgstr "筛选:"
+
+#. Acceptable use
+msgid "gallery.footerAcceptableUse"
+msgstr "Acceptable use"
+
+#. © 2026 yCAPTCHA Gallery
+msgid "gallery.footerCopyright"
+msgstr "© 2026 yCAPTCHA 图库"
+
+#. Docs
+msgid "gallery.footerDocs"
+msgstr "文档"
+
+#. Privacy
+msgid "gallery.footerPrivacy"
+msgstr "Privacy"
+
+#. source
+msgid "gallery.footerSource"
+msgstr "源代码"
+
+#. Forking copies every image into your account as a new image set. From there, wire it to a site and set your own prompt + correct images.
+msgid "gallery.forkHint"
+msgstr "fork 会把所有图片复制到你账号下作为一个新的图像集,之后你可以把它关联到站点,并自行设置题目和正确答案。"
+
+#. Fork to my account
+msgid "gallery.forkToMyAccount"
+msgstr "fork 到我的账号"
+
+#. Forking…
+msgid "gallery.forking"
+msgstr "正在 fork…"
+
+#. Gallery
+msgid "gallery.galleryLabel"
+msgstr "图库"
+
+#. Go to image sets
+msgid "gallery.goToImageSets"
+msgstr "前往图像集"
+
+#. Images in this set
+msgid "gallery.imagesInSet"
+msgstr "本集包含的图片"
+
+#. Item deleted
+msgid "gallery.itemDeleted"
+msgstr "已删除"
+
+#. Manage in My items
+msgid "gallery.manageInMine"
+msgstr "在「我的作品」中管理"
+
+#. This is your image set. Manage it from My items to edit, unpublish, or wire it to a site.
+msgid "gallery.manageInMineHint"
+msgstr "这是你自己的图像集。在「我的作品」中可以编辑、下架或关联到站点。"
+
+#. Head to your image sets and pick one to publish. You'll confirm the images before anything goes public.
+msgid "gallery.mineEmptyBody"
+msgstr "去你的图像集页面挑一个发布吧。在公开之前你可以再确认一次图片。"
+
+#. Nothing published yet
+msgid "gallery.mineEmptyHeadline"
+msgstr "还没有发布任何内容"
+
+#. Your gallery items
+msgid "gallery.mineEyebrow"
+msgstr "你的图库作品"
+
+#. Everything you've published.
+msgid "gallery.mineHeadline"
+msgstr "你发布的全部内容。"
+
+#. Browse
+msgid "gallery.navBrowse"
+msgstr "浏览"
+
+#. Dashboard
+msgid "gallery.navDashboard"
+msgstr "控制台"
+
+#. ← Main site
+msgid "gallery.navMainSite"
+msgstr "← 主站"
+
+#. My items
+msgid "gallery.navMine"
+msgstr "我的作品"
+
+#. Sign in
+msgid "gallery.navSignIn"
+msgstr "登录"
+
+#. Privacy Policy
+msgid "gallery.privacyLink"
+msgstr "Privacy Policy"
+
+#. Back to {name}
+msgid "gallery.publishBackTo"
+msgstr "返回 {name}"
+
+#. Publish to gallery
+msgid "gallery.publishCta"
+msgstr "发布到图库"
+
+#. Publish to gallery
+msgid "gallery.publishEyebrow"
+msgstr "发布到图库"
+
+#. Share <em>{name}</em> as an image set
+msgid "gallery.publishHeadline"
+msgstr "将 <em>{name}</em> 作为图像集分享"
+
+#. You're sharing the below <strong>image pool</strong>. Be advised that others can use your images freely on their sites.
+msgid "gallery.publishIntroA"
+msgstr "你正在分享以下<strong>图像池</strong>。请注意,其他人可以自由地在自己的站点上使用这些图片。"
+
+#. Gallery items are <strong>frozen snapshots</strong>. Editing or deleting this image set afterwards won't change what's public.
+msgid "gallery.publishIntroB"
+msgstr "图库作品是<strong>冻结快照</strong>,之后编辑或删除这个图像集都不会影响已公开的内容。"
+
+#. Publish one of yours
+msgid "gallery.publishOneOfYours"
+msgstr "发布你的图像集"
+
+#. Publishing…
+msgid "gallery.publishing"
+msgstr "正在发布…"
+
+#. Sign in to fork
+msgid "gallery.signInToFork"
+msgstr "登录后 fork"
+
+#. Forking copies this set into your account so you can build a puzzle around it.
+msgid "gallery.signInToForkHint"
+msgstr "fork 会把这个图像集复制到你的账号,方便你基于它搭建验证码。"
+
+#. Popular
+msgid "gallery.sortPopular"
+msgstr "热门"
+
+#. Recent
+msgid "gallery.sortRecent"
+msgstr "最新"
+
+#. I have read and agree to the
+msgid "gallery.termsAgree"
+msgstr "我已阅读并同意"
+
+#. and
+msgid "gallery.termsAnd"
+msgstr "和"
+
+#. I understand these images may become permanently public and reusable by anyone in the Gallery.
+msgid "gallery.termsExplainer"
+msgstr "我理解这些图片可能会永久公开,并可被图库中任何人重复使用。"
+
+#. Title
+msgid "gallery.titleLabel"
+msgstr "标题"
+
+#. This set has {count} {count, plural, one {image} other {images}}. Gallery items need at least 9 images (3×3 grid). Add more before publishing.
+msgid "gallery.tooFewImages"
+msgstr "本图像集只有 {count} 张图片。图库作品至少需要 9 张 (3×3 网格),请先补充后再发布。"
+
+#. {count} total
+msgid "gallery.totalCount"
+msgstr "共 {count} 张"
+
+#. What's going out ({count} {count, plural, one {image} other {images}})
+msgid "gallery.whatsGoingOut"
+msgstr "将公开的内容 ({count} 张图片)"
+
+#. Every image below will be copied to the gallery and made public.
+msgid "gallery.whatsGoingOutDesc"
+msgstr "下面的每张图片都会被复制到图库并公开。"
+
+#. This image set is referenced by the following puzzles. Remove them first.
+msgid "imageSets.cannotDeleteDescription"
+msgstr "以下题目正在引用此图片集，请先删除它们。"
+
+#. Cannot delete image set
+msgid "imageSets.cannotDeleteTitle"
+msgstr "无法删除图片集"
+
+#. Give your image set a name. You can upload images after creating it.
+msgid "imageSets.create.description"
+msgstr "为你的图片集命名。创建后可以上传图片。"
+
+#. e.g. NYC Subway Signs
+msgid "imageSets.create.namePlaceholder"
+msgstr "例如：地铁标志"
+
+#. Create Image Set
+msgid "imageSets.create.title"
+msgstr "创建图片集"
+
+#. Create Image Set
+msgid "imageSets.createImageSet"
+msgstr "创建图片集"
+
+#. Delete Image Set
+msgid "imageSets.deleteImageSet"
+msgstr "删除图片集"
+
+#. This will permanently delete this image set and all its images. You must remove any puzzles using this set first.
+msgid "imageSets.deleteImageSetDescription"
+msgstr "此操作将永久删除此图片集及其所有图片。你必须先删除所有使用此图片集的题目。"
+
+#. Deleting this image set will also remove all images from storage. You must remove any puzzles using this set first.
+msgid "imageSets.detail.dangerDescription"
+msgstr "删除此图片集将同时从存储中移除所有图片。你必须先删除所有使用此图片集的题目。"
+
+#. Danger Zone
+msgid "imageSets.detail.dangerZone"
+msgstr "危险区域"
+
+#. This will permanently delete this image set and all its images from storage. You must remove any puzzles using this set first.
+msgid "imageSets.detail.deleteConfirmDescription"
+msgstr "此操作将永久删除此图片集及其存储中的所有图片。你必须先删除所有使用此图片集的题目。"
+
+#. Drop images here or click to browse
+msgid "imageSets.detail.dropOrBrowse"
+msgstr "将图片拖放至此处或点击浏览"
+
+#. Exceeds 20MB
+msgid "imageSets.detail.errorExceedsSize"
+msgstr "超过 20MB"
+
+#. HEIC not supported by this browser. Please use Safari
+msgid "imageSets.detail.errorHeicUnsupported"
+msgstr "此浏览器不支持 HEIC 格式，请使用 Safari"
+
+#. Maximum {count} files at a time.
+msgid "imageSets.detail.errorMaxFiles"
+msgstr "每次最多 {count} 个文件。"
+
+#. Not an image
+msgid "imageSets.detail.errorNotAnImage"
+msgstr "不是图片"
+
+#. Storage quota exceeded
+msgid "imageSets.detail.errorOverQuota"
+msgstr "已超出存储配额"
+
+#. Unsupported format
+msgid "imageSets.detail.errorUnsupportedFormat"
+msgstr "不支持的格式"
+
+#. Upload failed
+msgid "imageSets.detail.errorUploadFailed"
+msgstr "上传失败"
+
+#. Images
+msgid "imageSets.detail.images"
+msgstr "图片"
+
+#. No images yet. Upload some above.
+msgid "imageSets.detail.noImagesYet"
+msgstr "还没有图片。请在上方上传一些。"
+
+#. Compressing...
+msgid "imageSets.detail.statusCompressing"
+msgstr "压缩中..."
+
+#. Done
+msgid "imageSets.detail.statusDone"
+msgstr "完成"
+
+#. Duplicate
+msgid "imageSets.detail.statusDuplicate"
+msgstr "重复"
+
+#. Uploading...
+msgid "imageSets.detail.statusUploading"
+msgstr "上传中..."
+
+#. Waiting...
+msgid "imageSets.detail.statusWaiting"
+msgstr "等待中..."
+
+#. Drag and drop or click to select. Non-standard formats (HEIC, TIFF) are auto-converted.
+msgid "imageSets.detail.uploadDescription"
+msgstr "拖放或点击选择文件。非标准格式（HEIC、TIFF）将自动转换。"
+
+#. Upload Images
+msgid "imageSets.detail.uploadImages"
+msgstr "上传图片"
+
+#. Uploading...
+msgid "imageSets.detail.uploading"
+msgstr "上传中..."
+
+#. {count} {count, plural, one {image} other {images}}
+msgid "imageSets.imageCount"
+msgstr "{count} 张图片"
+
+#. Create an image set and upload images to use in puzzles.
+msgid "imageSets.noImageSetsDescription"
+msgstr "创建一个图片集并上传图片以用于题目。"
+
+#. No image sets yet
+msgid "imageSets.noImageSetsYet"
+msgstr "还没有图片集"
+
+#. Image Sets
+msgid "imageSets.title"
+msgstr "图片集"
+
+#. + bring your own
+msgid "landing.bringYourOwn"
+msgstr "+ 自带素材"
+
+#. Themes shipping today
+msgid "landing.communityThemesLabel"
+msgstr "现已上线的主题"
+
+#. Get started
+msgid "landing.ctaButton"
+msgstr "立即开始"
+
+#. Drop in the widget, pick your images, ship.
+msgid "landing.ctaSub"
+msgstr "接入组件、选好图片、上线。"
+
+#. One Line, Your Styles. Go.
+msgid "landing.ctaTitle"
+msgstr "一行代码，你的风格。开始吧。"
+
+#. Not really. yCAPTCHA has no ML, no fingerprinting, no behavioral analysis — any bot with off-the-shelf image recognition will walk straight through it. If you need real bot protection, use Cloudflare Turnstile or hCaptcha. yCAPTCHA is for the vibe: your community, your puzzles.
+msgid "landing.faqA1"
+msgstr "挡不住。yCAPTCHA 没有机器学习、没有指纹识别、也没有行为分析——任何带现成图像识别的 bot 都能直接过关。要真挡 bot 请用 Cloudflare Turnstile 或 hCaptcha。yCAPTCHA 是为氛围服务的：你的社群，你的题目。"
+
+#. That's the whole point. Upload your images, mark which images are correct, and your CAPTCHA becomes an inside joke only your community gets — subway lines, rhythm game charts, dev tools, niche memes.
+msgid "landing.faqA2"
+msgstr "这就是整个重点。上传你自己的图片，勾出哪些图算正确，你的验证码就成了只有你社群懂的梗——地铁线路、音游谱面、开发工具、小圈子里的梗图。"
+
+#. No, but you can self-host it.
+msgid "landing.faqA4"
+msgstr "没有，但你可以自托管。"
+
+#. Yes. 200 MB upload cap per account, no paid tier, no credit card.
+msgid "landing.faqA5"
+msgstr "真的。每个账号 200 MB 上传上限，没有付费套餐，不用绑卡。"
+
+#. FAQ
+msgid "landing.faqEyebrow"
+msgstr "常见问题"
+
+#. Does this actually stop bots?
+msgid "landing.faqQ1"
+msgstr "这玩意儿真能挡住机器人吗？"
+
+#. Can I use my own images?
+msgid "landing.faqQ2"
+msgstr "可以用我自己的图吗？"
+
+#. Is there a SLA?
+msgid "landing.faqQ4"
+msgstr "有 SLA 吗？"
+
+#. Is it really free?
+msgid "landing.faqQ5"
+msgstr "真的免费吗？"
+
+#. Questions, answered.
+msgid "landing.faqTitle"
+msgstr "你问，我答。"
+
+#. Get Started
+msgid "landing.getStarted"
+msgstr "立即开始"
+
+#. Stop Picking Traffic Lights
+msgid "landing.heroHeadline"
+msgstr "告别红绿灯"
+
+#. Your community,
+msgid "landing.heroHeadlineA"
+msgstr "你的社群，"
+
+#. your CAPTCHA.
+msgid "landing.heroHeadlineB"
+msgstr "你的验证码。"
+
+#. How it works
+msgid "landing.howItWorksEyebrow"
+msgstr "工作原理"
+
+#. Three steps. One page of code.
+msgid "landing.howItWorksTitle"
+msgstr "三步搞定，一页代码。"
+
+#. Dashboard
+msgid "landing.navDashboard"
+msgstr "控制台"
+
+#. Docs
+msgid "landing.navDocs"
+msgstr "文档"
+
+#. Gallery
+msgid "landing.navGallery"
+msgstr "画廊"
+
+#. GitHub
+msgid "landing.navGitHub"
+msgstr "GitHub"
+
+#. Next demo
+msgid "landing.nextDemo"
+msgstr "下一个演示"
+
+#. Please try again.
+msgid "landing.pleaseRetry"
+msgstr "请重试。"
+
+#. Previous demo
+msgid "landing.previousDemo"
+msgstr "上一个演示"
+
+#. Read Docs
+msgid "landing.readDocs"
+msgstr "阅读文档"
+
+#. See the gallery
+msgid "landing.seeGallery"
+msgstr "逛逛画廊"
+
+#. Show demo {number}
+msgid "landing.showDemo"
+msgstr "显示演示 {number}"
+
+#. Start free
+msgid "landing.startFree"
+msgstr "免费开始"
+
+#. Drag a folder into the dashboard, or fork one of the sample sets. Mark the images that count as correct.
+msgid "landing.step1Body"
+msgstr "把文件夹拖进后台，或者 fork 一份示例图集。勾出哪些图算作「正确」。"
+
+#. Upload an image set
+msgid "landing.step1Title"
+msgstr "上传一个图集"
+
+#. Drop one script tag and one div into your page. Tie it to a puzzle with your site key.
+msgid "landing.step2Body"
+msgstr "一个 script 标签加一个 div，配上你的 site key，就完事。"
+
+#. Embed the widget
+msgid "landing.step2Title"
+msgstr "嵌入组件"
+
+#. POST the token and your secret key to /api/v0/captcha/siteverify.
+msgid "landing.step3Body"
+msgstr "把 token 和 secret key POST 到 /api/v0/captcha/siteverify。"
+
+#. Verify on the server
+msgid "landing.step3Title"
+msgstr "服务端验证"
+
+#. Stop picking traffic lights. Pick your own images, audios, and challenges.
+msgid "landing.tagline"
+msgstr "告别红绿灯。自选图片、音频和题目。"
+
+#. Try it out!
+msgid "landing.tryItOut"
+msgstr "Try it out"
+
+#. Verification passed!
+msgid "landing.verificationPassed"
+msgstr "验证通过！"
+
+#. English
+msgid "languageSwitcher.en"
+msgstr "English"
+
+#. 日本語
+msgid "languageSwitcher.ja"
+msgstr "日本語"
+
+#. Language
+msgid "languageSwitcher.label"
+msgstr "语言"
+
+#. 简体中文
+msgid "languageSwitcher.zh-CN"
+msgstr "简体中文"
+
+#. Your community's inside-joke CAPTCHA — upload your own images and build challenges around shared references instead of traffic lights.
+msgid "metadata.description"
+msgstr "属于你小圈子的梗图验证码——用社群共享的梗代替千篇一律的红绿灯。"
+
+#. yCAPTCHA
+msgid "metadata.title"
+msgstr "yCAPTCHA"
+
+#. Collapse
+msgid "onboarding.collapse"
+msgstr "收起"
+
+#. Dismiss
+msgid "onboarding.dismiss"
+msgstr "关闭"
+
+#. Expand
+msgid "onboarding.expand"
+msgstr "展开"
+
+#. {completed}/{total}
+msgid "onboarding.progressLabel"
+msgstr "{completed}/{total}"
+
+#. Add site
+msgid "onboarding.step1Cta"
+msgstr "添加站点"
+
+#. Create a site
+msgid "onboarding.step1Title"
+msgstr "创建站点"
+
+#. Audio
+msgid "onboarding.step2CtaAudio"
+msgstr "音频"
+
+#. Images
+msgid "onboarding.step2CtaImages"
+msgstr "图片"
+
+#. Add content
+msgid "onboarding.step2Title"
+msgstr "添加内容"
+
+#. Create a site first
+msgid "onboarding.step3LockedHint"
+msgstr "请先创建站点"
+
+#. Create a puzzle
+msgid "onboarding.step3Title"
+msgstr "创建题目"
+
+#. Finish the steps above
+msgid "onboarding.step4LockedHint"
+msgstr "请先完成上面的步骤"
+
+#. Embed widget
+msgid "onboarding.step4Title"
+msgstr "嵌入组件"
+
+#. Get started
+msgid "onboarding.title"
+msgstr "开始使用"
+
+#. Copy Markdown
+msgid "pageActions.copyMarkdown"
+msgstr "复制 Markdown"
+
+#. Open
+msgid "pageActions.open"
+msgstr "打开"
+
+#. Open in ChatGPT
+msgid "pageActions.openInChatGPT"
+msgstr "在 ChatGPT 中打开"
+
+#. Open in Claude
+msgid "pageActions.openInClaude"
+msgstr "在 Claude 中打开"
+
+#. Open in Cursor
+msgid "pageActions.openInCursor"
+msgstr "在 Cursor 中打开"
+
+#. Open in GitHub
+msgid "pageActions.openInGitHub"
+msgstr "在 GitHub 中打开"
+
+#. Open in Scira AI
+msgid "pageActions.openInSciraAI"
+msgstr "在 Scira AI 中打开"
+
+#. View as Markdown
+msgid "pageActions.viewAsMarkdown"
+msgstr "以 Markdown 查看"
+
+#. Test how this puzzle works for users.
+msgid "puzzlePreview.description"
+msgstr "测试此题目对用户的呈现效果。"
+
+#. Refresh preview
+msgid "puzzlePreview.refreshPreview"
+msgstr "刷新预览"
+
+#. Select an audio clip and answer to see preview
+msgid "puzzlePreview.selectAudioClip"
+msgstr "选择音频片段并填写答案以查看预览"
+
+#. Select correct images to see preview
+msgid "puzzlePreview.selectCorrectImages"
+msgstr "选择正确图片以查看预览"
+
+#. Preview
+msgid "puzzlePreview.title"
+msgstr "预览"
+
+#. {count} correct per challenge
+msgid "puzzles.correctPerChallenge"
+msgstr "每次挑战 {count} 张正确图片"
+
+#. Advanced Settings
+msgid "puzzles.create.advancedSettings"
+msgstr "高级设置"
+
+#. The text users must type after hearing the audio to pass.
+msgid "puzzles.create.audioAnswerHint"
+msgstr "用户听到音频后需要输入的文本答案。"
+
+#. Correct Answer
+msgid "puzzles.create.audioAnswerLabel"
+msgstr "正确答案"
+
+#. e.g. Describe the city you live in
+msgid "puzzles.create.audioAnswerPlaceholder"
+msgstr "例如：Describe the city you live in"
+
+#. Audio CAPTCHA
+msgid "puzzles.create.audioCaptcha"
+msgstr "音频验证码"
+
+#. Select an audio clip and set the correct answer users must type.
+msgid "puzzles.create.audioCaptchaDescription"
+msgstr "选择音频片段并设置用户需要输入的正确答案。"
+
+#. Verification Mode
+msgid "puzzles.create.captchaMode"
+msgstr "验证方式"
+
+#. Choose how users verify: image grid, audio clip, or both.
+msgid "puzzles.create.captchaModeDescription"
+msgstr "选择用户验证方式：图片网格、音频片段或两者兼用。"
+
+#. Correct Images per Challenge
+msgid "puzzles.create.correctPerChallenge"
+msgstr "每次挑战的正确图片数"
+
+#. How many correct images to show in each 3×3 grid.
+msgid "puzzles.create.correctPerChallengeHelp"
+msgstr "在每个 3×3 网格中显示多少张正确图片。"
+
+#. Create one first
+msgid "puzzles.create.createOneFirst"
+msgstr "先创建一个"
+
+#. User must select at least {required} of {total} correct {count, plural, one {image} other {images}} to pass.
+msgid "puzzles.create.difficultyHelp"
+msgstr "用户必须至少选择 {total} 张正确图片中的 {required} 张才能通过。"
+
+#. Difficulty
+msgid "puzzles.create.difficultyLabel"
+msgstr "难度"
+
+#. Exact number
+msgid "puzzles.create.exactNumber"
+msgstr "精确数量"
+
+#. Hand-pick Incorrect Images
+msgid "puzzles.create.handPickIncorrect"
+msgstr "手动选择错误图片"
+
+#. If off, wrong answers are randomly drawn from remaining images.
+msgid "puzzles.create.handPickIncorrectHelp"
+msgstr "关闭时，错误答案将从剩余图片中随机抽取。"
+
+#. Image Set
+msgid "puzzles.create.imageSet"
+msgstr "图片集"
+
+#. Choose the image pool for this puzzle.
+msgid "puzzles.create.imageSetDescription"
+msgstr "选择此题目的图片池。"
+
+#. {name} ({count} images)
+msgid "puzzles.create.imageSetOption"
+msgstr "{name}（{count} 张图片）"
+
+#. {count} incorrect {count, plural, one {image} other {images}} selected
+msgid "puzzles.create.incorrectSelected"
+msgstr "已选择 {count} 张错误图片"
+
+#. Max
+msgid "puzzles.create.max"
+msgstr "最大"
+
+#. Min
+msgid "puzzles.create.min"
+msgstr "最小"
+
+#. Audio only
+msgid "puzzles.create.modeAudio"
+msgstr "仅音频"
+
+#. Combined (image + audio toggle)
+msgid "puzzles.create.modeCombined"
+msgstr "组合（图片 + 音频切换）"
+
+#. Image only
+msgid "puzzles.create.modeImage"
+msgstr "仅图片"
+
+#. No audio clips yet.
+msgid "puzzles.create.noAudioYet"
+msgstr "暂无音频片段。"
+
+#. No image sets yet.
+msgid "puzzles.create.noImageSetsYet"
+msgstr "还没有图片集。"
+
+#. No sites yet.
+msgid "puzzles.create.noSitesYet"
+msgstr "还没有站点。"
+
+#. Prompt
+msgid "puzzles.create.prompt"
+msgstr "提示词"
+
+#. The word shown to users after \"Select all images with\".
+msgid "puzzles.create.promptDescription"
+msgstr "在「选择所有包含以下内容的图片」之后显示给用户的关键词。"
+
+#. e.g. trains, buses, crosswalks
+msgid "puzzles.create.promptPlaceholder"
+msgstr "例如：火车、公交车、人行横道"
+
+#. Random range
+msgid "puzzles.create.randomRange"
+msgstr "随机范围"
+
+#. Audio Clip
+msgid "puzzles.create.selectAudio"
+msgstr "音频片段"
+
+#. Select an audio clip...
+msgid "puzzles.create.selectAudioPlaceholder"
+msgstr "选择音频片段..."
+
+#. Select Correct Images
+msgid "puzzles.create.selectCorrectImages"
+msgstr "选择正确图片"
+
+#. Select an image set...
+msgid "puzzles.create.selectImageSet"
+msgstr "选择一个图片集..."
+
+#. Select a site...
+msgid "puzzles.create.selectSite"
+msgstr "选择一个站点..."
+
+#. Site
+msgid "puzzles.create.site"
+msgstr "站点"
+
+#. Which site will this puzzle be used on?
+msgid "puzzles.create.siteDescription"
+msgstr "此题目将用于哪个站点？"
+
+#. Tag all images that are correct answers. Each challenge will randomly show {count} of them.
+msgid "puzzles.create.tagDescription"
+msgstr "标记所有正确答案的图片。每次挑战将随机展示其中 {count} 张。"
+
+#. ({count} tagged)
+msgid "puzzles.create.tagged"
+msgstr "（已标记 {count} 张）"
+
+#. Create Puzzle
+msgid "puzzles.create.title"
+msgstr "创建题目"
+
+#. Upload one first
+msgid "puzzles.create.uploadFirst"
+msgstr "先上传一个"
+
+#. Create Puzzle
+msgid "puzzles.createPuzzle"
+msgstr "创建题目"
+
+#. Create a site
+msgid "puzzles.createSiteFirst"
+msgstr "创建一个站点"
+
+#.  first, then add puzzles to it.
+msgid "puzzles.createSiteFirstSuffix"
+msgstr "，然后再添加题目。"
+
+#. Delete Puzzle
+msgid "puzzles.deletePuzzle"
+msgstr "删除题目"
+
+#. This will permanently delete this puzzle. Existing captcha sessions using it will stop working.
+msgid "puzzles.deletePuzzleDescription"
+msgstr "此操作将永久删除此题目。使用它的现有验证码会话将停止工作。"
+
+#. difficulty {value}
+msgid "puzzles.difficulty"
+msgstr "难度 {value}"
+
+#. (disabled)
+msgid "puzzles.disabled"
+msgstr "（已禁用）"
+
+#. Correct Images
+msgid "puzzles.edit.correctImages"
+msgstr "正确图片"
+
+#. Deleting this puzzle will remove it from the site. Existing captcha sessions using this puzzle will stop working.
+msgid "puzzles.edit.dangerDescription"
+msgstr "删除此题目将把它从站点中移除。使用此题目的现有验证码会话将停止工作。"
+
+#. Danger Zone
+msgid "puzzles.edit.dangerZone"
+msgstr "危险区域"
+
+#. If off, wrong answers are randomly drawn.
+msgid "puzzles.edit.handPickIncorrectHelp"
+msgstr "关闭时，错误答案将随机抽取。"
+
+#. Prompt
+msgid "puzzles.edit.prompt"
+msgstr "提示词"
+
+#. The word shown after \"Select all images with\".
+msgid "puzzles.edit.promptDescription"
+msgstr "在「选择所有包含以下内容的图片」之后显示的关键词。"
+
+#. Edit Puzzle
+msgid "puzzles.edit.title"
+msgstr "编辑题目"
+
+#. Image set: {name}
+msgid "puzzles.imageSet"
+msgstr "图片集：{name}"
+
+#. Create a puzzle to start using yCAPTCHA.
+msgid "puzzles.noPuzzlesDescription"
+msgstr "创建一个题目以开始使用 yCAPTCHA。"
+
+#. No puzzles yet
+msgid "puzzles.noPuzzlesYet"
+msgstr "还没有题目"
+
+#. Puzzles
+msgid "puzzles.title"
+msgstr "验证题目"
+
+#. Dark theme
+msgid "settings.appearance.darkTheme"
+msgstr "深色主题"
+
+#. Choose your preferred color theme.
+msgid "settings.appearance.description"
+msgstr "选择你偏好的颜色主题"
+
+#. Light theme
+msgid "settings.appearance.lightTheme"
+msgstr "浅色主题"
+
+#. System theme
+msgid "settings.appearance.systemTheme"
+msgstr "跟随系统"
+
+#. Appearance
+msgid "settings.appearance.title"
+msgstr "外观"
+
+#. Delete Account
+msgid "settings.deleteAccount.deleteButton"
+msgstr "删除账户"
+
+#. Permanently delete your account and all associated data including sites, puzzles, image sets, and uploaded images.
+msgid "settings.deleteAccount.description"
+msgstr "永久删除你的账户及所有关联数据，包括站点、题目、图片集和已上传的图片"
+
+#. Failed to delete account
+msgid "settings.deleteAccount.failedToDelete"
+msgstr "删除账户失败"
+
+#. This action is permanent and irreversible. All your sites, puzzles, image sets, and uploaded images will be permanently destroyed. Active CAPTCHA widgets on your sites will stop working immediately.
+msgid "settings.deleteAccount.step2Body"
+msgstr "此操作是永久且不可逆的。你的所有站点、题目、图片集和已上传的图片将被永久销毁。你站点上活跃的验证码组件将立即停止工作"
+
+#. I understand, continue
+msgid "settings.deleteAccount.step2Continue"
+msgstr "我已了解，继续"
+
+#. Are you sure you want to do this?
+msgid "settings.deleteAccount.step2Title"
+msgstr "你确定要这样做吗？"
+
+#. Continue
+msgid "settings.deleteAccount.step3Continue"
+msgstr "继续"
+
+#. Your email
+msgid "settings.deleteAccount.step3Email"
+msgstr "你的邮箱"
+
+#. To verify, type your email <email></email> and the phrase <phrase></phrase> below.
+msgid "settings.deleteAccount.step3Instruction"
+msgstr "为进行验证，请在下方输入你的邮箱 <email></email> 和短语 <phrase></phrase>"
+
+#. Type \"{phrase}\"
+msgid "settings.deleteAccount.step3Phrase"
+msgstr "输入 {phrase}"
+
+#. This is your last chance. After this, there is no going back.
+msgid "settings.deleteAccount.step4Body"
+msgstr "这是你最后的机会。此操作之后将无法撤销。"
+
+#. Permanently delete my account
+msgid "settings.deleteAccount.step4Confirm"
+msgstr "永久删除我的账户"
+
+#. Deleting everything...
+msgid "settings.deleteAccount.step4Deleting"
+msgstr "正在删除所有数据..."
+
+#. Enter your password to permanently delete your account
+msgid "settings.deleteAccount.step4Label"
+msgstr "输入你的密码以永久删除账户"
+
+#. Your password
+msgid "settings.deleteAccount.step4Placeholder"
+msgstr "你的密码"
+
+#. FINAL WARNING
+msgid "settings.deleteAccount.step4Title"
+msgstr "最终警告"
+
+#. Delete Account
+msgid "settings.deleteAccount.title"
+msgstr "删除账户"
+
+#. Choose your preferred language.
+msgid "settings.language.description"
+msgstr "选择你偏好的界面语言"
+
+#. Language
+msgid "settings.language.title"
+msgstr "语言"
+
+#. Add passkey
+msgid "settings.passkeys.addPasskey"
+msgstr "添加通行密钥"
+
+#. Added {date}
+msgid "settings.passkeys.added"
+msgstr "添加于 {date}"
+
+#. Sign in without a password using biometrics, security keys, or your device.
+msgid "settings.passkeys.description"
+msgstr "使用生物识别、安全密钥或你的设备进行无密码登录"
+
+#. Failed to add passkey
+msgid "settings.passkeys.failedToAdd"
+msgstr "添加通行密钥失败"
+
+#. Failed to delete passkey
+msgid "settings.passkeys.failedToDelete"
+msgstr "删除通行密钥失败"
+
+#. Failed to rename passkey
+msgid "settings.passkeys.failedToRename"
+msgstr "重命名通行密钥失败"
+
+#. No passkeys registered.
+msgid "settings.passkeys.noPasskeys"
+msgstr "未注册通行密钥。"
+
+#. Registering...
+msgid "settings.passkeys.registering"
+msgstr "注册中..."
+
+#. Passkeys
+msgid "settings.passkeys.title"
+msgstr "通行密钥"
+
+#. Unnamed passkey
+msgid "settings.passkeys.unnamedPasskey"
+msgstr "未命名通行密钥"
+
+#. Update your display name.
+msgid "settings.profile.description"
+msgstr "更新你的显示名称"
+
+#. Failed to update
+msgid "settings.profile.failedToUpdate"
+msgstr "更新失败"
+
+#. Name updated
+msgid "settings.profile.nameUpdated"
+msgstr "名称已更新"
+
+#. Save Changes
+msgid "settings.profile.saveChanges"
+msgstr "保存更改"
+
+#. Profile
+msgid "settings.profile.title"
+msgstr "个人资料"
+
+#. Audio
+msgid "settings.storage.audioBytes"
+msgstr "音频"
+
+#. Images
+msgid "settings.storage.imageBytes"
+msgstr "图片"
+
+#. Storage
+msgid "settings.storage.title"
+msgstr "存储"
+
+#. {used} of {quota} used ({percent}%)
+msgid "settings.storage.used"
+msgstr "已使用 {used} / {quota}（{percent}%）"
+
+#. Settings
+msgid "settings.title"
+msgstr "设置"
+
+#. Audio
+msgid "sidebar.audio"
+msgstr "音频"
+
+#. Docs
+msgid "sidebar.docs"
+msgstr "文档"
+
+#. Gallery
+msgid "sidebar.gallery"
+msgstr "画廊"
+
+#. Home Page
+msgid "sidebar.homePage"
+msgstr "首页"
+
+#. Image Sets
+msgid "sidebar.imageSets"
+msgstr "图片集"
+
+#. Manage
+msgid "sidebar.manage"
+msgstr "管理"
+
+#. Overview
+msgid "sidebar.overview"
+msgstr "概览"
+
+#. Puzzles
+msgid "sidebar.puzzles"
+msgstr "验证题目"
+
+#. Settings
+msgid "sidebar.settings"
+msgstr "设置"
+
+#. Sites
+msgid "sidebar.sites"
+msgstr "站点"
+
+#. Add Site
+msgid "sites.addSite"
+msgstr "添加站点"
+
+#. Create Site
+msgid "sites.createSheet.createSite"
+msgstr "创建站点"
+
+#. Add a site to get your API keys for embedding the CAPTCHA widget.
+msgid "sites.createSheet.description"
+msgstr "添加一个站点以获取用于嵌入验证码组件的 API 密钥。"
+
+#. example.com
+msgid "sites.createSheet.domainPlaceholder"
+msgstr "example.com"
+
+#. My Website
+msgid "sites.createSheet.namePlaceholder"
+msgstr "我的网站"
+
+#. Create a new site
+msgid "sites.createSheet.title"
+msgstr "创建新站点"
+
+#. Delete Site
+msgid "sites.deleteSite"
+msgstr "删除站点"
+
+#. This will permanently delete this site and all its puzzles. This action cannot be undone.
+msgid "sites.deleteSiteDescription"
+msgstr "此操作将永久删除此站点及其所有验证题目，且无法撤销。"
+
+#. API Keys
+msgid "sites.detail.apiKeys"
+msgstr "API 密钥"
+
+#. Use these keys to integrate yCAPTCHA with your site.
+msgid "sites.detail.apiKeysDescription"
+msgstr "使用这些密钥将 yCAPTCHA 集成到你的站点。"
+
+#. Create Puzzle
+msgid "sites.detail.createPuzzle"
+msgstr "创建题目"
+
+#. Deleting this site will permanently remove all its puzzles and active CAPTCHA widgets will stop working.
+msgid "sites.detail.dangerDescription"
+msgstr "删除此站点将永久移除其所有题目，活跃的验证码组件将停止工作。"
+
+#. Danger Zone
+msgid "sites.detail.dangerZone"
+msgstr "危险区域"
+
+#. Delete Puzzle
+msgid "sites.detail.deletePuzzle"
+msgstr "删除题目"
+
+#. This will permanently delete this puzzle. Existing captcha sessions using it will stop working.
+msgid "sites.detail.deletePuzzleDescription"
+msgstr "此操作将永久删除此题目。使用它的现有验证码会话将停止工作。"
+
+#. This will permanently delete this site and all its puzzles. Active CAPTCHA widgets will stop working.
+msgid "sites.detail.deleteSiteConfirmDescription"
+msgstr "此操作将永久删除此站点及其所有题目。活跃的验证码组件将停止工作。"
+
+#. difficulty: {value}
+msgid "sites.detail.difficulty"
+msgstr "难度：{value}"
+
+#. example.com
+msgid "sites.detail.domainPlaceholder"
+msgstr "example.com"
+
+#. Copy the code below and paste it into your website.
+msgid "sites.detail.embedDescription"
+msgstr "复制下面的代码并粘贴到你的网站中。"
+
+#. Embed Widget
+msgid "sites.detail.embedWidget"
+msgstr "嵌入组件"
+
+#. No puzzles yet. Create one to start using yCAPTCHA on this site.
+msgid "sites.detail.noPuzzlesYet"
+msgstr "还没有题目。创建一个以开始在此站点上使用 yCAPTCHA。"
+
+#. Preview
+msgid "sites.detail.previewLabel"
+msgstr "预览"
+
+#. {count, plural, one {# puzzle} other {# puzzles}}
+msgid "sites.detail.puzzleCount"
+msgstr "{count, plural, other {# 个题目}}"
+
+#. Puzzles
+msgid "sites.detail.puzzles"
+msgstr "验证题目"
+
+#. Regenerate
+msgid "sites.detail.regenerate"
+msgstr "重新生成"
+
+#. This will invalidate your current keys. Any existing widget embeds using the old site key will stop working until you update them.
+msgid "sites.detail.regenerateConfirmDescription"
+msgstr "此操作将使当前密钥失效。使用旧站点密钥的现有组件嵌入将停止工作，直到你更新它们。"
+
+#. Regenerate API Keys
+msgid "sites.detail.regenerateConfirmTitle"
+msgstr "重新生成 API 密钥"
+
+#. Regenerate Keys
+msgid "sites.detail.regenerateKeys"
+msgstr "重新生成密钥"
+
+#. Regenerating...
+msgid "sites.detail.regenerating"
+msgstr "重新生成中..."
+
+#. Save Changes
+msgid "sites.detail.saveChanges"
+msgstr "保存更改"
+
+#. Secret Key (private)
+msgid "sites.detail.secretKeyPrivate"
+msgstr "私有密钥（私密）"
+
+#. Site Key (public)
+msgid "sites.detail.siteKeyPublic"
+msgstr "站点密钥（公开）"
+
+#. Site Settings
+msgid "sites.detail.siteSettings"
+msgstr "站点设置"
+
+#. CAPTCHA widget preview
+msgid "sites.detail.widgetPreviewTitle"
+msgstr "验证码组件预览"
+
+#. Create your first site to get started with yCAPTCHA.
+msgid "sites.noSitesDescription"
+msgstr "创建你的第一个站点以开始使用 yCAPTCHA。"
+
+#. No sites yet
+msgid "sites.noSitesYet"
+msgstr "还没有站点"
+
+#. Sites
+msgid "sites.title"
+msgstr "站点"

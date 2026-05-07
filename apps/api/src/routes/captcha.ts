@@ -197,15 +197,15 @@ const captcha = new Hono()
     }
     const sessionToken = body.sessionToken as string;
 
-    const isAudioMode = typeof body.textAnswer === "string";
-    const isImageMode = Array.isArray(body.selectedIndices);
+    const hasAudioAnswer = typeof body.textAnswer === "string";
+    const hasImageAnswer = Array.isArray(body.selectedIndices);
 
-    if (!isAudioMode && !isImageMode) {
+    if (!hasAudioAnswer && !hasImageAnswer) {
       return c.json({ error: "Missing textAnswer or selectedIndices" }, 400);
     }
 
     let uniqueIndices: number[] | null = null;
-    if (isImageMode) {
+    if (hasImageAnswer) {
       const selectedIndices = body.selectedIndices as number[];
       if (selectedIndices.length > CAPTCHA_GRID_SIZE) {
         return c.json({ error: "Invalid indices" }, 400);
@@ -217,15 +217,6 @@ const captcha = new Hono()
         )
       ) {
         return c.json({ error: "Invalid indices" }, 400);
-      }
-      if (uniqueIndices.length === 0) {
-        return c.json({ success: false });
-      }
-    }
-
-    if (isAudioMode) {
-      if ((body.textAnswer as string).trim().length === 0) {
-        return c.json({ success: false });
       }
     }
 
@@ -243,47 +234,62 @@ const captcha = new Hono()
       puzzleId: session.puzzleId,
     };
 
-    if (isAudioMode) {
+    // Derive the puzzle's required modes from the stored session, not the
+    // client payload. A "combined" puzzle has both audio answer and correct
+    // images set; clients must clear both halves.
+    const requiresAudio = !!session.audioAnswer;
+    const requiresImage = session.correctImageIds.length > 0;
+
+    if (requiresAudio && !hasAudioAnswer) {
+      after(() => recordEvent({ ...eventBase, eventType: "fail" }));
+      return c.json({ success: false });
+    }
+    if (requiresImage && !hasImageAnswer) {
+      after(() => recordEvent({ ...eventBase, eventType: "fail" }));
+      return c.json({ success: false });
+    }
+
+    if (requiresAudio) {
       const textAnswer = (body.textAnswer as string).trim();
-      if (!session.audioAnswer) {
-        return c.json({ error: "Audio not configured for this session" }, 400);
+      if (textAnswer.length === 0) {
+        after(() => recordEvent({ ...eventBase, eventType: "fail" }));
+        return c.json({ success: false });
       }
       const a = Buffer.from(textAnswer.toLowerCase());
-      const b = Buffer.from(session.audioAnswer.toLowerCase());
+      // biome-ignore lint/style/noNonNullAssertion: requiresAudio guards this
+      const b = Buffer.from(session.audioAnswer!.toLowerCase());
       const correct = a.length === b.length && timingSafeEqual(a, b);
       if (!correct) {
         after(() => recordEvent({ ...eventBase, eventType: "fail" }));
         return c.json({ success: false });
       }
-      const verifyToken = await createVerifiedSession({
-        puzzleId: session.puzzleId,
-        siteId: session.siteId,
-        userId: session.userId,
-      });
-      after(() => recordEvent({ ...eventBase, eventType: "pass" }));
-      return c.json({ success: true, token: verifyToken });
     }
 
-    const indices = uniqueIndices as number[];
-    if (indices.length === CAPTCHA_GRID_SIZE) {
-      after(() => recordEvent({ ...eventBase, eventType: "auto_fail" }));
-      return c.json({ success: false });
-    }
-
-    const correctIds = new Set(session.correctImageIds);
-    const selectedImageIds = indices.map((i) => session.imageIds[i]!);
-    const selectedCorrectCount = selectedImageIds.filter((id) =>
-      correctIds.has(id),
-    ).length;
-    const selectedWrongCount = selectedImageIds.length - selectedCorrectCount;
-    const score = selectedCorrectCount - selectedWrongCount;
-    const requiredCount = Math.max(
-      1,
-      Math.ceil(session.correctCount * session.difficulty),
-    );
-    if (score < requiredCount) {
-      after(() => recordEvent({ ...eventBase, eventType: "fail" }));
-      return c.json({ success: false });
+    if (requiresImage) {
+      const indices = uniqueIndices ?? [];
+      if (indices.length === 0) {
+        after(() => recordEvent({ ...eventBase, eventType: "fail" }));
+        return c.json({ success: false });
+      }
+      if (indices.length === CAPTCHA_GRID_SIZE) {
+        after(() => recordEvent({ ...eventBase, eventType: "auto_fail" }));
+        return c.json({ success: false });
+      }
+      const correctIds = new Set(session.correctImageIds);
+      const selectedImageIds = indices.map((i) => session.imageIds[i]!);
+      const selectedCorrectCount = selectedImageIds.filter((id) =>
+        correctIds.has(id),
+      ).length;
+      const selectedWrongCount = selectedImageIds.length - selectedCorrectCount;
+      const score = selectedCorrectCount - selectedWrongCount;
+      const requiredCount = Math.max(
+        1,
+        Math.ceil(session.correctCount * session.difficulty),
+      );
+      if (score < requiredCount) {
+        after(() => recordEvent({ ...eventBase, eventType: "fail" }));
+        return c.json({ success: false });
+      }
     }
 
     const verifyToken = await createVerifiedSession({

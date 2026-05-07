@@ -166,9 +166,18 @@ const imageSets = new Hono<{ Variables: AuthVariables }>()
       crossSetRows.map((e) => [e.contentHash, e.url]),
     );
 
-    const newProcessed = processed.filter(
-      (p) => !existingInSet.has(p.contentHash),
-    );
+    // Drop hashes that already live in the set, AND collapse duplicates
+    // *within this batch* — a drag-and-drop with the same file twice would
+    // otherwise hit the (image_set_id, content_hash) unique constraint and
+    // fail the whole insert.
+    const seenInBatch = new Set<string>();
+    const newProcessed: typeof processed = [];
+    for (const p of processed) {
+      if (existingInSet.has(p.contentHash)) continue;
+      if (seenInBatch.has(p.contentHash)) continue;
+      seenInBatch.add(p.contentHash);
+      newProcessed.push(p);
+    }
     const dupeCount = processed.length - newProcessed.length;
     if (dupeCount > 0) {
       skipped.push(
