@@ -1,4 +1,3 @@
-import "server-only";
 import { and, count, eq, gte, sql } from "drizzle-orm";
 import { db } from "./db";
 import { puzzle, site, verificationEvent } from "./db/app-schema";

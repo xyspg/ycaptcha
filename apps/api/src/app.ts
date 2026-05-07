@@ -3,7 +3,9 @@ import { cors } from "hono/cors";
 import { env } from "./env";
 import { auth } from "./lib/auth";
 import { errorHandler } from "./middleware/error";
+import { analytics } from "./routes/analytics";
 import { audioRoute } from "./routes/audio";
+import { captcha } from "./routes/captcha";
 import { imageSets } from "./routes/image-sets";
 import { onboarding } from "./routes/onboarding";
 import { puzzles } from "./routes/puzzles";
@@ -29,7 +31,9 @@ export const app = new Hono()
   .route("/api/puzzles", puzzles)
   .route("/api/image-sets", imageSets)
   .route("/api/audio", audioRoute)
-  .route("/api/onboarding", onboarding);
+  .route("/api/analytics", analytics)
+  .route("/api/onboarding", onboarding)
+  .route("/api/v0/captcha", captcha);
 
 app.onError(errorHandler);
 
