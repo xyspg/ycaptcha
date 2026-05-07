@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/dashboard/sites")({
+export const Route = createFileRoute("/dashboard/audio")({
   component: () => <Outlet />,
 });

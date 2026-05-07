@@ -27,6 +27,8 @@ node_modules
 
 # production
 /build
+/apps/*/dist
+/apps/*/.tsbuildinfo
 
 # misc
 .DS_Store

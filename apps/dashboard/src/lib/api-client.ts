@@ -1,11 +1,16 @@
 import type { ApiApp } from "@ycaptcha/shared";
-import { hc } from "hono/client";
+import { hc, type InferResponseType } from "hono/client";
 
 const baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 
 export const api = hc<ApiApp>(baseUrl, {
   init: { credentials: "include" },
 });
+
+export type Site = Extract<
+  InferResponseType<(typeof api.api.sites)[":id"]["$get"]>,
+  { site: unknown }
+>["site"];
 
 /**
  * Throw the response body as an error if the request failed.

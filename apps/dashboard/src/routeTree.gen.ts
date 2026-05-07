@@ -10,12 +10,27 @@
 
 import { Route as rootRouteImport } from "./routes/__root";
 import { Route as DashboardRouteImport } from "./routes/dashboard";
+import { Route as DashboardAudioRouteImport } from "./routes/dashboard/audio";
+import { Route as DashboardAudioIndexRouteImport } from "./routes/dashboard/audio/index";
+import { Route as DashboardImageSetsRouteImport } from "./routes/dashboard/image-sets";
+import { Route as DashboardImageSetsIndexRouteImport } from "./routes/dashboard/image-sets/index";
 import { Route as DashboardIndexRouteImport } from "./routes/dashboard/index";
+import { Route as DashboardPuzzlesRouteImport } from "./routes/dashboard/puzzles";
+import { Route as DashboardPuzzlesIndexRouteImport } from "./routes/dashboard/puzzles/index";
+import { Route as DashboardPuzzlesNewRouteImport } from "./routes/dashboard/puzzles/new";
+import { Route as DashboardSettingsRouteImport } from "./routes/dashboard/settings";
 import { Route as DashboardSitesRouteImport } from "./routes/dashboard/sites";
 import { Route as DashboardSitesSiteIdRouteImport } from "./routes/dashboard/sites/$siteId";
+import { Route as DashboardSitesIndexRouteImport } from "./routes/dashboard/sites/index";
 import { Route as IndexRouteImport } from "./routes/index";
 import { Route as LoginRouteImport } from "./routes/login";
+import { Route as SignupRouteImport } from "./routes/signup";
 
+const SignupRoute = SignupRouteImport.update({
+  id: "/signup",
+  path: "/signup",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const LoginRoute = LoginRouteImport.update({
   id: "/login",
   path: "/login",
@@ -41,35 +56,106 @@ const DashboardSitesRoute = DashboardSitesRouteImport.update({
   path: "/sites",
   getParentRoute: () => DashboardRoute,
 } as any);
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: "/settings",
+  path: "/settings",
+  getParentRoute: () => DashboardRoute,
+} as any);
+const DashboardPuzzlesRoute = DashboardPuzzlesRouteImport.update({
+  id: "/puzzles",
+  path: "/puzzles",
+  getParentRoute: () => DashboardRoute,
+} as any);
+const DashboardImageSetsRoute = DashboardImageSetsRouteImport.update({
+  id: "/image-sets",
+  path: "/image-sets",
+  getParentRoute: () => DashboardRoute,
+} as any);
+const DashboardAudioRoute = DashboardAudioRouteImport.update({
+  id: "/audio",
+  path: "/audio",
+  getParentRoute: () => DashboardRoute,
+} as any);
+const DashboardSitesIndexRoute = DashboardSitesIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardSitesRoute,
+} as any);
+const DashboardPuzzlesIndexRoute = DashboardPuzzlesIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardPuzzlesRoute,
+} as any);
+const DashboardImageSetsIndexRoute = DashboardImageSetsIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardImageSetsRoute,
+} as any);
+const DashboardAudioIndexRoute = DashboardAudioIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => DashboardAudioRoute,
+} as any);
 const DashboardSitesSiteIdRoute = DashboardSitesSiteIdRouteImport.update({
   id: "/$siteId",
   path: "/$siteId",
   getParentRoute: () => DashboardSitesRoute,
+} as any);
+const DashboardPuzzlesNewRoute = DashboardPuzzlesNewRouteImport.update({
+  id: "/new",
+  path: "/new",
+  getParentRoute: () => DashboardPuzzlesRoute,
 } as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/signup": typeof SignupRoute;
+  "/dashboard/audio": typeof DashboardAudioRouteWithChildren;
+  "/dashboard/image-sets": typeof DashboardImageSetsRouteWithChildren;
+  "/dashboard/puzzles": typeof DashboardPuzzlesRouteWithChildren;
+  "/dashboard/settings": typeof DashboardSettingsRoute;
   "/dashboard/sites": typeof DashboardSitesRouteWithChildren;
   "/dashboard/": typeof DashboardIndexRoute;
+  "/dashboard/puzzles/new": typeof DashboardPuzzlesNewRoute;
   "/dashboard/sites/$siteId": typeof DashboardSitesSiteIdRoute;
+  "/dashboard/audio/": typeof DashboardAudioIndexRoute;
+  "/dashboard/image-sets/": typeof DashboardImageSetsIndexRoute;
+  "/dashboard/puzzles/": typeof DashboardPuzzlesIndexRoute;
+  "/dashboard/sites/": typeof DashboardSitesIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/login": typeof LoginRoute;
-  "/dashboard/sites": typeof DashboardSitesRouteWithChildren;
+  "/signup": typeof SignupRoute;
+  "/dashboard/settings": typeof DashboardSettingsRoute;
   "/dashboard": typeof DashboardIndexRoute;
+  "/dashboard/puzzles/new": typeof DashboardPuzzlesNewRoute;
   "/dashboard/sites/$siteId": typeof DashboardSitesSiteIdRoute;
+  "/dashboard/audio": typeof DashboardAudioIndexRoute;
+  "/dashboard/image-sets": typeof DashboardImageSetsIndexRoute;
+  "/dashboard/puzzles": typeof DashboardPuzzlesIndexRoute;
+  "/dashboard/sites": typeof DashboardSitesIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/signup": typeof SignupRoute;
+  "/dashboard/audio": typeof DashboardAudioRouteWithChildren;
+  "/dashboard/image-sets": typeof DashboardImageSetsRouteWithChildren;
+  "/dashboard/puzzles": typeof DashboardPuzzlesRouteWithChildren;
+  "/dashboard/settings": typeof DashboardSettingsRoute;
   "/dashboard/sites": typeof DashboardSitesRouteWithChildren;
   "/dashboard/": typeof DashboardIndexRoute;
+  "/dashboard/puzzles/new": typeof DashboardPuzzlesNewRoute;
   "/dashboard/sites/$siteId": typeof DashboardSitesSiteIdRoute;
+  "/dashboard/audio/": typeof DashboardAudioIndexRoute;
+  "/dashboard/image-sets/": typeof DashboardImageSetsIndexRoute;
+  "/dashboard/puzzles/": typeof DashboardPuzzlesIndexRoute;
+  "/dashboard/sites/": typeof DashboardSitesIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
@@ -77,34 +163,68 @@ export interface FileRouteTypes {
     | "/"
     | "/dashboard"
     | "/login"
+    | "/signup"
+    | "/dashboard/audio"
+    | "/dashboard/image-sets"
+    | "/dashboard/puzzles"
+    | "/dashboard/settings"
     | "/dashboard/sites"
     | "/dashboard/"
-    | "/dashboard/sites/$siteId";
+    | "/dashboard/puzzles/new"
+    | "/dashboard/sites/$siteId"
+    | "/dashboard/audio/"
+    | "/dashboard/image-sets/"
+    | "/dashboard/puzzles/"
+    | "/dashboard/sites/";
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
     | "/login"
-    | "/dashboard/sites"
+    | "/signup"
+    | "/dashboard/settings"
     | "/dashboard"
-    | "/dashboard/sites/$siteId";
+    | "/dashboard/puzzles/new"
+    | "/dashboard/sites/$siteId"
+    | "/dashboard/audio"
+    | "/dashboard/image-sets"
+    | "/dashboard/puzzles"
+    | "/dashboard/sites";
   id:
     | "__root__"
     | "/"
     | "/dashboard"
     | "/login"
+    | "/signup"
+    | "/dashboard/audio"
+    | "/dashboard/image-sets"
+    | "/dashboard/puzzles"
+    | "/dashboard/settings"
     | "/dashboard/sites"
     | "/dashboard/"
-    | "/dashboard/sites/$siteId";
+    | "/dashboard/puzzles/new"
+    | "/dashboard/sites/$siteId"
+    | "/dashboard/audio/"
+    | "/dashboard/image-sets/"
+    | "/dashboard/puzzles/"
+    | "/dashboard/sites/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
   DashboardRoute: typeof DashboardRouteWithChildren;
   LoginRoute: typeof LoginRoute;
+  SignupRoute: typeof SignupRoute;
 }
 
 declare module "@tanstack/react-router" {
   interface FileRoutesByPath {
+    "/signup": {
+      id: "/signup";
+      path: "/signup";
+      fullPath: "/signup";
+      preLoaderRoute: typeof SignupRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/login": {
       id: "/login";
       path: "/login";
@@ -140,6 +260,62 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DashboardSitesRouteImport;
       parentRoute: typeof DashboardRoute;
     };
+    "/dashboard/settings": {
+      id: "/dashboard/settings";
+      path: "/settings";
+      fullPath: "/dashboard/settings";
+      preLoaderRoute: typeof DashboardSettingsRouteImport;
+      parentRoute: typeof DashboardRoute;
+    };
+    "/dashboard/puzzles": {
+      id: "/dashboard/puzzles";
+      path: "/puzzles";
+      fullPath: "/dashboard/puzzles";
+      preLoaderRoute: typeof DashboardPuzzlesRouteImport;
+      parentRoute: typeof DashboardRoute;
+    };
+    "/dashboard/image-sets": {
+      id: "/dashboard/image-sets";
+      path: "/image-sets";
+      fullPath: "/dashboard/image-sets";
+      preLoaderRoute: typeof DashboardImageSetsRouteImport;
+      parentRoute: typeof DashboardRoute;
+    };
+    "/dashboard/audio": {
+      id: "/dashboard/audio";
+      path: "/audio";
+      fullPath: "/dashboard/audio";
+      preLoaderRoute: typeof DashboardAudioRouteImport;
+      parentRoute: typeof DashboardRoute;
+    };
+    "/dashboard/sites/": {
+      id: "/dashboard/sites/";
+      path: "/";
+      fullPath: "/dashboard/sites/";
+      preLoaderRoute: typeof DashboardSitesIndexRouteImport;
+      parentRoute: typeof DashboardSitesRoute;
+    };
+    "/dashboard/puzzles/": {
+      id: "/dashboard/puzzles/";
+      path: "/";
+      fullPath: "/dashboard/puzzles/";
+      preLoaderRoute: typeof DashboardPuzzlesIndexRouteImport;
+      parentRoute: typeof DashboardPuzzlesRoute;
+    };
+    "/dashboard/image-sets/": {
+      id: "/dashboard/image-sets/";
+      path: "/";
+      fullPath: "/dashboard/image-sets/";
+      preLoaderRoute: typeof DashboardImageSetsIndexRouteImport;
+      parentRoute: typeof DashboardImageSetsRoute;
+    };
+    "/dashboard/audio/": {
+      id: "/dashboard/audio/";
+      path: "/";
+      fullPath: "/dashboard/audio/";
+      preLoaderRoute: typeof DashboardAudioIndexRouteImport;
+      parentRoute: typeof DashboardAudioRoute;
+    };
     "/dashboard/sites/$siteId": {
       id: "/dashboard/sites/$siteId";
       path: "/$siteId";
@@ -147,15 +323,60 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DashboardSitesSiteIdRouteImport;
       parentRoute: typeof DashboardSitesRoute;
     };
+    "/dashboard/puzzles/new": {
+      id: "/dashboard/puzzles/new";
+      path: "/new";
+      fullPath: "/dashboard/puzzles/new";
+      preLoaderRoute: typeof DashboardPuzzlesNewRouteImport;
+      parentRoute: typeof DashboardPuzzlesRoute;
+    };
   }
 }
 
+interface DashboardAudioRouteChildren {
+  DashboardAudioIndexRoute: typeof DashboardAudioIndexRoute;
+}
+
+const DashboardAudioRouteChildren: DashboardAudioRouteChildren = {
+  DashboardAudioIndexRoute: DashboardAudioIndexRoute,
+};
+
+const DashboardAudioRouteWithChildren = DashboardAudioRoute._addFileChildren(
+  DashboardAudioRouteChildren,
+);
+
+interface DashboardImageSetsRouteChildren {
+  DashboardImageSetsIndexRoute: typeof DashboardImageSetsIndexRoute;
+}
+
+const DashboardImageSetsRouteChildren: DashboardImageSetsRouteChildren = {
+  DashboardImageSetsIndexRoute: DashboardImageSetsIndexRoute,
+};
+
+const DashboardImageSetsRouteWithChildren =
+  DashboardImageSetsRoute._addFileChildren(DashboardImageSetsRouteChildren);
+
+interface DashboardPuzzlesRouteChildren {
+  DashboardPuzzlesNewRoute: typeof DashboardPuzzlesNewRoute;
+  DashboardPuzzlesIndexRoute: typeof DashboardPuzzlesIndexRoute;
+}
+
+const DashboardPuzzlesRouteChildren: DashboardPuzzlesRouteChildren = {
+  DashboardPuzzlesNewRoute: DashboardPuzzlesNewRoute,
+  DashboardPuzzlesIndexRoute: DashboardPuzzlesIndexRoute,
+};
+
+const DashboardPuzzlesRouteWithChildren =
+  DashboardPuzzlesRoute._addFileChildren(DashboardPuzzlesRouteChildren);
+
 interface DashboardSitesRouteChildren {
   DashboardSitesSiteIdRoute: typeof DashboardSitesSiteIdRoute;
+  DashboardSitesIndexRoute: typeof DashboardSitesIndexRoute;
 }
 
 const DashboardSitesRouteChildren: DashboardSitesRouteChildren = {
   DashboardSitesSiteIdRoute: DashboardSitesSiteIdRoute,
+  DashboardSitesIndexRoute: DashboardSitesIndexRoute,
 };
 
 const DashboardSitesRouteWithChildren = DashboardSitesRoute._addFileChildren(
@@ -163,11 +384,19 @@ const DashboardSitesRouteWithChildren = DashboardSitesRoute._addFileChildren(
 );
 
 interface DashboardRouteChildren {
+  DashboardAudioRoute: typeof DashboardAudioRouteWithChildren;
+  DashboardImageSetsRoute: typeof DashboardImageSetsRouteWithChildren;
+  DashboardPuzzlesRoute: typeof DashboardPuzzlesRouteWithChildren;
+  DashboardSettingsRoute: typeof DashboardSettingsRoute;
   DashboardSitesRoute: typeof DashboardSitesRouteWithChildren;
   DashboardIndexRoute: typeof DashboardIndexRoute;
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAudioRoute: DashboardAudioRouteWithChildren,
+  DashboardImageSetsRoute: DashboardImageSetsRouteWithChildren,
+  DashboardPuzzlesRoute: DashboardPuzzlesRouteWithChildren,
+  DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardSitesRoute: DashboardSitesRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
 };
@@ -180,6 +409,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,16 +1,19 @@
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { api, unwrap } from "@/lib/api-client";
-
-type Site = {
-  id: string;
-  name: string;
-  domain: string;
-  siteKey: string;
-  secretKey: string;
-  createdAt: string;
-};
+import { ArrowLeft, Copy, RefreshCw } from "lucide-react";
+import { useState } from "react";
+import { ConfirmDeleteDialog } from "@/components/confirm-delete-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { api, type Site, unwrap } from "@/lib/api-client";
+import { copyToClipboard } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/sites/$siteId")({
   component: SiteDetail,
@@ -18,8 +21,10 @@ export const Route = createFileRoute("/dashboard/sites/$siteId")({
 
 function SiteDetail() {
   const { siteId } = Route.useParams();
+  const { t } = useLingui();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   const site = useQuery({
     queryKey: ["sites", siteId],
@@ -36,7 +41,10 @@ function SiteDetail() {
           param: { id: siteId },
         }),
       ),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["sites", siteId] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["sites", siteId] });
+      qc.invalidateQueries({ queryKey: ["sites"] });
+    },
   });
 
   const del = useMutation({
@@ -46,70 +54,123 @@ function SiteDetail() {
       ),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["sites"] });
+      qc.invalidateQueries({ queryKey: ["onboarding"] });
       navigate({ to: "/dashboard/sites" });
     },
   });
 
   if (site.isLoading) {
     return (
-      <p>
+      <p className="text-sm text-muted-foreground">
         <Trans>Loading…</Trans>
       </p>
     );
   }
   if (site.error) {
-    return <p style={{ color: "crimson" }}>{(site.error as Error).message}</p>;
+    return (
+      <p className="text-sm text-destructive">
+        {(site.error as Error).message}
+      </p>
+    );
   }
   if (!site.data) return null;
 
   const s = site.data.site;
   return (
-    <section>
-      <p>
+    <section className="flex flex-col gap-6">
+      <Button asChild variant="ghost" size="sm" className="self-start">
         <Link to="/dashboard/sites">
-          ← <Trans>Back to sites</Trans>
+          <ArrowLeft />
+          <Trans>Back to sites</Trans>
         </Link>
-      </p>
-      <h1>{s.name}</h1>
-      <p style={{ fontSize: 14, opacity: 0.8 }}>{s.domain}</p>
+      </Button>
 
-      <h2>
-        <Trans>Keys</Trans>
-      </h2>
-      <dl>
-        <dt>
-          <Trans>Site key</Trans>
-        </dt>
-        <dd>
-          <code>{s.siteKey}</code>
-        </dd>
-        <dt>
-          <Trans>Secret key</Trans>
-        </dt>
-        <dd>
-          <code>{s.secretKey}</code>
-        </dd>
-      </dl>
-
-      <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-        <button
-          type="button"
-          onClick={() => regen.mutate()}
-          disabled={regen.isPending}
-        >
-          <Trans>Regenerate keys</Trans>
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            if (confirm("Delete this site?")) del.mutate();
-          }}
-          disabled={del.isPending}
-          style={{ color: "crimson" }}
-        >
-          <Trans>Delete</Trans>
-        </button>
+      <div>
+        <h1 className="text-2xl font-semibold">{s.name}</h1>
+        {s.domain && (
+          <p className="text-sm text-muted-foreground">{s.domain}</p>
+        )}
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <Trans>API keys</Trans>
+          </CardTitle>
+          <CardDescription>
+            <Trans>
+              The site key is public; the secret key never leaves your server.
+            </Trans>
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          <KeyRow label="Site key" value={s.siteKey} />
+          <KeyRow label="Secret key" value={s.secretKey} secret />
+          <div className="flex flex-wrap gap-2 pt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => regen.mutate()}
+              disabled={regen.isPending}
+            >
+              <RefreshCw />
+              {regen.isPending ? (
+                <Trans>Regenerating…</Trans>
+              ) : (
+                <Trans>Regenerate keys</Trans>
+              )}
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trans>Delete site</Trans>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <ConfirmDeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={t`Delete site`}
+        description={t`This permanently removes the site, its keys, and all its puzzles.`}
+        confirmText={s.name}
+        onConfirm={async () => {
+          await del.mutateAsync();
+        }}
+      />
     </section>
+  );
+}
+
+function KeyRow({
+  label,
+  value,
+  secret,
+}: {
+  label: string;
+  value: string;
+  secret?: boolean;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <span className="text-xs uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
+      <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2 font-mono text-sm">
+        <code className="flex-1 truncate">
+          {secret ? value.replace(/.(?=.{4})/g, "•") : value}
+        </code>
+        <Button
+          variant="ghost"
+          size="icon-xs"
+          onClick={() => copyToClipboard(value)}
+        >
+          <Copy className="size-3" />
+        </Button>
+      </div>
+    </div>
   );
 }
