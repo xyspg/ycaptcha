@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from "./routes/__root";
 import { Route as DashboardRouteImport } from "./routes/dashboard";
 import { Route as DashboardIndexRouteImport } from "./routes/dashboard/index";
+import { Route as DashboardSitesRouteImport } from "./routes/dashboard/sites";
+import { Route as DashboardSitesSiteIdRouteImport } from "./routes/dashboard/sites/$siteId";
 import { Route as IndexRouteImport } from "./routes/index";
 import { Route as LoginRouteImport } from "./routes/login";
 
@@ -34,31 +36,65 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: "/",
   getParentRoute: () => DashboardRoute,
 } as any);
+const DashboardSitesRoute = DashboardSitesRouteImport.update({
+  id: "/sites",
+  path: "/sites",
+  getParentRoute: () => DashboardRoute,
+} as any);
+const DashboardSitesSiteIdRoute = DashboardSitesSiteIdRouteImport.update({
+  id: "/$siteId",
+  path: "/$siteId",
+  getParentRoute: () => DashboardSitesRoute,
+} as any);
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/dashboard/sites": typeof DashboardSitesRouteWithChildren;
   "/dashboard/": typeof DashboardIndexRoute;
+  "/dashboard/sites/$siteId": typeof DashboardSitesSiteIdRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
   "/login": typeof LoginRoute;
+  "/dashboard/sites": typeof DashboardSitesRouteWithChildren;
   "/dashboard": typeof DashboardIndexRoute;
+  "/dashboard/sites/$siteId": typeof DashboardSitesSiteIdRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   "/": typeof IndexRoute;
   "/dashboard": typeof DashboardRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/dashboard/sites": typeof DashboardSitesRouteWithChildren;
   "/dashboard/": typeof DashboardIndexRoute;
+  "/dashboard/sites/$siteId": typeof DashboardSitesSiteIdRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/dashboard" | "/login" | "/dashboard/";
+  fullPaths:
+    | "/"
+    | "/dashboard"
+    | "/login"
+    | "/dashboard/sites"
+    | "/dashboard/"
+    | "/dashboard/sites/$siteId";
   fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/login" | "/dashboard";
-  id: "__root__" | "/" | "/dashboard" | "/login" | "/dashboard/";
+  to:
+    | "/"
+    | "/login"
+    | "/dashboard/sites"
+    | "/dashboard"
+    | "/dashboard/sites/$siteId";
+  id:
+    | "__root__"
+    | "/"
+    | "/dashboard"
+    | "/login"
+    | "/dashboard/sites"
+    | "/dashboard/"
+    | "/dashboard/sites/$siteId";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -97,14 +133,42 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof DashboardIndexRouteImport;
       parentRoute: typeof DashboardRoute;
     };
+    "/dashboard/sites": {
+      id: "/dashboard/sites";
+      path: "/sites";
+      fullPath: "/dashboard/sites";
+      preLoaderRoute: typeof DashboardSitesRouteImport;
+      parentRoute: typeof DashboardRoute;
+    };
+    "/dashboard/sites/$siteId": {
+      id: "/dashboard/sites/$siteId";
+      path: "/$siteId";
+      fullPath: "/dashboard/sites/$siteId";
+      preLoaderRoute: typeof DashboardSitesSiteIdRouteImport;
+      parentRoute: typeof DashboardSitesRoute;
+    };
   }
 }
 
+interface DashboardSitesRouteChildren {
+  DashboardSitesSiteIdRoute: typeof DashboardSitesSiteIdRoute;
+}
+
+const DashboardSitesRouteChildren: DashboardSitesRouteChildren = {
+  DashboardSitesSiteIdRoute: DashboardSitesSiteIdRoute,
+};
+
+const DashboardSitesRouteWithChildren = DashboardSitesRoute._addFileChildren(
+  DashboardSitesRouteChildren,
+);
+
 interface DashboardRouteChildren {
+  DashboardSitesRoute: typeof DashboardSitesRouteWithChildren;
   DashboardIndexRoute: typeof DashboardIndexRoute;
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardSitesRoute: DashboardSitesRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
 };
 
