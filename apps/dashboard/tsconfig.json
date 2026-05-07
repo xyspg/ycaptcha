@@ -5,10 +5,7 @@
       "@/*": ["./src/*"]
     },
     "types": ["vite/client"],
-    "noEmit": true,
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true
+    "noEmit": true
   },
   "include": ["src/**/*"]
 }
