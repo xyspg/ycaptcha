@@ -1,0 +1,39 @@
+---
+title: クイックスタート
+description: yCAPTCHA をはじめる。
+---
+
+## はじめに
+
+yCAPTCHA <span className="text-sm text-neutral-700 dark:text-neutral-400">(your-CAPTCHA)</span> は、小さなコミュニティやサブカルチャー向けの CAPTCHA ウィジェットです。汎用の信号機ではなく、コミュニティが共有するネタ——路線図、音ゲー譜面、ニッチなミーム——を素材にして自分でチャレンジを作れます。
+
+**本格的なボット対策サービスではありません**：機械学習も指紋認識も行動分析もありません。本気でボットを防ぎたいなら [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/) や hCaptcha をどうぞ。yCAPTCHA は空気感を大事にします。
+
+## API キーの取得
+
+[ダッシュボード](/dashboard) でサイトを作成し、API キーを取得します。
+
+<Callout title="セキュリティ" type="warn">
+  シークレットキー (`sk_...`) をクライアントサイドのコードに絶対に公開しないでください。
+</Callout>
+
+## 2 行で埋め込む
+
+```html
+<div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
+```
+
+## LLM との連携
+
+```
+${NEXT_PUBLIC_SITE_URL}/llms-full.txt
+```
+
+## 次のステップ
+
+<Cards>
+  <Card title="API リファレンス" href="/docs/api-reference">
+    エンドポイントの完全なドキュメント。
+  </Card>
+</Cards>

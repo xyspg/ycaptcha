@@ -1,9 +1,74 @@
-import type { ReactNode } from "react";
+import type { Metadata, Viewport } from "next";
+import { Caveat, Geist, Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { Toaster } from "sonner";
+import { Providers } from "@/components/providers";
+import { config } from "@/lib/config";
+import "./globals.css";
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
+
+export default async function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang={locale} suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${plusJakarta.variable} ${caveat.variable} flex min-h-screen flex-col font-sans antialiased`}
+      >
+        <Script
+          defer
+          src="https://mizuki.xyspg.moe/akiyama"
+          data-website-id="31902df6-c1da-4e2a-93fd-d5f2a84b2bc3"
+          data-domains={config.siteHostname}
+          strategy="afterInteractive"
+        />
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <Providers>
+            {children}
+            <Toaster />
+          </Providers>
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

@@ -1,0 +1,62 @@
+---
+title: Create a Site
+description: Create a site, upload images, and configure puzzles to get your API keys.
+---
+
+Before embedding the widget, you need to create a site in the yCAPTCHA dashboard to get your Site Key and Secret Key.
+
+## 1. Create a site
+
+1. Log into the [yCAPTCHA dashboard](/dashboard).
+2. Navigate to **Sites** and click **Create Site**.
+3. Give your site a name (e.g., "My Blog", "Login Page").
+4. Your site will be issued two keys:
+
+| Key        | Format   | Purpose                                      |
+| ---------- | -------- | -------------------------------------------- |
+| Site Key   | `pk_...` | Public. Used in the widget iframe URL.        |
+| Secret Key | `sk_...` | Private. Used only on your server for verification. |
+
+> **Never expose your Secret Key in client-side code.** It should only be used in server-to-server API calls.
+
+## 2. Upload images
+
+1. Navigate to **Image Sets** in the dashboard.
+2. Create a new image set (e.g., "NYC Parks", "Fire Hydrants").
+3. Upload the images you want to use in your challenges.
+
+Image sets are owned by your account, not a specific site. You can reuse the same image set across multiple sites.
+
+## 3. Create a puzzle
+
+1. Navigate to your site's **Puzzles** section.
+2. Click **Create Puzzle** and configure:
+
+| Setting          | Description                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------- |
+| Image Set        | Select which image pool to use for this puzzle.                                              |
+| Prompt           | The keyword shown to users (e.g., `parks`). The widget adds a fixed instruction prefix.     |
+| Correct Images   | Mark which images in the set are the right answers.                                          |
+| Incorrect Images | Optionally hand-pick distractors. If left empty, they are drawn randomly from the pool.      |
+| Difficulty       | Float from 0 to 1 (default 0.5). Controls how many correct selections are required to pass. |
+
+### Prompt
+
+Enter just the keyword (e.g., `parks`, `fire hydrants`). The widget always displays "Select all images with" as the instruction prefix.
+
+### Difficulty
+
+The pass threshold is calculated as:
+
+```
+requiredCorrect = Math.ceil(correctImageCount * difficulty)
+```
+
+For example, with 3 correct images and difficulty 0.5, the user needs to select at least 2 correct images.
+
+## Next steps
+
+Once you have a site with at least one puzzle configured:
+
+1. [Embed the Widget](/docs/get-started/embed-widget) on your webpage
+2. [Validate tokens](/docs/get-started/server-validation) on your server

@@ -1,0 +1,102 @@
+---
+title: Server-side Validation
+description: Verify yCAPTCHA tokens on your server using the Siteverify API.
+---
+
+After the user completes the CAPTCHA, you receive a one-time token via `postMessage`. You **must** verify this token on your server before accepting the form submission.
+
+<Callout title="Security Warning" type="warn">
+  This call must always happen on your server — never in the browser.
+</Callout>
+
+## Endpoint
+
+```
+POST ${NEXT_PUBLIC_SITE_URL}/api/v0/captcha/siteverify
+```
+
+## Request
+
+| Field       | Type     | Required | Description                                |
+| ----------- | -------- | -------- | ------------------------------------------ |
+| `token`     | `string` | Yes      | The token from the widget's `postMessage`. |
+| `secretKey` | `string` | Yes      | Your site's secret key (`sk_...`).         |
+
+```json
+{
+  "token": "aB3dEfGh...64chars",
+  "secretKey": "sk_aBcDeFgHiJkLmNoPqRsTuVwXyZ123456"
+}
+```
+
+## Response
+
+### Success
+
+```json
+{ "success": true }
+```
+
+### Failure
+
+All failures return HTTP 200 with `success: false` and an `error` field:
+
+| Error                          | Meaning                                                       |
+| ------------------------------ | ------------------------------------------------------------- |
+| `"Missing token or secretKey"` | Request body missing required fields.                         |
+| `"Invalid token"`              | Token not found — never issued, already consumed, or expired. |
+| `"Invalid secretKey"`          | Secret key doesn't match the site owning this puzzle.         |
+
+## Examples
+
+### Node.js (fetch)
+
+```js
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+const response = await fetch(
+  `${siteUrl}/api/v0/captcha/siteverify`,
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      token: req.body.captchaToken,
+      secretKey: process.env.YCAPTCHA_SECRET_KEY,
+    }),
+  },
+);
+
+const result = await response.json();
+
+if (!result.success) {
+  return res.status(400).json({ error: "CAPTCHA verification failed" });
+}
+
+// Proceed with form handling
+```
+
+### Python (requests)
+
+```python
+import os
+import requests
+
+site_url = os.environ["NEXT_PUBLIC_SITE_URL"]
+
+result = requests.post(
+    f"{site_url}/api/v0/captcha/siteverify",
+    json={
+        "token": request.form["ycaptcha-response"],
+        "secretKey": os.environ["YCAPTCHA_SECRET_KEY"],
+    },
+).json()
+
+if not result.get("success"):
+    abort(400, "CAPTCHA verification failed")
+```
+
+## Important notes
+
+- **Tokens are single-use.** On a successful verification, the session is permanently deleted. Calling siteverify again with the same token returns `"Invalid token"`.
+- **Always check `success === true` explicitly.** A 200 HTTP status alone does not mean success.
+- The `secretKey` is verified by joining through the puzzle to its site — a token from one site cannot be validated with another site's key.

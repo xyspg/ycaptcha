@@ -1,0 +1,146 @@
+---
+title: ウィジェットを埋め込む
+description: 単一のスクリプトタグで yCAPTCHA ウィジェットを Web ページに追加します。
+---
+
+2 行の HTML で yCAPTCHA をサイトに追加します。スクリプトはすべてを処理します — ウィジェットの作成、チャレンジフローの管理、リサイズ、検証トークン付きの hidden フォーム入力の注入まで行います。
+
+## 前提条件
+
+- 少なくとも 1 つの [設定済みパズル](/docs/get-started/create-site) を持つ yCAPTCHA サイト
+- サイトキー (`pk_...`)
+
+---
+
+## クイックスタート
+
+```html
+<div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+```
+
+これだけです。スクリプトはページ上のすべての `.y-captcha` 要素を自動的に見つけ、ウィジェットを作成し、その横に hidden の `<input name="ycaptcha-response">` を挿入します。ユーザーがチャレンジに合格すると、input に検証トークンが入力され、フォームと一緒に送信できる状態になります。
+
+---
+
+## フォームとの統合
+
+```html
+<form action="/submit" method="POST">
+  <input type="text" name="email" placeholder="Email" required />
+
+  <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+
+  <button type="submit">Submit</button>
+</form>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+```
+
+フォーム送信時、トークンはフォームボディ内で `ycaptcha-response` として送信されます。[サーバー上で検証してください](/docs/get-started/server-validation)。
+
+---
+
+## 明示的なレンダリング
+
+より細かい制御が必要な場合は、自動レンダリングの代わりに JavaScript API を使用してください:
+
+```html
+<div id="captcha-container"></div>
+
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js?onload=onCaptchaLoad&render=explicit" async defer></script>
+
+<script>
+function onCaptchaLoad() {
+  ycaptcha.render("#captcha-container", {
+    sitekey: "YOUR_SITE_KEY",
+    callback: function (token) {
+      console.log("Verified:", token);
+    },
+    "expired-callback": function () {
+      console.log("Token expired");
+    },
+    "error-callback": function (message) {
+      console.error("Error:", message);
+    },
+  });
+}
+</script>
+```
+
+---
+
+## JavaScript API
+
+スクリプトは次のメソッドを持つ `window.ycaptcha` を公開します:
+
+### `ycaptcha.render(container, params)`
+
+コンテナ要素にウィジェットをレンダリングします。
+
+| パラメータ | 型 | 説明 |
+|---|---|---|
+| `container` | `string \| HTMLElement` | CSS セレクタまたは DOM 要素 |
+| `params.sitekey` | `string` | サイトキー (`data-sitekey` を上書き) |
+| `params.callback` | `function` | 成功時にトークンとともに呼び出されます |
+| `params["expired-callback"]` | `function` | トークンが期限切れになったときに呼び出されます |
+| `params["error-callback"]` | `function` | 失敗時にエラーメッセージとともに呼び出されます |
+| `params["response-field-name"]` | `string` | カスタム hidden input 名 (デフォルト: `ycaptcha-response`) |
+
+ウィジェット ID の文字列を返します。
+
+### `ycaptcha.getResponse(widgetId?)`
+
+現在の検証トークンを返します。まだ検証されていない場合は `null` を返します。
+
+### `ycaptcha.reset(widgetId?)`
+
+ウィジェットを初期状態にリセットします。フォーム送信後にユーザーが再度解けるようにするために使用します。
+
+### `ycaptcha.remove(widgetId?)`
+
+ウィジェットを DOM から削除してクリーンアップします。
+
+### `ycaptcha.isExpired(widgetId?)`
+
+トークンが期限切れの場合 `true` を返します。
+
+> `widgetId` を省略した場合、すべてのメソッドは直近に作成されたウィジェットに対して動作します。
+
+---
+
+## data 属性
+
+JavaScript API の代わりに、`data-*` 属性でウィジェットを設定することもできます:
+
+```html
+<div
+  class="y-captcha"
+  data-sitekey="YOUR_SITE_KEY"
+  data-callback="onSuccess"
+  data-expired-callback="onExpired"
+  data-error-callback="onError"
+></div>
+```
+
+属性値は、対応するイベントが発生したときに呼び出されるグローバル関数名です。
+
+---
+
+## イベント
+
+ウィジェットは内部的に `postMessage` を介して通信します。低レベルアクセスが必要な場合 (例: フレームワーク統合のため)、これらがそのイベントです:
+
+| イベント | ペイロード | 説明 |
+|---|---|---|
+| `success` | `{ token: string }` | ユーザーが CAPTCHA に合格 |
+| `expired` | — | 5 分のセッションが経過 |
+| `error` | `{ code, message }` | 致命的なエラー (無効な siteKey、ネットワーク障害) |
+| `resize` | `{ width, height }` | ウィジェットの寸法が変更されました |
+
+すべてのメッセージには、フィルタリング用の `source: "ycaptcha"` が含まれます。
+
+---
+
+## 次のステップ
+
+ウィジェットを埋め込んだら、[サーバー上でトークンを検証してください](/docs/get-started/server-validation)。

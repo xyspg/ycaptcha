@@ -1,0 +1,47 @@
+---
+title: 概要
+description: yCAPTCHA REST API の完全なリファレンス。
+---
+
+ベース URL:
+
+```
+${NEXT_PUBLIC_SITE_URL}
+```
+
+## 公開エンドポイント
+
+バックエンドが呼び出す必要がある唯一のエンドポイント:
+
+<Cards>
+  <Card title="POST /siteverify" href="/docs/api-reference/siteverify">
+    CAPTCHA トークンをサーバー側で検証します。シークレットキーが必要です。
+  </Card>
+</Cards>
+
+## ウィジェット内部エンドポイント
+
+これらはウィジェットによって自動的に呼び出されます。直接やり取りする必要はありません。
+
+<Cards>
+  <Card title="POST /challenge" href="/docs/api-reference/challenge">
+    ランダム化された画像グリッドで新しいチャレンジセッションを作成します。
+  </Card>
+  <Card title="POST /verify" href="/docs/api-reference/verify">
+    検証のためにユーザーの画像選択を送信します。
+  </Card>
+  <Card title="GET /image" href="/docs/api-reference/image">
+    実際のストレージ URL を公開せずにチャレンジ画像をプロキシします。
+  </Card>
+</Cards>
+
+## レート制限
+
+IP ごとのスライディングウィンドウのレート制限が、すべての API ルートに適用されます:
+
+| ルート | 制限 |
+| --- | --- |
+| `/siteverify` | 100 リクエスト/分 |
+| `/challenge` | 20 リクエスト/分 |
+| `/verify` | 10 リクエスト/分 |
+| `/image` | 60 リクエスト/分 |

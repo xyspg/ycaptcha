@@ -1,0 +1,39 @@
+---
+title: Quick Start
+description: Getting started with yCAPTCHA.
+---
+
+## Introduction
+
+yCAPTCHA <span className="text-sm text-neutral-700 dark:text-neutral-400">(your-CAPTCHA)</span> is a CAPTCHA widget built for small communities and subcultures. You upload your own images and build challenges around shared references — subway lines, rhythm game charts, niche memes — instead of generic traffic lights.
+
+It is **not a serious bot-detection service**: there is no ML, no fingerprinting, no behavioral analysis. If you need real bot protection, use [Cloudflare Turnstile](https://www.cloudflare.com/products/turnstile/) or hCaptcha. yCAPTCHA is about the vibe.
+
+## Getting your API Key
+
+Create a site and get API key in [Dashboard](/dashboard).
+
+<Callout title="Security" type="warn">
+  Never expose your Secret Key (`sk_...`) in client-side code.
+</Callout>
+
+## Embed in 2 lines
+
+```html
+<div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
+```
+
+## Work with LLMs
+
+```
+${NEXT_PUBLIC_SITE_URL}/llms-full.txt
+```
+
+## Next steps
+
+<Cards>
+  <Card title="API Reference" href="/docs/api-reference">
+    Full endpoint documentation.
+  </Card>
+</Cards>

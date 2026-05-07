@@ -1,0 +1,47 @@
+---
+title: Overview
+description: Complete reference for the yCAPTCHA REST API.
+---
+
+Base URL:
+
+```
+${NEXT_PUBLIC_SITE_URL}
+```
+
+## Public Endpoint
+
+The only endpoint your backend needs to call:
+
+<Cards>
+  <Card title="POST /siteverify" href="/docs/api-reference/siteverify">
+    Verify a CAPTCHA token server-side. Requires your Secret Key.
+  </Card>
+</Cards>
+
+## Widget Internal Endpoints
+
+These are called automatically by the widget. You do not need to interact with them directly.
+
+<Cards>
+  <Card title="POST /challenge" href="/docs/api-reference/challenge">
+    Create a new challenge session with a randomized image grid.
+  </Card>
+  <Card title="POST /verify" href="/docs/api-reference/verify">
+    Submit the user's image selections for verification.
+  </Card>
+  <Card title="GET /image" href="/docs/api-reference/image">
+    Proxy a challenge image without exposing the real storage URL.
+  </Card>
+</Cards>
+
+## Rate Limiting
+
+Per-IP sliding window rate limits are enforced on all API routes:
+
+| Route | Limit |
+| --- | --- |
+| `/siteverify` | 100 requests/min |
+| `/challenge` | 20 requests/min |
+| `/verify` | 10 requests/min |
+| `/image` | 60 requests/min |

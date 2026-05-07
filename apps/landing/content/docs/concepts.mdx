@@ -1,0 +1,110 @@
+---
+title: Concepts
+description: Understand the yCAPTCHA data model, verification flow, and scoring logic.
+---
+
+## Data model
+
+### Site
+
+Represents a domain or application where the CAPTCHA is deployed. Each site has a **Site Key** (`pk_...`) for the client and a **Secret Key** (`sk_...`) for server-side verification. One user can own many sites.
+
+### Image Set
+
+A named pool of images (e.g., "NYC Parks", "Fire Hydrants"). Owned by a user — not a specific site — so it can be reused across multiple sites.
+
+### Image
+
+A single image within an image set. Has an `id`, a public `url` (hosted on Cloudflare R2), and an optional `name`. Images have no inherent labels — the puzzle defines which images are correct.
+
+### Puzzle
+
+Belongs to a site and references an image set. Contains:
+
+- **Prompt** — the keyword shown to the user (e.g., "parks"). The widget displays it with a fixed instruction prefix.
+- **Correct images** — which images from the set are the right answers
+- **Correct count** — how many correct images to show per challenge (randomly selected from the correct pool each time)
+- **Incorrect images** — optional hand-picked distractors. If not set, distractors are drawn randomly from the remaining images in the set
+- **Difficulty** — a float from 0 to 1 (default 0.5) that controls the pass threshold
+- **Enabled** — toggle to disable a puzzle without deleting it
+
+### CAPTCHA Session
+
+Stored in Redis with a 5-minute TTL. Challenge sessions hold all verification data (image order, correct answers, difficulty). Verified sessions are created after passing and consumed atomically by siteverify.
+
+---
+
+## Verification flow
+
+```
+Browser                         yCAPTCHA Server           Your Backend
+   |                                  |                         |
+   | 1. Load /widget/{siteKey}        |                         |
+   |--------------------------------->|                         |
+   |                                  |                         |
+   | 2. POST /challenge {siteKey}     |                         |
+   |--------------------------------->|                         |
+   |  { sessionToken, prompt, images} |                         |
+   |<---------------------------------|                         |
+   |                                  |                         |
+   | 3. User selects images           |                         |
+   |                                  |                         |
+   | 4. POST /verify                  |                         |
+   |    {sessionToken, selectedIndices}                         |
+   |--------------------------------->|                         |
+   |  { success: true, token }        |                         |
+   |<---------------------------------|                         |
+   |                                  |                         |
+   | 5. postMessage to parent page    |                         |
+   |                                  |                         |
+   | 6. Form submit with token        |                         |
+   |-------------------------------------------------->|        |
+   |                                  |                         |
+   |                                  | 7. POST /siteverify     |
+   |                                  |    {token, secretKey}   |
+   |                                  |<------------------------|
+   |                                  |  { success: true }      |
+   |                                  |------------------------>|
+   |                                  |                         |
+   |                                  |         8. Accept/reject
+```
+
+---
+
+## Scoring logic
+
+### Grid assembly
+
+Every challenge serves exactly **9 images** in a 3x3 grid. The server randomly picks `correctCount` images from the puzzle's correct pool, fills remaining slots with distractors (hand-picked or random), then shuffles with Fisher-Yates. The widget receives only proxy URLs — it cannot see image IDs or distinguish correct from incorrect.
+
+### Pass threshold
+
+The number of correct selections required to pass is:
+
+```
+requiredCorrect = Math.ceil(correctCount * difficulty)
+```
+
+| correctCount | Difficulty | Required selections |
+| ------------ | ---------- | ------------------- |
+| 3            | 0.5        | 2                   |
+| 3            | 1.0        | 3                   |
+| 3            | 0.25       | 1                   |
+| 5            | 0.5        | 3                   |
+
+### Anti-bot rule
+
+If all 9 grid positions are selected, the attempt **automatically fails** before any threshold check. This catches bots that select everything to guarantee hitting all correct images.
+
+### Wrong selection penalty
+
+Each incorrect selection subtracts 1 from the score. The final score is `correctSelections - wrongSelections`, and this must meet or exceed the required threshold. This prevents attackers from selecting large subsets to guarantee enough correct hits.
+
+---
+
+## Token lifecycle
+
+1. **Challenge session** created in Redis when `/challenge` is called (5-minute TTL)
+2. `/verify` atomically consumes the challenge session (prevents replay) and creates a **verified session** in Redis
+3. `/siteverify` atomically consumes the verified session (one-time use) and validates the secret key
+4. Any subsequent call with the same token returns `"Invalid token"`
