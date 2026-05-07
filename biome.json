@@ -13,7 +13,9 @@
       "!**/.next",
       "!**/public/captcha.js",
       "!captcha.js",
-      "!**/*.css"
+      "!**/*.css",
+      "!**/routeTree.gen.ts",
+      "!**/dist/**"
     ]
   },
   "formatter": {
