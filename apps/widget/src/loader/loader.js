@@ -162,7 +162,9 @@
   }
 
   window.addEventListener("message", (event) => {
-    if (ORIGIN && event.origin !== ORIGIN) return;
+    // Fail closed: if ORIGIN could not be resolved, reject every message
+    // rather than skipping the origin check.
+    if (!ORIGIN || event.origin !== ORIGIN) return;
 
     var data = event.data;
     if (!data || data.source !== SOURCE) return;

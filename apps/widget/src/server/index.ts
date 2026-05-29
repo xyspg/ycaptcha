@@ -8,6 +8,10 @@ const ROOT = path.resolve(import.meta.dirname, "../..");
 const LOADER_DIR = path.join(ROOT, "dist/loader");
 const CLIENT_DIR = path.join(ROOT, "dist/client");
 
+// Site keys are minted as `pk_${nanoid(32)}`; reject anything else before it
+// reaches the HTML or the CSP lookup cache.
+const SITEKEY_RE = /^pk_[A-Za-z0-9_-]+$/;
+
 async function readClientEntry(): Promise<string> {
   const dirEntries = await Array.fromAsync(
     new Bun.Glob("widget-app.*.js").scan({ cwd: CLIENT_DIR }),
@@ -55,6 +59,9 @@ const app = new Hono()
   .get("/health", (c) => c.json({ ok: true, service: "widget" }))
   .get("/widget/:siteKey", async (c) => {
     const siteKey = c.req.param("siteKey");
+    if (!SITEKEY_RE.test(siteKey)) {
+      return c.text("Invalid siteKey", 404);
+    }
     const [html, frameAncestors] = await Promise.all([
       widgetHtml(siteKey),
       getFrameAncestors(siteKey),
