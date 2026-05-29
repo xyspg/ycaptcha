@@ -7,7 +7,9 @@ COPY apps/widget/package.json apps/widget/
 COPY apps/dashboard/package.json apps/dashboard/
 COPY apps/landing/package.json apps/landing/
 COPY packages/shared/package.json packages/shared/
-RUN bun install --frozen-lockfile
+# --linker=hoisted: match local dev (bunfig.toml) so cross-workspace transitive
+# deps resolve identically in the image instead of bun's default isolated layout.
+RUN bun install --frozen-lockfile --linker=hoisted
 
 FROM oven/bun:1.3-debian AS runtime
 WORKDIR /app
@@ -22,5 +24,6 @@ COPY apps/api /app/apps/api
 COPY packages/shared /app/packages/shared
 
 WORKDIR /app/apps/api
+USER bun
 EXPOSE 3001
 CMD ["bun", "run", "src/index.ts"]

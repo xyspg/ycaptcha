@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1.7
 FROM oven/bun:1.3-debian AS base
 WORKDIR /app
-ENV NODE_ENV=production
 
 FROM base AS deps
 COPY package.json bun.lock tsconfig.base.json ./
@@ -10,7 +9,9 @@ COPY apps/widget/package.json apps/widget/
 COPY apps/dashboard/package.json apps/dashboard/
 COPY apps/landing/package.json apps/landing/
 COPY packages/shared/package.json packages/shared/
-RUN bun install --frozen-lockfile
+# --linker=hoisted: match local dev (bunfig.toml) so cross-workspace transitive
+# deps resolve identically in the image instead of bun's default isolated layout.
+RUN bun install --frozen-lockfile --linker=hoisted
 
 FROM base AS builder
 COPY --from=deps /app/node_modules /app/node_modules
@@ -31,6 +32,7 @@ WORKDIR /app/apps/widget
 RUN bun run build
 
 FROM base AS runtime
+ENV NODE_ENV=production
 COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/apps/api /app/apps/api
 COPY --from=builder /app/apps/widget /app/apps/widget
@@ -38,5 +40,6 @@ COPY --from=builder /app/packages/shared /app/packages/shared
 COPY --from=builder /app/package.json /app/bun.lock /app/tsconfig.base.json /app/
 
 WORKDIR /app/apps/widget
+USER bun
 EXPOSE 3002
 CMD ["bun", "run", "src/server/index.ts"]

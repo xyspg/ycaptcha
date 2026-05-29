@@ -7,7 +7,9 @@ COPY apps/widget/package.json apps/widget/
 COPY apps/dashboard/package.json apps/dashboard/
 COPY apps/landing/package.json apps/landing/
 COPY packages/shared/package.json packages/shared/
-RUN bun install --frozen-lockfile
+# --linker=hoisted: match local dev (bunfig.toml) so cross-workspace transitive
+# deps resolve identically in the image instead of bun's default isolated layout.
+RUN bun install --frozen-lockfile --linker=hoisted
 
 FROM oven/bun:1.3-debian AS builder
 WORKDIR /app
@@ -21,7 +23,9 @@ COPY apps/dashboard /app/apps/dashboard
 COPY packages/shared /app/packages/shared
 
 ARG VITE_API_URL
+ARG VITE_LANDING_URL
 ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_LANDING_URL=${VITE_LANDING_URL}
 
 WORKDIR /app/apps/dashboard
 RUN bun run build

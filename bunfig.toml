@@ -1,0 +1,6 @@
+[install]
+# Hoisted linker so the legacy monolith at the repo root can resolve
+# transitive deps like `nanoid` and `@next/env` that aren't direct
+# dependencies of the root package.json. Drop this file after the
+# monolith is decommissioned (cutover step 6).
+linker = "hoisted"
