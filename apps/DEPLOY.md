@@ -23,9 +23,9 @@ Some env vars are inlined into client bundles at build time and need to be
 passed as Dockerfile `ARG`s:
 
 - `apps/widget` — `VITE_API_URL`, `VITE_WIDGET_URL`
-- `apps/dashboard` — `VITE_API_URL`
+- `apps/dashboard` — `VITE_API_URL`, `VITE_LANDING_URL`
 - `apps/landing` — `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_APP_URL`,
-  `NEXT_PUBLIC_GITHUB_URL`, `NEXT_PUBLIC_R2_PUBLIC_URL`
+  `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_GITHUB_URL`, `NEXT_PUBLIC_R2_PUBLIC_URL`
 
 Set these in Dokploy under each service's Build Arguments.
 
@@ -40,6 +40,7 @@ Set in Dokploy per service. Source of truth is the per-app `.env.example`.
 - `BETTER_AUTH_SECRET` — generate with `openssl rand -hex 32`
 - `BETTER_AUTH_URL=https://api.ycaptcha.xyspg.moe`
 - `WEB_APP_URL=https://app.ycaptcha.xyspg.moe`
+- `SITE_URL=https://ycaptcha.xyspg.moe` — required; used for the apex origin check
 - `AUTH_COOKIE_DOMAIN=.ycaptcha.xyspg.moe`
 - `AUTH_TRUSTED_ORIGINS=https://ycaptcha.xyspg.moe,https://app.ycaptcha.xyspg.moe,https://widget.ycaptcha.xyspg.moe`
 - `PASSKEY_RP_ID=ycaptcha.xyspg.moe`
@@ -81,7 +82,7 @@ aws s3 sync s3://ycaptcha-r2 s3://ycaptcha \
 
 ## Smoke checklist after first boot
 
-- `curl https://api.ycaptcha.xyspg.moe/api/health` returns `{"ok":true}`
+- `curl https://api.ycaptcha.xyspg.moe/health` returns `{"ok":true,"service":"api"}`
 - `curl -I https://widget.ycaptcha.xyspg.moe/captcha.js` returns 200, < 5 KB
 - `curl -I https://widget.ycaptcha.xyspg.moe/widget/<existing_sitekey>` returns
   `Content-Security-Policy: frame-ancestors …` matching DB row
