@@ -75,7 +75,7 @@ export function WidgetApp({ siteKey }: { siteKey: string }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/v0/captcha/challenge`, {
+      const res = await fetch(`${API_BASE}/api/v1/captcha/challenge`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -96,7 +96,14 @@ export function WidgetApp({ siteKey }: { siteKey: string }) {
       const data = await res.json();
       const nextMode: WidgetMode =
         data.captchaMode === "audio" ? "audio" : "image";
-      setImages(data.images ?? []);
+      // The API returns relative image-proxy paths; the widget iframe is served
+      // from a different origin than the API, so prefix the API origin (the
+      // audio URL below is built the same way).
+      setImages(
+        ((data.images ?? []) as { url: string }[]).map((img) => ({
+          url: `${API_BASE}${img.url}`,
+        })),
+      );
       setPrompt(data.prompt);
       setSessionToken(data.sessionToken);
       setCaptchaMode(data.captchaMode ?? "image");
@@ -131,7 +138,7 @@ export function WidgetApp({ siteKey }: { siteKey: string }) {
     setSessionToken(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/v0/captcha/verify`, {
+      const res = await fetch(`${API_BASE}/api/v1/captcha/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionToken: token, selectedIndices }),
@@ -160,7 +167,7 @@ export function WidgetApp({ siteKey }: { siteKey: string }) {
     setSessionToken(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/v0/captcha/verify`, {
+      const res = await fetch(`${API_BASE}/api/v1/captcha/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionToken: token, textAnswer }),
@@ -212,7 +219,7 @@ export function WidgetApp({ siteKey }: { siteKey: string }) {
 
       {phase === "challenge" && mode === "audio" && sessionToken && (
         <CaptchaAudioWidget
-          audioUrl={`${API_BASE}/api/v0/captcha/audio/${sessionToken}`}
+          audioUrl={`${API_BASE}/api/v1/captcha/audio/${sessionToken}`}
           onVerify={handleAudioVerify}
           onSwitchToImage={
             captchaMode === "combined" ? () => setMode("image") : undefined
