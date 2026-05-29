@@ -8,14 +8,14 @@ export const api = hc<ApiApp>(baseUrl, {
 });
 
 export type Site = Extract<
-  InferResponseType<(typeof api.api.sites)[":id"]["$get"]>,
+  InferResponseType<(typeof api.api.v1.sites)[":id"]["$get"]>,
   { site: unknown }
 >["site"];
 
 /**
  * Throw the response body as an error if the request failed.
  * Useful inside TanStack Query's queryFn / mutationFn:
- *   queryFn: () => unwrap(api.api.sites.$get())
+ *   queryFn: () => unwrap(api.api.v1.sites.$get())
  */
 export async function unwrap<T>(promise: Promise<Response>): Promise<T> {
   const res = await promise;
@@ -26,7 +26,11 @@ export async function unwrap<T>(promise: Promise<Response>): Promise<T> {
     } catch {
       body = { error: res.statusText };
     }
-    throw Object.assign(new Error("Request failed"), {
+    const message =
+      body && typeof body === "object" && "error" in body
+        ? String((body as { error: unknown }).error)
+        : res.statusText || "Request failed";
+    throw Object.assign(new Error(message), {
       status: res.status,
       body,
     });

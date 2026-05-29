@@ -41,6 +41,12 @@ type OnboardingResponse = {
   progress: OnboardingProgress | null;
 };
 
+// Home and Docs live on the landing site, a different origin from the dashboard
+// SPA, so they must be absolute URLs (a root-relative href would hit this app).
+const LANDING_URL = (
+  import.meta.env.VITE_LANDING_URL ?? "http://localhost:3000"
+).replace(/\/$/, "");
+
 function isPathActive(pathname: string, href: string) {
   return href === "/dashboard"
     ? pathname === "/dashboard"
@@ -55,7 +61,7 @@ export function AppSidebar() {
 
   const onboarding = useQuery({
     queryKey: ["onboarding"],
-    queryFn: () => unwrap<OnboardingResponse>(api.api.onboarding.$get()),
+    queryFn: () => unwrap<OnboardingResponse>(api.api.v1.onboarding.$get()),
     enabled: !!session,
     staleTime: 60_000,
   });
@@ -125,7 +131,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href="/" target="_self">
+              <a href={LANDING_URL} target="_self">
                 <Home />
                 <span>
                   <Trans>Home</Trans>
@@ -135,7 +141,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <a href="/docs" target="_blank" rel="noreferrer">
+              <a href={`${LANDING_URL}/docs`} target="_blank" rel="noreferrer">
                 <BookOpen />
                 <span>
                   <Trans>Docs</Trans>

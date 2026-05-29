@@ -1,5 +1,6 @@
 import { Trans, useLingui } from "@lingui/react/macro";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,8 +39,14 @@ export function ConfirmDeleteDialog({
 
   const handleConfirm = () => {
     startTransition(async () => {
-      await onConfirm();
-      onOpenChange(false);
+      try {
+        await onConfirm();
+        onOpenChange(false);
+      } catch (err) {
+        // Keep the dialog open and tell the user; otherwise a failed delete
+        // leaves the dialog stuck with no feedback.
+        toast.error(err instanceof Error ? err.message : t`Failed to delete`);
+      }
     });
   };
 
