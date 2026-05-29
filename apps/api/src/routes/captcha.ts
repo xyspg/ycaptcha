@@ -184,7 +184,7 @@ const captcha = new Hono()
       prompt: puzzleData.prompt,
       ...(needsImages && {
         images: allImages.map((_, i) => ({
-          url: `/api/v0/captcha/image/${token}/${i}`,
+          url: `/api/v1/captcha/image/${token}/${i}`,
         })),
       }),
       audioEnabled: !!audioUrl,
@@ -239,6 +239,12 @@ const captcha = new Hono()
     // images set; clients must clear both halves.
     const requiresAudio = !!session.audioAnswer;
     const requiresImage = session.correctImageIds.length > 0;
+
+    // Fail closed: a session with nothing to grade must never mint a token.
+    if (!requiresAudio && !requiresImage) {
+      after(() => recordEvent({ ...eventBase, eventType: "fail" }));
+      return c.json({ success: false });
+    }
 
     if (requiresAudio && !hasAudioAnswer) {
       after(() => recordEvent({ ...eventBase, eventType: "fail" }));

@@ -1,5 +1,5 @@
 import { createMiddleware } from "hono/factory";
-import { RateLimiterRedis } from "rate-limiter-flexible";
+import { RateLimiterRedis, RateLimiterRes } from "rate-limiter-flexible";
 import { env } from "../env";
 import { rawRedis } from "../lib/redis";
 import { getClientIP } from "../lib/utils";
@@ -39,16 +39,17 @@ export function rateLimit(name: LimiterName) {
     const ip = getClientIP(c.req.raw);
     try {
       await limiters[name].consume(ip);
-      await next();
-    } catch (res) {
-      const retryAfter =
-        res && typeof res === "object" && "msBeforeNext" in res
-          ? Math.ceil(
-              Number((res as { msBeforeNext: number }).msBeforeNext) / 1000,
-            )
-          : 60;
-      c.header("Retry-After", String(retryAfter));
-      return c.json({ error: "Too many requests", retryAfter }, 429);
+    } catch (err) {
+      // rate-limiter-flexible rejects with a RateLimiterRes ONLY when the limit
+      // was exceeded. Any other rejection is a store (Redis) error — fail open
+      // and log it rather than 429-ing every request as if it were throttled.
+      if (err instanceof RateLimiterRes) {
+        const retryAfter = Math.ceil(err.msBeforeNext / 1000);
+        c.header("Retry-After", String(retryAfter));
+        return c.json({ error: "Too many requests", retryAfter }, 429);
+      }
+      console.error(`[rate-limit] store error on "${name}":`, err);
     }
+    await next();
   });
 }
