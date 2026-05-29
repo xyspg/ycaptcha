@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "${NEXT_PUBLIC_SITE_URL}",
+      "url": "${NEXT_PUBLIC_API_URL}",
       "description": "Production"
     }
   ],
   "paths": {
-    "/api/v0/captcha/siteverify": {
+    "/api/v1/captcha/siteverify": {
       "post": {
         "operationId": "siteverify",
         "summary": "Verify a CAPTCHA token",
@@ -107,7 +107,7 @@
         }
       }
     },
-    "/api/v0/captcha/challenge": {
+    "/api/v1/captcha/challenge": {
       "post": {
         "operationId": "challenge",
         "summary": "Create a CAPTCHA challenge",
@@ -185,7 +185,7 @@
         }
       }
     },
-    "/api/v0/captcha/verify": {
+    "/api/v1/captcha/verify": {
       "post": {
         "operationId": "verify",
         "summary": "Submit challenge answer",
@@ -246,7 +246,7 @@
         }
       }
     },
-    "/api/v0/captcha/image/{sessionToken}/{index}": {
+    "/api/v1/captcha/image/{sessionToken}/{index}": {
       "get": {
         "operationId": "image",
         "summary": "Fetch a challenge image",

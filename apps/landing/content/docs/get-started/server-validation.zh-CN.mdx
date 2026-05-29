@@ -12,7 +12,7 @@ description: 使用 Siteverify API 在你的服务器上验证 yCAPTCHA 令牌�
 ## 接口地址
 
 ```
-POST ${NEXT_PUBLIC_SITE_URL}/api/v0/captcha/siteverify
+POST ${NEXT_PUBLIC_API_URL}/api/v1/captcha/siteverify
 ```
 
 ## 请求
@@ -52,10 +52,10 @@ POST ${NEXT_PUBLIC_SITE_URL}/api/v0/captcha/siteverify
 ### Node.js (fetch)
 
 ```js
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const siteUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const response = await fetch(
-  `${siteUrl}/api/v0/captcha/siteverify`,
+  `${siteUrl}/api/v1/captcha/siteverify`,
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -81,10 +81,10 @@ if (!result.success) {
 import os
 import requests
 
-site_url = os.environ["NEXT_PUBLIC_SITE_URL"]
+site_url = os.environ["NEXT_PUBLIC_API_URL"]
 
 result = requests.post(
-    f"{site_url}/api/v0/captcha/siteverify",
+    f"{site_url}/api/v1/captcha/siteverify",
     json={
         "token": request.form["captcha-token"],
         "secretKey": os.environ["YCAPTCHA_SECRET_KEY"],
@@ -98,8 +98,8 @@ if not result.get("success"):
 ### PHP (cURL)
 
 ```php
-$siteUrl = getenv('NEXT_PUBLIC_SITE_URL');
-$response = json_decode(file_get_contents($siteUrl . '/api/v0/captcha/siteverify', false, stream_context_create([
+$siteUrl = getenv('NEXT_PUBLIC_API_URL');
+$response = json_decode(file_get_contents($siteUrl . '/api/v1/captcha/siteverify', false, stream_context_create([
     'http' => [
         'method' => 'POST',
         'header' => 'Content-Type: application/json',

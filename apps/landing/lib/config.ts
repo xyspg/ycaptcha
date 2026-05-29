@@ -2,10 +2,12 @@ import { env } from "@/lib/env";
 
 const siteUrl = env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, "");
 const appUrl = env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+const apiUrl = env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
 
 export const config = {
   siteUrl,
   appUrl,
+  apiUrl,
   siteHostname: new URL(siteUrl).hostname,
   getSiteUrl(path = "") {
     if (!path) return siteUrl;
@@ -14,5 +16,9 @@ export const config = {
   getAppUrl(path = "") {
     if (!path) return appUrl;
     return new URL(path.replace(/^\/+/, ""), `${appUrl}/`).toString();
+  },
+  getApiUrl(path = "") {
+    if (!path) return apiUrl;
+    return new URL(path.replace(/^\/+/, ""), `${apiUrl}/`).toString();
   },
 } as const;

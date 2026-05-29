@@ -37,7 +37,7 @@ const EMBED_SNIPPET = `<script
 ></div>`;
 
 const VERIFY_SNIPPET = `const res = await fetch(
-  "${config.getSiteUrl("/api/v0/captcha/siteverify")}",
+  "${config.getApiUrl("/api/v1/captcha/siteverify")}",
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -96,14 +96,6 @@ export async function HomePage() {
             className="hidden sm:inline-flex"
           >
             <Link href="/docs">{t("navDocs")}</Link>
-          </Button>
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="hidden sm:inline-flex"
-          >
-            <Link href="/gallery">{t("navGallery")}</Link>
           </Button>
           <Button
             asChild
@@ -172,14 +164,6 @@ export async function HomePage() {
                   </span>
                 </a>
               </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="rounded-full px-5"
-              >
-                <Link href="/gallery">{t("seeGallery")}</Link>
-              </Button>
             </div>
 
             {/* Community themes pill row */}
@@ -192,10 +176,9 @@ export async function HomePage() {
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {COMMUNITY_THEMES.map((c) => (
-                  <Link
+                  <span
                     key={c.name}
-                    href="/gallery"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-2.5 py-1 text-xs text-foreground/70 backdrop-blur-sm transition-colors hover:border-foreground/30 hover:bg-background hover:text-foreground"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background/80 px-2.5 py-1 text-xs text-foreground/70 backdrop-blur-sm"
                     style={{ fontFamily: "var(--font-geist-mono)" }}
                   >
                     <span
@@ -203,7 +186,7 @@ export async function HomePage() {
                       className={`size-1.5 rounded-full ${c.hue}`}
                     />
                     {c.name}
-                  </Link>
+                  </span>
                 ))}
                 <a
                   href={config.getAppUrl("/dashboard")}
