@@ -16,7 +16,7 @@ description: 通过一个 script 标签将 yCAPTCHA 组件添加到你的网页�
 
 ```html
 <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
-<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
 ```
 
 就这样。脚本会自动查找页面上所有的 `.y-captcha` 元素，创建组件，并在旁边插入一个隐藏的 `<input name="ycaptcha-response">`。当用户通过挑战时，输入框会填入验证令牌——可以随时与你的表单一起提交。
@@ -33,7 +33,7 @@ description: 通过一个 script 标签将 yCAPTCHA 组件添加到你的网页�
 
   <button type="submit">提交</button>
 </form>
-<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
 ```
 
 提交表单时，令牌以 `ycaptcha-response` 的形式包含在表单主体中。在你的服务器上[验证它](/docs/get-started/server-validation)。

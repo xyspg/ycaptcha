@@ -16,7 +16,7 @@ description: 単一のスクリプトタグで yCAPTCHA ウィジェットを We
 
 ```html
 <div class="y-captcha" data-sitekey="YOUR_SITE_KEY"></div>
-<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
 ```
 
 これだけです。スクリプトはページ上のすべての `.y-captcha` 要素を自動的に見つけ、ウィジェットを作成し、その横に hidden の `<input name="ycaptcha-response">` を挿入します。ユーザーがチャレンジに合格すると、input に検証トークンが入力され、フォームと一緒に送信できる状態になります。
@@ -33,7 +33,7 @@ description: 単一のスクリプトタグで yCAPTCHA ウィジェットを We
 
   <button type="submit">Submit</button>
 </form>
-<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" integrity="sha384-RSf+Eo9mckZ4jPu9Wh7vaNye+fuYnEWj38AUUmUFVvo8bgN2pkeKfuEABl4AorZ6" crossorigin="anonymous" async defer></script>
+<script src="${NEXT_PUBLIC_SITE_URL}/captcha.js" async defer></script>
 ```
 
 フォーム送信時、トークンはフォームボディ内で `ycaptcha-response` として送信されます。[サーバー上で検証してください](/docs/get-started/server-validation)。

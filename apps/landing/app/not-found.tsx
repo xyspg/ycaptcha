@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { config } from "@/lib/config";
 
 export default function NotFound() {
   return (
@@ -9,7 +9,7 @@ export default function NotFound() {
         The page you're looking for doesn't exist.
       </p>
       <Button asChild>
-        <Link href="/dashboard">Back to Dashboard</Link>
+        <a href={config.getAppUrl("/dashboard")}>Back to Dashboard</a>
       </Button>
     </div>
   );
