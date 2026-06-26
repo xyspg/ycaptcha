@@ -90,7 +90,7 @@ export function SidebarOnboardingChecklist({
 
   const dismiss = useMutation({
     mutationFn: () =>
-      unwrap<{ message: string }>(api.api.onboarding.dismiss.$post()),
+      unwrap<{ message: string }>(api.api.v1.onboarding.dismiss.$post()),
     onSuccess: () =>
       qc.setQueryData(["onboarding"], { dismissed: true, progress: null }),
   });

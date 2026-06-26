@@ -1,3 +1,4 @@
+import { neon } from "@neondatabase/serverless";
 import { expect, test as setup } from "@playwright/test";
 
 const authFile = "e2e/.auth/user.json";
@@ -15,9 +16,19 @@ setup("register and authenticate test user", async ({ page }) => {
   await page.getByLabel("Confirm Password").fill(password);
   await page.getByRole("button", { name: "Sign Up" }).click();
 
-  // Wait for either redirect to dashboard or error (user already exists)
+  // Three possible post-signup states:
+  //  - "Check your email" card (.test domains skip the real email send,
+  //    so verification never lands client-side; we mark the user verified
+  //    directly via SQL below)
+  //  - .text-destructive error (user already exists from a previous run)
+  //  - direct redirect to /dashboard (only if email verification is off)
   const result = await Promise.race([
     page.waitForURL("**/dashboard**", { timeout: 10_000 }).then(() => "ok"),
+    page
+      .getByText(/check your inbox|verification link/i)
+      .first()
+      .waitFor({ timeout: 10_000 })
+      .then(() => "needs-verify"),
     page
       .locator(".text-destructive")
       .first()
@@ -25,8 +36,18 @@ setup("register and authenticate test user", async ({ page }) => {
       .then(() => "error"),
   ]);
 
-  if (result === "error") {
-    // User already exists, fall back to login
+  if (result === "needs-verify" || result === "error") {
+    // Force-verify via SQL so login succeeds. better-auth's
+    // requireEmailVerification gate reads user.email_verified.
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error("DATABASE_URL required to verify e2e test user");
+    }
+    const sql = neon(databaseUrl);
+    await sql`
+      UPDATE "user" SET email_verified = true WHERE email = ${email}
+    `;
+
     await page.goto("/login");
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password", { exact: true }).fill(password);

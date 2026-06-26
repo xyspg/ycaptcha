@@ -30,14 +30,14 @@ function SiteDetail() {
     queryKey: ["sites", siteId],
     queryFn: () =>
       unwrap<{ site: Site }>(
-        api.api.sites[":id"].$get({ param: { id: siteId } }),
+        api.api.v1.sites[":id"].$get({ param: { id: siteId } }),
       ),
   });
 
   const regen = useMutation({
     mutationFn: () =>
       unwrap<{ site: Site; message: string }>(
-        api.api.sites[":id"]["regenerate-keys"].$post({
+        api.api.v1.sites[":id"]["regenerate-keys"].$post({
           param: { id: siteId },
         }),
       ),
@@ -50,7 +50,7 @@ function SiteDetail() {
   const del = useMutation({
     mutationFn: () =>
       unwrap<{ message: string }>(
-        api.api.sites[":id"].$delete({ param: { id: siteId } }),
+        api.api.v1.sites[":id"].$delete({ param: { id: siteId } }),
       ),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["sites"] });

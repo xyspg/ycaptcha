@@ -1170,9 +1170,9 @@ msgstr "Drop one script tag and one div into your page. Tie it to a puzzle with 
 msgid "landing.step2Title"
 msgstr "Embed the widget"
 
-#. POST the token and your secret key to /api/v0/captcha/siteverify.
+#. POST the token and your secret key to /api/v1/captcha/siteverify.
 msgid "landing.step3Body"
-msgstr "POST the token and your secret key to /api/v0/captcha/siteverify."
+msgstr "POST the token and your secret key to /api/v1/captcha/siteverify."
 
 #. Verify on the server
 msgid "landing.step3Title"

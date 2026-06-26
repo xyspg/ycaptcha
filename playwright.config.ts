@@ -35,8 +35,12 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // .env.test first so its DATABASE_URL (test db) wins over .env.local
-    command: "bun --env-file=.env.test --env-file=.env.local next dev",
+    // .env.local first, .env.test last — bun's later --env-file overrides the
+    // earlier one. The refactor branch's .env.local sets refactor-only URLs
+    // (api.ycaptcha.localhost, etc.) that must NOT leak into the legacy
+    // monolith webServer; .env.test pins everything monolith-relevant back to
+    // localhost:3000.
+    command: "bun --env-file=.env.local --env-file=.env.test next dev",
     url: "http://localhost:3000",
     reuseExistingServer: false,
   },

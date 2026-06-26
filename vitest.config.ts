@@ -6,9 +6,11 @@ export default defineConfig({
     environment: "node",
     exclude: [
       "e2e/**",
-      "node_modules/**",
+      "**/node_modules/**",
       "__tests__/integration/**",
       ".claude/**",
+      "apps/**",
+      "packages/**",
     ],
   },
   resolve: {

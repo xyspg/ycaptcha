@@ -46,7 +46,7 @@ export const Route = createFileRoute("/dashboard/sites/")({
 function SitesPage() {
   const sites = useQuery({
     queryKey: ["sites"],
-    queryFn: () => unwrap<SitesResponse>(api.api.sites.$get()),
+    queryFn: () => unwrap<SitesResponse>(api.api.v1.sites.$get()),
   });
 
   return (
@@ -106,7 +106,7 @@ function CreateSiteDialog() {
 
   const createSite = useMutation({
     mutationFn: (input: CreateSiteInput) =>
-      unwrap<{ site: Site }>(api.api.sites.$post({ json: input })),
+      unwrap<{ site: Site }>(api.api.v1.sites.$post({ json: input })),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["sites"] });
       qc.invalidateQueries({ queryKey: ["onboarding"] });
@@ -204,7 +204,7 @@ function SiteCard({ site }: { site: Site }) {
   const deleteSite = useMutation({
     mutationFn: () =>
       unwrap<{ message: string }>(
-        api.api.sites[":id"].$delete({ param: { id: site.id } }),
+        api.api.v1.sites[":id"].$delete({ param: { id: site.id } }),
       ),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["sites"] });

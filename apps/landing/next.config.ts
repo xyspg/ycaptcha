@@ -1,4 +1,3 @@
-import path from "node:path";
 import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
@@ -9,10 +8,10 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 const nextConfig: NextConfig = {
   output: "standalone",
   devIndicators: false,
+  // Pin the project root to apps/landing so Turbopack does NOT walk up to the
+  // monorepo root and pick up the legacy monolith's `proxy.ts` as middleware.
   turbopack: {
-    // Workspace root. In Docker the build context only includes apps/landing
-    // (no monolith proxy.ts at the workspace root), so this is safe.
-    root: path.resolve(import.meta.dirname, "../.."),
+    root: import.meta.dirname,
   },
   async rewrites() {
     return [

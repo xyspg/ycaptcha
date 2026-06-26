@@ -46,7 +46,7 @@
     "step2Title": "嵌入组件",
     "step2Body": "一个 script 标签加一个 div，配上你的 site key，就完事。",
     "step3Title": "服务端验证",
-    "step3Body": "把 token 和 secret key POST 到 /api/v0/captcha/siteverify。",
+    "step3Body": "把 token 和 secret key POST 到 /api/v1/captcha/siteverify。",
     "ctaTitle": "一行代码，你的风格。开始吧。",
     "ctaSub": "接入组件、选好图片、上线。",
     "ctaButton": "立即开始",

@@ -30,7 +30,9 @@ export const auth = betterAuth({
   },
 
   rateLimit: {
-    enabled: true,
+    // env.DISABLE_RATE_LIMIT is set in .env.test so e2e can hammer signup
+    // without hitting the strict customRules below.
+    enabled: env.DISABLE_RATE_LIMIT !== "true",
     storage: "secondary-storage",
     window: 60,
     max: 100,

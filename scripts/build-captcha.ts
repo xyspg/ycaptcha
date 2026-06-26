@@ -1,11 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { loadEnvConfig } from "@next/env";
 import { minify } from "terser";
-
-const isDev = process.argv.includes("--dev");
-
-loadEnvConfig(process.cwd(), isDev);
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
 

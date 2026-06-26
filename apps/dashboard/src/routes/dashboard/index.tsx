@@ -15,7 +15,7 @@ function DashboardHome() {
   const stats = useQuery({
     queryKey: ["analytics", "dashboard"],
     queryFn: () =>
-      unwrap<DashboardStatsResponse>(api.api.analytics.dashboard.$get()),
+      unwrap<DashboardStatsResponse>(api.api.v1.analytics.dashboard.$get()),
   });
 
   return (

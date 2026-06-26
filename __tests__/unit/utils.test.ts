@@ -36,11 +36,11 @@ describe("shuffle()", () => {
 });
 
 describe("getClientIP()", () => {
-  it("extracts the first IP from x-forwarded-for", () => {
+  it("extracts the trusted (rightmost) IP from x-forwarded-for", () => {
     const req = new Request("http://localhost", {
       headers: { "x-forwarded-for": "1.2.3.4, 5.6.7.8" },
     });
-    expect(getClientIP(req)).toBe("1.2.3.4");
+    expect(getClientIP(req)).toBe("5.6.7.8");
   });
 
   it("normalizes ::1 to 127.0.0.1", () => {

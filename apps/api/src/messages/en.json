@@ -46,7 +46,7 @@
     "step2Title": "Embed the widget",
     "step2Body": "Drop one script tag and one div into your page. Tie it to a puzzle with your site key.",
     "step3Title": "Verify on the server",
-    "step3Body": "POST the token and your secret key to /api/v0/captcha/siteverify.",
+    "step3Body": "POST the token and your secret key to /api/v1/captcha/siteverify.",
     "ctaTitle": "One Line, Your Styles. Go.",
     "ctaSub": "Drop in the widget, pick your images, ship.",
     "ctaButton": "Get started",

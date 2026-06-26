@@ -46,7 +46,7 @@
     "step2Title": "ウィジェットを埋め込む",
     "step2Body": "script タグひとつと div ひとつ。サイトキーを設定すれば完了です。",
     "step3Title": "サーバーで検証",
-    "step3Body": "トークンとシークレットキーを /api/v0/captcha/siteverify に POST。",
+    "step3Body": "トークンとシークレットキーを /api/v1/captcha/siteverify に POST。",
     "ctaTitle": "一行で、あなたのスタイル。行こう。",
     "ctaSub": "ウィジェットを入れて、画像を選んで、リリース。",
     "ctaButton": "はじめる",

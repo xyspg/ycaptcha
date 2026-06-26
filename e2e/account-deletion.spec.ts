@@ -1,3 +1,4 @@
+import { neon } from "@neondatabase/serverless";
 import { expect, type Page, test } from "@playwright/test";
 import {
   createSiteWithKeys,
@@ -33,6 +34,33 @@ async function signUp(
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByLabel("Confirm Password").fill(password);
   await page.getByRole("button", { name: "Sign Up" }).click();
+
+  // .test placeholder emails skip the verification email; the user lands on
+  // a "Check your inbox" card and stays unverified. Force-verify via SQL,
+  // then sign in.
+  const onCheckEmail = await page
+    .getByText(/check your inbox|verification link/i)
+    .first()
+    .waitFor({ timeout: 10_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (onCheckEmail) {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error("DATABASE_URL required to verify e2e test user");
+    }
+    const sql = neon(databaseUrl);
+    await sql`
+      UPDATE "user" SET email_verified = true WHERE email = ${email}
+    `;
+
+    await page.goto("/login");
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password", { exact: true }).fill(password);
+    await page.getByRole("button", { name: "Sign In", exact: true }).click();
+  }
+
   await page.waitForURL("**/dashboard**", { timeout: 10_000 });
 }
 

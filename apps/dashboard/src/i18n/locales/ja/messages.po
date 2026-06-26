@@ -1170,9 +1170,9 @@ msgstr "script タグひとつと div ひとつ。サイトキーを設定すれ
 msgid "landing.step2Title"
 msgstr "ウィジェットを埋め込む"
 
-#. POST the token and your secret key to /api/v0/captcha/siteverify.
+#. POST the token and your secret key to /api/v1/captcha/siteverify.
 msgid "landing.step3Body"
-msgstr "トークンとシークレットキーを /api/v0/captcha/siteverify に POST。"
+msgstr "トークンとシークレットキーを /api/v1/captcha/siteverify に POST。"
 
 #. Verify on the server
 msgid "landing.step3Title"

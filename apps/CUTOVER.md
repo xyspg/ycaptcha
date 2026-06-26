@@ -66,7 +66,7 @@ impact.
 
 - [ ] Flip DNS.
 - [ ] Verify: `curl https://api.ycaptcha.xyspg.moe/health` → `{"ok":true}`.
-- [ ] Smoke `POST /api/v0/captcha/challenge` end-to-end against
+- [ ] Smoke `POST /api/v1/captcha/challenge` end-to-end against
       `widget.ycaptcha.xyspg.moe`.
 - [ ] Confirm `Set-Cookie` includes `Domain=.ycaptcha.xyspg.moe; Secure;
       SameSite=Lax`.
