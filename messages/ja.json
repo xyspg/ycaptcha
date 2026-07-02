@@ -244,6 +244,7 @@
     "correctPerChallenge": "1回の課題につき正解 {count} 個",
     "deletePuzzle": "パズルを削除",
     "deletePuzzleDescription": "このパズルを完全に削除します。使用中のCAPTCHAセッションは動作しなくなります。",
+    "duplicatePuzzle": "パズルを複製",
     "create": {
       "title": "パズルを作成",
       "site": "サイト",

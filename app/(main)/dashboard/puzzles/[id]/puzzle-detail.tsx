@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Trash2 } from "lucide-react";
+import { ArrowLeft, Copy, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useActionState, useState } from "react";
@@ -97,6 +97,12 @@ export function PuzzleDetail({
           <h1 className="text-2xl font-semibold">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{siteName}</p>
         </div>
+        <Button variant="outline" size="sm" className="ml-auto" asChild>
+          <Link href={`/dashboard/puzzles/new?from=${p.id}`}>
+            <Copy className="size-4" />
+            {tp("duplicatePuzzle")}
+          </Link>
+        </Button>
       </div>
 
       {analyticsSlot}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Copy, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -116,6 +116,12 @@ export function PuzzleCard({
           </Link>
         </ContextMenuTrigger>
         <ContextMenuContent>
+          <ContextMenuItem asChild>
+            <Link href={`/dashboard/puzzles/new?from=${id}`}>
+              <Copy className="size-3.5" />
+              {t("duplicatePuzzle")}
+            </Link>
+          </ContextMenuItem>
           <ContextMenuItem
             className="text-destructive focus:text-destructive"
             onSelect={() => setDeleteOpen(true)}

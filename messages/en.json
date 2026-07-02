@@ -244,6 +244,7 @@
     "correctPerChallenge": "{count} correct per challenge",
     "deletePuzzle": "Delete Puzzle",
     "deletePuzzleDescription": "This will permanently delete this puzzle. Existing captcha sessions using it will stop working.",
+    "duplicatePuzzle": "Duplicate Puzzle",
     "create": {
       "title": "Create Puzzle",
       "site": "Site",

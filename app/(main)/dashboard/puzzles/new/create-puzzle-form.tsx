@@ -39,9 +39,23 @@ interface AudioClipData {
   url: string;
 }
 
+interface PuzzleDefaultValues {
+  captchaMode: CaptchaMode;
+  imageSetId: string;
+  prompt: string;
+  correctImageIds: string[];
+  incorrectImageIds: string[] | null;
+  correctCount: number;
+  correctCountMax: number | null;
+  difficulty: number;
+  audioId: string;
+  audioAnswer: string;
+}
+
 interface CreatePuzzleFormProps {
   sites: { id: string; name: string }[];
   defaultSiteId?: string;
+  defaultValues?: PuzzleDefaultValues;
   imageSets: ImageSetData[];
   audioClips: AudioClipData[];
 }
@@ -49,6 +63,7 @@ interface CreatePuzzleFormProps {
 export function CreatePuzzleForm({
   sites,
   defaultSiteId,
+  defaultValues,
   imageSets,
   audioClips,
 }: CreatePuzzleFormProps) {
@@ -56,11 +71,19 @@ export function CreatePuzzleForm({
   const tp = useTranslations("puzzles");
   const tc = useTranslations("common");
   const [selectedSiteId, setSelectedSiteId] = useState(defaultSiteId ?? "");
-  const [selectedSetId, setSelectedSetId] = useState("");
-  const [captchaMode, setCaptchaMode] = useState<CaptchaMode>("image");
-  const [selectedAudioId, setSelectedAudioId] = useState("");
-  const [audioAnswer, setAudioAnswer] = useState("");
-  const config = usePuzzleConfig();
+  const [selectedSetId, setSelectedSetId] = useState(
+    defaultValues?.imageSetId ?? "",
+  );
+  const [captchaMode, setCaptchaMode] = useState<CaptchaMode>(
+    defaultValues?.captchaMode ?? "image",
+  );
+  const [selectedAudioId, setSelectedAudioId] = useState(
+    defaultValues?.audioId ?? "",
+  );
+  const [audioAnswer, setAudioAnswer] = useState(
+    defaultValues?.audioAnswer ?? "",
+  );
+  const config = usePuzzleConfig(defaultValues);
 
   const needsImages = captchaMode !== "audio";
   const needsAudio = captchaMode !== "image";
@@ -84,7 +107,9 @@ export function CreatePuzzleForm({
             <ArrowLeft className="size-4" />
           </Link>
         </Button>
-        <h1 className="text-2xl font-semibold">{t("title")}</h1>
+        <h1 className="text-2xl font-semibold">
+          {defaultValues ? tp("duplicatePuzzle") : t("title")}
+        </h1>
       </div>
 
       <div className="flex flex-col gap-6 lg:flex-row">
