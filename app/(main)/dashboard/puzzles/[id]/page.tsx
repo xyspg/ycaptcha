@@ -2,9 +2,15 @@ import { and, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { PuzzleAnalyticsSection } from "@/components/puzzle-analytics-section";
 import { requireSession } from "@/lib/auth/session";
+import { config } from "@/lib/config";
 import { db } from "@/lib/db";
 import { audio, puzzle, site } from "@/lib/db/app-schema";
+import {
+  listQuizLinksWithStats,
+  listRecentQuizAttempts,
+} from "@/lib/quiz-stats";
 import { PuzzleDetail } from "./puzzle-detail";
+import { QuizLinksCard } from "./quiz-links-card";
 
 export default async function Page({
   params,
@@ -24,7 +30,7 @@ export default async function Page({
 
   if (!puzzleData) notFound();
 
-  const [imageSets, audioClips] = await Promise.all([
+  const [imageSets, audioClips, quizLinks, quizAttempts] = await Promise.all([
     db.query.imageSet.findMany({
       where: (is, { eq: e }) => e(is.userId, session.user.id),
       with: { images: true },
@@ -35,7 +41,22 @@ export default async function Page({
       .from(audio)
       .where(eq(audio.userId, session.user.id))
       .orderBy(audio.createdAt),
+    listQuizLinksWithStats(id, session.user.id),
+    listRecentQuizAttempts(id, session.user.id),
   ]);
+
+  const now = new Date();
+  const quizLinkViews = quizLinks.map((link) => ({
+    id: link.id,
+    url: config.getSiteUrl(`/q/${link.slug}`),
+    expiresAt: link.expiresAt,
+    expired: link.expiresAt !== null && link.expiresAt < now,
+    challengeCount: link.challengeCount,
+    attempts: link.attempts,
+    passes: link.passes,
+    passRate: link.passRate,
+    recentAttempts: quizAttempts.get(link.id) ?? [],
+  }));
 
   return (
     <PuzzleDetail
@@ -69,6 +90,9 @@ export default async function Page({
       }))}
       audioClips={audioClips}
       analyticsSlot={<PuzzleAnalyticsSection puzzleId={puzzleData.puzzle.id} />}
+      quizLinksSlot={
+        <QuizLinksCard puzzleId={puzzleData.puzzle.id} links={quizLinkViews} />
+      }
     />
   );
 }

@@ -5,6 +5,7 @@ import {
   consumeChallengeSession,
   createVerifiedSession,
 } from "@/lib/captcha-session";
+import { recordQuizAttempt } from "@/lib/quiz-stats";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 
@@ -72,6 +73,10 @@ export async function POST(request: Request) {
     puzzleId: session.puzzleId,
   };
 
+  // Instant Quiz sessions record a quizAttempt instead of a verificationEvent
+  // and never mint a verified session (there is no siteverify consumer).
+  const quizLinkId = session.quizLinkId;
+
   // --- Audio verification ---
   if (isAudioMode) {
     const textAnswer = (body.textAnswer as string).trim();
@@ -86,6 +91,21 @@ export async function POST(request: Request) {
     const a = Buffer.from(textAnswer.toLowerCase());
     const b = Buffer.from(session.audioAnswer.toLowerCase());
     const correct = a.length === b.length && timingSafeEqual(a, b);
+
+    if (quizLinkId) {
+      after(() =>
+        recordQuizAttempt({
+          quizLinkId,
+          passed: correct,
+          autoFailed: false,
+          mode: "audio",
+          selectedCount: 0,
+          correctSelections: 0,
+          wrongSelections: 0,
+        }),
+      );
+      return Response.json({ success: correct });
+    }
 
     if (!correct) {
       after(() => recordEvent({ ...eventBase, eventType: "fail" }));
@@ -108,6 +128,20 @@ export async function POST(request: Request) {
 
   // anti-bot: selecting every tile is never legitimate
   if (indices.length === CAPTCHA_GRID_SIZE) {
+    if (quizLinkId) {
+      after(() =>
+        recordQuizAttempt({
+          quizLinkId,
+          passed: false,
+          autoFailed: true,
+          mode: "image",
+          selectedCount: indices.length,
+          correctSelections: 0,
+          wrongSelections: 0,
+        }),
+      );
+      return Response.json({ success: false });
+    }
     after(() => recordEvent({ ...eventBase, eventType: "auto_fail" }));
     return Response.json({ success: false });
   }
@@ -125,7 +159,31 @@ export async function POST(request: Request) {
     Math.ceil(session.correctCount * session.difficulty),
   );
 
-  if (score < requiredCount) {
+  const passed = score >= requiredCount;
+
+  if (quizLinkId) {
+    after(() =>
+      recordQuizAttempt({
+        quizLinkId,
+        passed,
+        autoFailed: false,
+        mode: "image",
+        selectedCount: indices.length,
+        correctSelections: selectedCorrectCount,
+        wrongSelections: selectedWrongCount,
+      }),
+    );
+    // Extra accuracy fields let the quiz play page show the player their own
+    // result. Only present for quiz sessions — the widget flow is unchanged.
+    return Response.json({
+      success: passed,
+      correctSelections: selectedCorrectCount,
+      selectedCount: indices.length,
+      correctCount: session.correctCount,
+    });
+  }
+
+  if (!passed) {
     after(() => recordEvent({ ...eventBase, eventType: "fail" }));
     return Response.json({ success: false });
   }

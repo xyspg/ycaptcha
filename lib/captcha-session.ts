@@ -13,6 +13,7 @@ export interface ChallengeSession {
   difficulty: number;
   audioUrl?: string; // R2 URL for audio proxy
   audioAnswer?: string; // correct text answer for audio mode
+  quizLinkId?: string; // set for Instant Quiz sessions — verify records a quizAttempt instead of a verificationEvent
 }
 
 export interface VerifiedSession {

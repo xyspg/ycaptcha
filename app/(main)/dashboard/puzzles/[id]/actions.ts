@@ -6,9 +6,20 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { audio, image, imageSet, puzzle, site } from "@/lib/db/app-schema";
+import {
+  audio,
+  image,
+  imageSet,
+  puzzle,
+  quizLink,
+  site,
+} from "@/lib/db/app-schema";
 import type { ActionState } from "@/lib/types";
-import { CAPTCHA_GRID_SIZE, CAPTCHA_MODES } from "@/lib/types";
+import {
+  CAPTCHA_GRID_SIZE,
+  CAPTCHA_MODES,
+  QUIZ_LINK_EXPIRY_OPTIONS,
+} from "@/lib/types";
 
 async function requireOwnedPuzzle(puzzleId: string, userId: string) {
   const [row] = await db
@@ -267,6 +278,80 @@ export async function togglePuzzleEnabled(puzzleId: string, enabled: boolean) {
     .where(ownedPuzzleWhere(parsed.data.puzzleId, session.user.id));
 
   revalidatePath("/dashboard", "layout");
+}
+
+const EXPIRY_MS: Record<string, number | null> = {
+  "24h": 24 * 60 * 60 * 1000,
+  "7d": 7 * 24 * 60 * 60 * 1000,
+  "30d": 30 * 24 * 60 * 60 * 1000,
+  never: null,
+};
+
+const createQuizLinkSchema = z.object({
+  puzzleId: z.string().min(1),
+  expiry: z.enum(QUIZ_LINK_EXPIRY_OPTIONS),
+});
+
+export async function createQuizLink(
+  prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await requireSession();
+
+  const parsed = createQuizLinkSchema.safeParse({
+    puzzleId: formData.get("puzzleId"),
+    expiry: formData.get("expiry"),
+  });
+  if (!parsed.success) {
+    return { errors: z.flattenError(parsed.error).fieldErrors };
+  }
+
+  const owned = await requireOwnedPuzzle(parsed.data.puzzleId, session.user.id);
+  if (!owned) {
+    return { errors: { puzzleId: ["Puzzle not found"] } };
+  }
+
+  const ms = EXPIRY_MS[parsed.data.expiry];
+  await db.insert(quizLink).values({
+    puzzleId: parsed.data.puzzleId,
+    userId: session.user.id,
+    expiresAt: ms === null ? null : new Date(Date.now() + ms),
+  });
+
+  revalidatePath(`/dashboard/puzzles/${parsed.data.puzzleId}`);
+  return { success: true };
+}
+
+const deleteQuizLinkSchema = z.object({
+  quizLinkId: z.string().min(1),
+  puzzleId: z.string().min(1),
+});
+
+export async function deleteQuizLink(
+  prevState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await requireSession();
+
+  const parsed = deleteQuizLinkSchema.safeParse({
+    quizLinkId: formData.get("quizLinkId"),
+    puzzleId: formData.get("puzzleId"),
+  });
+  if (!parsed.success) {
+    return { errors: z.flattenError(parsed.error).fieldErrors };
+  }
+
+  await db
+    .delete(quizLink)
+    .where(
+      and(
+        eq(quizLink.id, parsed.data.quizLinkId),
+        eq(quizLink.userId, session.user.id),
+      ),
+    );
+
+  revalidatePath(`/dashboard/puzzles/${parsed.data.puzzleId}`);
+  return { success: true };
 }
 
 export async function deletePuzzle(

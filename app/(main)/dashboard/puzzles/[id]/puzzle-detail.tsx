@@ -59,6 +59,7 @@ interface PuzzleDetailProps {
   imageSets: ImageSetData[];
   audioClips: AudioClipData[];
   analyticsSlot?: React.ReactNode;
+  quizLinksSlot?: React.ReactNode;
 }
 
 export function PuzzleDetail({
@@ -67,6 +68,7 @@ export function PuzzleDetail({
   imageSets,
   audioClips,
   analyticsSlot,
+  quizLinksSlot,
 }: PuzzleDetailProps) {
   const t = useTranslations("puzzles.edit");
   const tp = useTranslations("puzzles");
@@ -108,6 +110,8 @@ export function PuzzleDetail({
         isPending={isPending}
         state={state}
       />
+
+      {quizLinksSlot}
 
       {/* Danger Zone */}
       <Card className="border-destructive/50 lg:max-w-[calc(100%-394px)]">

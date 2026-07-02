@@ -297,6 +297,32 @@
       "handPickIncorrectHelp": "オフにすると、不正解はランダムに選ばれます。",
       "dangerZone": "危険ゾーン",
       "dangerDescription": "このパズルを削除するとサイトから除外されます。このパズルを使用中のCAPTCHAセッションは動作しなくなります。"
+    },
+    "quizLinks": {
+      "title": "インスタントクイズリンク",
+      "description": "公開リンクを共有すれば、埋め込み不要で誰でもこのパズルを試せます。",
+      "create": "リンクを作成",
+      "creating": "作成中...",
+      "expiry_24h": "24時間で期限切れ",
+      "expiry_7d": "7日で期限切れ",
+      "expiry_30d": "30日で期限切れ",
+      "expiry_never": "無期限",
+      "empty": "リンクはまだありません。作成してパズルを共有しましょう。",
+      "copy": "リンクをコピー",
+      "delete": "リンクを削除",
+      "expired": "期限切れ",
+      "permanent": "無期限",
+      "expiresOn": "{date} に期限切れ",
+      "requests": "リクエスト {count} 回",
+      "attempts": "挑戦 {count} 回",
+      "passes": "合格 {count} 回",
+      "passRate": "合格率 {rate}%",
+      "showAttempts": "最近の挑戦を表示",
+      "hideAttempts": "最近の挑戦を隠す",
+      "attemptPassed": "合格",
+      "attemptFailed": "不合格",
+      "attemptAutoFailed": "自動不合格",
+      "attemptDetail": "{selected} 枚選択中 {correct} 枚正解"
     }
   },
   "imageSets": {
@@ -563,5 +589,23 @@
       "ignoreNote": "パスワード再設定をリクエストしていない場合は、このメールを無視して問題ありません。",
       "footer": "© yCAPTCHA"
     }
+  },
+  "quiz": {
+    "title": "インスタントクイズ",
+    "intro": "CAPTCHA チャレンジが共有されました。クリアできるか試してみましょう。",
+    "start": "チャレンジ開始",
+    "loading": "読み込み中...",
+    "retry": "再試行",
+    "loadError": "チャレンジの読み込みに失敗しました",
+    "networkError": "ネットワークエラー",
+    "sessionExpired": "セッションの有効期限が切れたため、新しい問題に切り替えました。",
+    "tryAgain": "もう一度お試しください。",
+    "passedTitle": "クリアしました!",
+    "passedDescription": "お見事です。チャレンジをクリアしました。",
+    "passedAccuracy": "{total} 問中 {correct} 問正解しました。",
+    "playAgain": "もう一度遊ぶ",
+    "unavailableTitle": "このクイズリンクは利用できません",
+    "unavailableDescription": "リンクの有効期限が切れたか、作成者によって削除された可能性があります。",
+    "poweredBy": "Powered by"
   }
 }

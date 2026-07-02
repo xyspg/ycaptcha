@@ -297,6 +297,32 @@
       "handPickIncorrectHelp": "If off, wrong answers are randomly drawn.",
       "dangerZone": "Danger Zone",
       "dangerDescription": "Deleting this puzzle will remove it from the site. Existing captcha sessions using this puzzle will stop working."
+    },
+    "quizLinks": {
+      "title": "Instant Quiz Links",
+      "description": "Share a public link so anyone can try this puzzle. No embed required.",
+      "create": "Create Link",
+      "creating": "Creating...",
+      "expiry_24h": "Expires in 24 hours",
+      "expiry_7d": "Expires in 7 days",
+      "expiry_30d": "Expires in 30 days",
+      "expiry_never": "Never expires",
+      "empty": "No links yet. Create one to share this puzzle.",
+      "copy": "Copy link",
+      "delete": "Delete link",
+      "expired": "Expired",
+      "permanent": "Permanent",
+      "expiresOn": "Expires {date}",
+      "requests": "{count} requests",
+      "attempts": "{count} attempts",
+      "passes": "{count} passed",
+      "passRate": "{rate}% pass rate",
+      "showAttempts": "Show recent attempts",
+      "hideAttempts": "Hide recent attempts",
+      "attemptPassed": "Passed",
+      "attemptFailed": "Failed",
+      "attemptAutoFailed": "Auto-failed",
+      "attemptDetail": "{correct} correct of {selected} selected"
     }
   },
   "imageSets": {
@@ -563,5 +589,23 @@
       "ignoreNote": "If you didn't request a password reset, you can safely ignore this email.",
       "footer": "© yCAPTCHA"
     }
+  },
+  "quiz": {
+    "title": "Instant Quiz",
+    "intro": "Someone shared a CAPTCHA challenge with you. Can you pass it?",
+    "start": "Start Challenge",
+    "loading": "Loading...",
+    "retry": "Try Again",
+    "loadError": "Failed to load the challenge",
+    "networkError": "Network error",
+    "sessionExpired": "Session expired, here is a fresh challenge.",
+    "tryAgain": "Please try again.",
+    "passedTitle": "You passed!",
+    "passedDescription": "Nice work, you solved the challenge.",
+    "passedAccuracy": "You got {correct} of {total} correct.",
+    "playAgain": "Play Again",
+    "unavailableTitle": "This quiz link is unavailable",
+    "unavailableDescription": "The link may have expired or been removed by its creator.",
+    "poweredBy": "Powered by"
   }
 }

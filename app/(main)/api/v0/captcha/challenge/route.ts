@@ -4,7 +4,8 @@ import { recordEvent } from "@/lib/analytics";
 import { createChallengeSession } from "@/lib/captcha-session";
 import { config } from "@/lib/config";
 import { db } from "@/lib/db";
-import { audio, image, puzzle, site } from "@/lib/db/app-schema";
+import { audio, image, puzzle, quizLink, site } from "@/lib/db/app-schema";
+import { incrementQuizChallengeCount } from "@/lib/quiz-stats";
 import { checkRateLimit, rateLimiters } from "@/lib/rate-limit";
 import { CAPTCHA_GRID_SIZE } from "@/lib/types";
 import { shuffle } from "@/lib/utils";
@@ -14,56 +15,99 @@ export async function POST(request: Request) {
   if (limited) return limited;
 
   const body = await request.json().catch(() => null);
-  if (!body?.siteKey) {
+  if (!body?.siteKey && !body?.quizSlug) {
     return Response.json({ error: "Missing siteKey" }, { status: 400 });
   }
 
-  const [siteData] = await db
-    .select()
-    .from(site)
-    .where(eq(site.siteKey, body.siteKey));
+  let puzzleData: typeof puzzle.$inferSelect;
+  // Denormalized into the session so verify/analytics writes don't need joins.
+  let sessionSiteId: string;
+  let sessionUserId: string;
+  let quizLinkId: string | undefined;
 
-  if (!siteData) {
-    return Response.json({ error: "Invalid siteKey" }, { status: 404 });
-  }
+  if (typeof body.quizSlug === "string") {
+    // Instant Quiz branch: the link targets one specific puzzle and the play
+    // page is first-party, so there is no domain/origin check here.
+    const [link] = await db
+      .select()
+      .from(quizLink)
+      .where(eq(quizLink.slug, body.quizSlug));
 
-  if (siteData.domain && !body.origin) {
-    return Response.json({ error: "Missing origin" }, { status: 400 });
-  }
-  if (siteData.domain && body.origin) {
-    try {
-      const parentHost = new URL(body.origin).hostname;
-      const appHost = config.siteHostname;
-      const isLocalhost =
-        parentHost === "localhost" || parentHost === "127.0.0.1";
-      if (
-        !isLocalhost &&
-        parentHost !== appHost &&
-        parentHost !== siteData.domain &&
-        !parentHost.endsWith(`.${siteData.domain}`)
-      ) {
-        return Response.json(
-          { error: "Domain not allowed for this siteKey" },
-          { status: 403 },
-        );
-      }
-    } catch {
-      return Response.json({ error: "Invalid origin" }, { status: 400 });
+    if (!link || (link.expiresAt && link.expiresAt < new Date())) {
+      return Response.json(
+        { error: "Invalid or expired quiz link" },
+        { status: 404 },
+      );
     }
-  }
 
-  const [puzzleData] = await db
-    .select()
-    .from(puzzle)
-    .where(and(eq(puzzle.siteId, siteData.id), eq(puzzle.enabled, true)))
-    .orderBy(sql`RANDOM()`)
-    .limit(1);
+    const [linkedPuzzle] = await db
+      .select()
+      .from(puzzle)
+      .where(and(eq(puzzle.id, link.puzzleId), eq(puzzle.enabled, true)));
 
-  if (!puzzleData) {
-    return Response.json(
-      { error: "No puzzles configured for this site" },
-      { status: 404 },
-    );
+    if (!linkedPuzzle) {
+      return Response.json(
+        { error: "Invalid or expired quiz link" },
+        { status: 404 },
+      );
+    }
+
+    puzzleData = linkedPuzzle;
+    sessionSiteId = linkedPuzzle.siteId;
+    sessionUserId = link.userId;
+    quizLinkId = link.id;
+  } else {
+    const [siteData] = await db
+      .select()
+      .from(site)
+      .where(eq(site.siteKey, body.siteKey));
+
+    if (!siteData) {
+      return Response.json({ error: "Invalid siteKey" }, { status: 404 });
+    }
+
+    if (siteData.domain && !body.origin) {
+      return Response.json({ error: "Missing origin" }, { status: 400 });
+    }
+    if (siteData.domain && body.origin) {
+      try {
+        const parentHost = new URL(body.origin).hostname;
+        const appHost = config.siteHostname;
+        const isLocalhost =
+          parentHost === "localhost" || parentHost === "127.0.0.1";
+        if (
+          !isLocalhost &&
+          parentHost !== appHost &&
+          parentHost !== siteData.domain &&
+          !parentHost.endsWith(`.${siteData.domain}`)
+        ) {
+          return Response.json(
+            { error: "Domain not allowed for this siteKey" },
+            { status: 403 },
+          );
+        }
+      } catch {
+        return Response.json({ error: "Invalid origin" }, { status: 400 });
+      }
+    }
+
+    const [sitePuzzle] = await db
+      .select()
+      .from(puzzle)
+      .where(and(eq(puzzle.siteId, siteData.id), eq(puzzle.enabled, true)))
+      .orderBy(sql`RANDOM()`)
+      .limit(1);
+
+    if (!sitePuzzle) {
+      return Response.json(
+        { error: "No puzzles configured for this site" },
+        { status: 404 },
+      );
+    }
+
+    puzzleData = sitePuzzle;
+    sessionSiteId = siteData.id;
+    sessionUserId = siteData.userId;
   }
 
   const mode = puzzleData.captchaMode;
@@ -163,8 +207,8 @@ export async function POST(request: Request) {
 
   const token = await createChallengeSession({
     puzzleId: puzzleData.id,
-    siteId: siteData.id,
-    userId: siteData.userId,
+    siteId: sessionSiteId,
+    userId: sessionUserId,
     imageUrls: allImages.map((img) => img.url),
     imageIds: allImages.map((img) => img.id),
     correctImageIds: correctImages.map((img) => img.id),
@@ -172,15 +216,20 @@ export async function POST(request: Request) {
     difficulty: puzzleData.difficulty,
     ...(audioUrl && { audioUrl }),
     ...(audioAnswer && { audioAnswer }),
+    ...(quizLinkId && { quizLinkId }),
   });
 
+  // Quiz traffic is tracked on the link itself and must not pollute the
+  // site's verificationEvent analytics.
   after(() =>
-    recordEvent({
-      userId: siteData.userId,
-      siteId: siteData.id,
-      puzzleId: puzzleData.id,
-      eventType: "challenge",
-    }),
+    quizLinkId
+      ? incrementQuizChallengeCount(quizLinkId)
+      : recordEvent({
+          userId: sessionUserId,
+          siteId: sessionSiteId,
+          puzzleId: puzzleData.id,
+          eventType: "challenge",
+        }),
   );
 
   // proxy URLs only — no image IDs exposed to client

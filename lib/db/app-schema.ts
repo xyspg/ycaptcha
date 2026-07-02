@@ -254,6 +254,79 @@ export const verificationEvent = pgTable(
   ],
 );
 
+// Instant Quiz Mode: a shareable public link that lets anyone play a specific
+// puzzle at /q/[slug] without embedding the widget. expiresAt null = permanent;
+// expiry is enforced at read time (challenge endpoint + play page), no cleanup
+// job. Deleting the link is the manual revoke path.
+export const quizLink = pgTable(
+  "quiz_link",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    slug: text("slug")
+      .notNull()
+      .unique()
+      .$defaultFn(() => nanoid(10)),
+    puzzleId: text("puzzle_id")
+      .notNull()
+      .references(() => puzzle.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at"), // null = permanent
+    challengeCount: integer("challenge_count").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("quizLink_puzzleId_idx").on(table.puzzleId),
+    index("quizLink_userId_idx").on(table.userId),
+  ],
+);
+
+// One row per quiz verify attempt. Kept separate from verificationEvent so
+// quiz traffic never pollutes site/dashboard analytics.
+export const quizAttempt = pgTable(
+  "quiz_attempt",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => nanoid()),
+    quizLinkId: text("quiz_link_id")
+      .notNull()
+      .references(() => quizLink.id, { onDelete: "cascade" }),
+    passed: boolean("passed").notNull(),
+    autoFailed: boolean("auto_failed").notNull().default(false), // all-9-selected anti-bot trip
+    mode: text("mode").notNull(), // "image" | "audio"
+    selectedCount: integer("selected_count").notNull().default(0), // 0 for audio mode
+    correctSelections: integer("correct_selections").notNull().default(0),
+    wrongSelections: integer("wrong_selections").notNull().default(0),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("quizAttempt_quizLinkId_createdAt_idx").on(
+      table.quizLinkId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const quizLinkRelations = relations(quizLink, ({ one, many }) => ({
+  puzzle: one(puzzle, {
+    fields: [quizLink.puzzleId],
+    references: [puzzle.id],
+  }),
+  user: one(user, { fields: [quizLink.userId], references: [user.id] }),
+  attempts: many(quizAttempt),
+}));
+
+export const quizAttemptRelations = relations(quizAttempt, ({ one }) => ({
+  quizLink: one(quizLink, {
+    fields: [quizAttempt.quizLinkId],
+    references: [quizLink.id],
+  }),
+}));
+
 export const verificationEventRelations = relations(
   verificationEvent,
   ({ one }) => ({

@@ -297,6 +297,32 @@
       "handPickIncorrectHelp": "关闭时，错误答案将随机抽取。",
       "dangerZone": "危险区域",
       "dangerDescription": "删除此题目将把它从站点中移除。使用此题目的现有验证码会话将停止工作。"
+    },
+    "quizLinks": {
+      "title": "快速测验链接",
+      "description": "生成公开链接,任何人无需嵌入即可直接试玩这个 puzzle。",
+      "create": "创建链接",
+      "creating": "创建中...",
+      "expiry_24h": "24 小时后过期",
+      "expiry_7d": "7 天后过期",
+      "expiry_30d": "30 天后过期",
+      "expiry_never": "永久有效",
+      "empty": "还没有链接。创建一个来分享这个 puzzle。",
+      "copy": "复制链接",
+      "delete": "删除链接",
+      "expired": "已过期",
+      "permanent": "永久有效",
+      "expiresOn": "{date} 过期",
+      "requests": "{count} 次请求",
+      "attempts": "{count} 次尝试",
+      "passes": "{count} 次通过",
+      "passRate": "通过率 {rate}%",
+      "showAttempts": "查看最近尝试",
+      "hideAttempts": "收起最近尝试",
+      "attemptPassed": "通过",
+      "attemptFailed": "失败",
+      "attemptAutoFailed": "自动判负",
+      "attemptDetail": "选择 {selected} 张,答对 {correct} 张"
     }
   },
   "imageSets": {
@@ -563,5 +589,23 @@
       "ignoreNote": "如果这不是你发起的密码重置请求，可以直接忽略这封邮件。",
       "footer": "© yCAPTCHA"
     }
+  },
+  "quiz": {
+    "title": "快速测验",
+    "intro": "有人分享给你一个 CAPTCHA 挑战,来试试你能不能通过。",
+    "start": "开始挑战",
+    "loading": "加载中...",
+    "retry": "重试",
+    "loadError": "挑战加载失败",
+    "networkError": "网络错误",
+    "sessionExpired": "会话已过期,已为你换一题。",
+    "tryAgain": "请再试一次。",
+    "passedTitle": "通过了!",
+    "passedDescription": "干得漂亮,你通过了这个挑战。",
+    "passedAccuracy": "你答对了 {correct}/{total}。",
+    "playAgain": "再玩一次",
+    "unavailableTitle": "该测验链接不可用",
+    "unavailableDescription": "链接可能已过期或已被创建者删除。",
+    "poweredBy": "技术支持:"
   }
 }

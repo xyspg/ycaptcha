@@ -27,3 +27,7 @@ export const DIFFICULTY_PRESETS = [
 /** Verification modes available per puzzle */
 export const CAPTCHA_MODES = ["image", "audio", "combined"] as const;
 export type CaptchaMode = (typeof CAPTCHA_MODES)[number];
+
+/** Expiry choices for Instant Quiz share links */
+export const QUIZ_LINK_EXPIRY_OPTIONS = ["24h", "7d", "30d", "never"] as const;
+export type QuizLinkExpiry = (typeof QUIZ_LINK_EXPIRY_OPTIONS)[number];
