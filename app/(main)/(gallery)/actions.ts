@@ -20,6 +20,10 @@ import type { ActionState } from "@/lib/types";
 export type { ActionState } from "@/lib/types";
 
 const MAX_ITEMS_PER_USER = 10;
+// The static browse page, every locale. /gallery is a rewrite, so this is the
+// destination route, and it must include the route group: a page's cache tag
+// is derived from its file path.
+const BROWSE_PAGE = "/(landing)/landing/[locale]/gallery";
 const MAX_IMAGES_PER_ITEM = 60;
 const MIN_IMAGES_PER_ITEM = 9;
 
@@ -184,7 +188,7 @@ export async function publishGalleryItem(
     throw err;
   }
 
-  revalidatePath("/gallery");
+  revalidatePath(BROWSE_PAGE, "page");
   revalidatePath("/gallery/mine");
   redirect(`/gallery/${inserted.slug}`);
 }
@@ -255,7 +259,7 @@ export async function deleteGalleryItem(
 
   await cleanupR2Keys(toDelete);
 
-  revalidatePath("/gallery");
+  revalidatePath(BROWSE_PAGE, "page");
   revalidatePath("/gallery/mine");
   revalidatePath(`/gallery/${parsed.data.slug}`);
   return { success: true };
@@ -377,6 +381,8 @@ export async function forkGalleryItem(
     throw err;
   }
 
+  // fork counts show on the browse page and drive its "popular" sort
+  revalidatePath(BROWSE_PAGE, "page");
   revalidatePath("/dashboard/image-sets");
   redirect(`/dashboard/image-sets/${newSetId}`);
 }

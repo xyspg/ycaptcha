@@ -1,41 +1,44 @@
-import { desc, eq } from "drizzle-orm";
-import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import { Button } from "@/components/ui/button";
-import { getSession } from "@/lib/auth/session";
-import { db } from "@/lib/db";
-import { galleryItem } from "@/lib/db/app-schema";
+"use client";
+
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { GALLERY_PAGE_SIZE, type GalleryCardItem } from "./card-item";
+import { GalleryPublishButton } from "./gallery-auth";
 import { GalleryItemCard } from "./gallery-item-card";
 
-export const dynamic = "force-dynamic";
+type Sort = "recent" | "popular";
 
-export default async function GalleryBrowsePage({
-  searchParams,
+// Reads ?sort= and ?tag= on the client: the page is prerendered, so search
+// params never reach the server. Render inside <Suspense> with a
+// <GalleryListing> fallback so the default view is in the static HTML.
+export function GalleryBrowser({ items }: { items: GalleryCardItem[] }) {
+  const params = useSearchParams();
+  const sort = params.get("sort") === "popular" ? "popular" : "recent";
+  return <GalleryListing items={items} sort={sort} tag={params.get("tag")} />;
+}
+
+export function GalleryListing({
+  items,
+  sort,
+  tag,
 }: {
-  searchParams: Promise<{ sort?: string; tag?: string }>;
+  // Union of the first page for each sort order; see the browse page.
+  items: GalleryCardItem[];
+  sort: Sort;
+  tag: string | null;
 }) {
-  const params = await searchParams;
-  const sort = params.sort === "popular" ? "popular" : "recent";
-  const tag = typeof params.tag === "string" ? params.tag : null;
+  const t = useTranslations("gallery");
 
-  const [session, items, t] = await Promise.all([
-    getSession(),
-    db
-      .select()
-      .from(galleryItem)
-      .where(eq(galleryItem.status, "published"))
-      .orderBy(
-        sort === "popular"
-          ? desc(galleryItem.downloadCount)
-          : desc(galleryItem.createdAt),
-      )
-      .limit(60),
-    getTranslations("gallery"),
-  ]);
-
-  // tag filter applied in memory — jsonb ? operator via drizzle needs a raw
-  // expression and the result set is small for now
-  const filtered = tag ? items.filter((it) => it.tags.includes(tag)) : items;
+  const listed = [...items]
+    .sort(
+      sort === "popular"
+        ? (a, b) =>
+            b.downloadCount - a.downloadCount || b.createdAt - a.createdAt
+        : (a, b) => b.createdAt - a.createdAt,
+    )
+    .slice(0, GALLERY_PAGE_SIZE);
+  // tag filter applied in memory, after the page limit, as before
+  const filtered = tag ? listed.filter((it) => it.tags.includes(tag)) : listed;
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-10 lg:px-8 lg:py-14">
@@ -55,16 +58,7 @@ export default async function GalleryBrowsePage({
           {t("browseTagline")}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          {session && (
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="rounded-full"
-            >
-              <Link href="/dashboard/image-sets">{t("publishOneOfYours")}</Link>
-            </Button>
-          )}
+          <GalleryPublishButton />
           <SortTabs
             sort={sort}
             tag={tag}
@@ -78,13 +72,13 @@ export default async function GalleryBrowsePage({
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-sm">
           <span className="text-muted-foreground">{t("filterLabel")}</span>
           <span className="font-medium">#{tag}</span>
-          <Link
+          <SearchLink
             href={`/gallery${sort === "popular" ? "?sort=popular" : ""}`}
             className="text-muted-foreground hover:text-foreground"
             aria-label={t("clearFilter")}
           >
             ×
-          </Link>
+          </SearchLink>
         </div>
       )}
 
@@ -97,7 +91,7 @@ export default async function GalleryBrowsePage({
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((item) => (
-            <GalleryItemCard key={item.id} item={item} />
+            <GalleryItemCard key={item.slug} item={item} />
           ))}
         </div>
       )}
@@ -110,26 +104,48 @@ function SortTabs({
   tag,
   labels,
 }: {
-  sort: string;
+  sort: Sort;
   tag: string | null;
   labels: { recent: string; popular: string };
 }) {
   const tagParam = tag ? `&tag=${encodeURIComponent(tag)}` : "";
   return (
     <div className="inline-flex items-center rounded-full border border-border bg-background/70 p-0.5 text-sm">
-      <Link
+      <SearchLink
         href={`/gallery${tag ? `?tag=${encodeURIComponent(tag)}` : ""}`}
         className={`rounded-full px-3 py-1 transition-colors ${sort === "recent" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
       >
         {labels.recent}
-      </Link>
-      <Link
+      </SearchLink>
+      <SearchLink
         href={`/gallery?sort=popular${tagParam}`}
         className={`rounded-full px-3 py-1 transition-colors ${sort === "popular" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
       >
         {labels.popular}
-      </Link>
+      </SearchLink>
     </div>
+  );
+}
+
+// Sort and filter are client state over a static page, so plain clicks update
+// the URL with the History API, which Next syncs into useSearchParams. A
+// router navigation would fetch nothing new, and one back to the bare
+// /gallery rewrite gets dropped (the router restores the previous search).
+function SearchLink({
+  href,
+  ...props
+}: React.ComponentProps<"a"> & { href: string }) {
+  return (
+    <a
+      href={href}
+      onClick={(e) => {
+        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+          return;
+        e.preventDefault();
+        window.history.pushState(null, "", href);
+      }}
+      {...props}
+    />
   );
 }
 

@@ -23,10 +23,13 @@ export function LanguageSwitcher() {
     setOpen(false);
     // biome-ignore lint/suspicious/noDocumentCookie: a one-off write; Cookie Store API lacks older Safari support
     document.cookie = `locale=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
-    // Direct /landing/{locale} URLs pin the locale from params, so the
+    // Direct /landing/{locale}/... URLs pin the locale from params, so the
     // cookie alone can't change them.
-    if (window.location.pathname.startsWith("/landing/")) {
-      window.location.assign(`/landing/${newLocale}`);
+    const { pathname, search } = window.location;
+    if (pathname.startsWith("/landing/")) {
+      window.location.assign(
+        pathname.replace(/^\/landing\/[^/]+/, `/landing/${newLocale}`) + search,
+      );
     } else {
       window.location.reload();
     }

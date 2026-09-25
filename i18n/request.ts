@@ -1,4 +1,5 @@
 import { cookies, headers } from "next/headers";
+import { hasLocale } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 import { defaultLocale, type Locale, locales } from "./config";
 
@@ -43,12 +44,14 @@ async function negotiateLocale(): Promise<Locale> {
 }
 
 export default getRequestConfig(async ({ requestLocale }) => {
-  // Statically rendered routes (the landing page) pin the locale via
-  // setRequestLocale; reading cookies there would opt them into dynamic rendering.
+  // Statically rendered routes (landing, gallery) pin the locale via
+  // setRequestLocale; reading cookies there would opt them into dynamic
+  // rendering. That holds for an unknown value too: the [locale] layout 404s
+  // it, but pages under it render in parallel and still get here.
   const requested = await requestLocale;
-  const locale = locales.includes(requested as Locale)
-    ? (requested as Locale)
-    : await negotiateLocale();
+  let locale: Locale;
+  if (requested === undefined) locale = await negotiateLocale();
+  else locale = hasLocale(locales, requested) ? requested : defaultLocale;
 
   return {
     locale,

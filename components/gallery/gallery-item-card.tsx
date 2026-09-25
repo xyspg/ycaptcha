@@ -1,13 +1,13 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import type { galleryItem } from "@/lib/db/app-schema";
+import { useTranslations } from "next-intl";
+import type { GalleryCardItem } from "./card-item";
 
-type Item = typeof galleryItem.$inferSelect;
-
-export async function GalleryItemCardContent({ item }: { item: Item }) {
-  const t = await getTranslations("gallery");
-  const previewImages = item.images.slice(0, 4);
+export function GalleryItemCardContent({ item }: { item: GalleryCardItem }) {
+  const t = useTranslations("gallery");
+  const { previewImages } = item;
 
   return (
     <>
@@ -37,7 +37,7 @@ export async function GalleryItemCardContent({ item }: { item: Item }) {
 
       <div className="flex flex-1 flex-col gap-1 px-1 pb-1">
         <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
-          <span>{t("cardImages", { count: item.images.length })}</span>
+          <span>{t("cardImages", { count: item.imageCount })}</span>
           <span>·</span>
           <span>{t("cardForks", { count: item.downloadCount })}</span>
         </div>
@@ -53,7 +53,7 @@ export async function GalleryItemCardContent({ item }: { item: Item }) {
           <div className="text-xs text-muted-foreground">
             {t("cardBy")}{" "}
             <span className="font-medium text-foreground/70">
-              {item.anonymous ? t("cardAnonymous") : item.authorDisplayName}
+              {item.author ?? t("cardAnonymous")}
             </span>
           </div>
           {item.tags.length > 0 && (
@@ -74,7 +74,7 @@ export async function GalleryItemCardContent({ item }: { item: Item }) {
   );
 }
 
-export function GalleryItemCard({ item }: { item: Item }) {
+export function GalleryItemCard({ item }: { item: GalleryCardItem }) {
   return (
     <Link
       href={`/gallery/${item.slug}`}
