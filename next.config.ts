@@ -6,7 +6,7 @@ import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { defaultLocale, locales } from "./i18n/config";
-import { SESSION_COOKIES } from "./lib/auth/cookies";
+import { SESSION_COOKIES } from "./lib/auth/constants";
 import "./lib/env";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
@@ -68,7 +68,7 @@ const nextConfig: NextConfig = {
   },
   // Routing for the static landing page runs on the edge so `/` never hits a
   // function. The session check is optimistic (cookie presence only); the
-  // dashboard proxy still validates the session.
+  // dashboard validates it via requireSession(), which clears stale cookies.
   async redirects() {
     return SESSION_COOKIES.map((key) => ({
       source: "/",
