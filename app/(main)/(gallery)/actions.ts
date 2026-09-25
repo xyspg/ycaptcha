@@ -8,6 +8,7 @@ import { requireSession } from "@/lib/auth/session";
 import { db, withUserLock } from "@/lib/db";
 import { galleryItem, image, imageSet } from "@/lib/db/app-schema";
 import { computeSetHash } from "@/lib/gallery-hash";
+import { revalidateGalleryBrowse } from "@/lib/gallery-revalidate";
 import { cleanupR2Keys, r2KeyFromUrl } from "@/lib/r2";
 import {
   getUserStorageUsage,
@@ -184,7 +185,7 @@ export async function publishGalleryItem(
     throw err;
   }
 
-  revalidatePath("/gallery");
+  revalidateGalleryBrowse();
   revalidatePath("/gallery/mine");
   redirect(`/gallery/${inserted.slug}`);
 }
@@ -255,7 +256,7 @@ export async function deleteGalleryItem(
 
   await cleanupR2Keys(toDelete);
 
-  revalidatePath("/gallery");
+  revalidateGalleryBrowse();
   revalidatePath("/gallery/mine");
   revalidatePath(`/gallery/${parsed.data.slug}`);
   return { success: true };
@@ -377,6 +378,9 @@ export async function forkGalleryItem(
     throw err;
   }
 
+  // The browse page's fork counts (and "popular" order) are left to its
+  // hourly refresh: invalidating it on every fork would hand the next visitor
+  // of each locale a cold, blocking regeneration.
   revalidatePath("/dashboard/image-sets");
   redirect(`/dashboard/image-sets/${newSetId}`);
 }

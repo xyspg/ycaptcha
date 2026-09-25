@@ -11,9 +11,12 @@ import "./lib/env";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
-// Mirrors i18n/request.ts: locale cookie first, then the primary
-// Accept-Language tag (`has` values are matched as ^...$ regexes).
-function landingRewrites(source: string) {
+// Rewrites `source` to the static page prerendered per locale at
+// /landing/{locale}{page}. Approximates i18n/request.ts: locale cookie first,
+// then only the primary Accept-Language tag, where request.ts also weighs
+// later tags (`fr, ja;q=0.9` negotiates ja there, en here). `has` values are
+// matched as ^...$ regexes.
+function localeRewrites(source: string, page = "") {
   return [
     {
       source,
@@ -24,7 +27,7 @@ function landingRewrites(source: string) {
           value: `(?<locale>${locales.join("|")})`,
         },
       ],
-      destination: "/landing/:locale",
+      destination: `/landing/:locale${page}`,
     },
     {
       source,
@@ -35,7 +38,7 @@ function landingRewrites(source: string) {
           value: "[zZ][hH].*",
         },
       ],
-      destination: "/landing/zh-CN",
+      destination: `/landing/zh-CN${page}`,
     },
     {
       source,
@@ -46,9 +49,9 @@ function landingRewrites(source: string) {
           value: "[jJ][aA].*",
         },
       ],
-      destination: "/landing/ja",
+      destination: `/landing/ja${page}`,
     },
-    { source, destination: `/landing/${defaultLocale}` },
+    { source, destination: `/landing/${defaultLocale}${page}` },
   ];
 }
 
@@ -66,9 +69,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "10mb",
     },
   },
-  // Routing for the static landing page runs on the edge so `/` never hits a
-  // function. The session check is optimistic (cookie presence only); the
-  // dashboard validates it via requireSession(), which clears stale cookies.
+  // Routing for the static landing and gallery pages runs on the edge so `/`
+  // and `/gallery` never hit a function. The session check is optimistic
+  // (cookie presence only); the dashboard validates it via requireSession(),
+  // which clears stale cookies.
   async redirects() {
     return SESSION_COOKIES.map((key) => ({
       source: "/",
@@ -79,7 +83,11 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return {
-      beforeFiles: [...landingRewrites("/"), ...landingRewrites("/home")],
+      beforeFiles: [
+        ...localeRewrites("/"),
+        ...localeRewrites("/home"),
+        ...localeRewrites("/gallery", "/gallery"),
+      ],
       afterFiles: [
         {
           source: "/docs/:path*.mdx",

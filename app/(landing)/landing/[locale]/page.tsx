@@ -1,7 +1,7 @@
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { cache } from "react";
 import { codeToHtml } from "shiki";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -13,6 +13,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { setStaticLocale } from "@/i18n/static-locale";
 import { config } from "@/lib/config";
 import { env } from "@/lib/env";
 import { DemoShowcase } from "./demo-showcase";
@@ -64,7 +65,7 @@ export default async function Home({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  setRequestLocale(locale);
+  setStaticLocale(locale);
 
   const t = await getTranslations("landing");
   const [embedHtml, verifyHtml] = await Promise.all([

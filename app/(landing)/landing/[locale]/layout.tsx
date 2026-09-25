@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import {
-  getMessages,
-  getTranslations,
-  setRequestLocale,
-} from "next-intl/server";
+import { notFound } from "next/navigation";
+import { hasLocale } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
 import { RootDocument } from "@/components/root-document";
 import { locales } from "@/i18n/config";
+import { setStaticLocale } from "@/i18n/static-locale";
 
-// Prerendered per locale and served from the CDN. `/` and `/home` are
-// rewritten here in next.config.ts based on the locale cookie or
-// Accept-Language, so the landing page never waits on a function cold start.
-export const dynamicParams = false;
-
+// Prerendered per locale and served from the CDN. `/`, `/home` and `/gallery`
+// are rewritten here in next.config.ts based on the locale cookie or
+// Accept-Language, so these pages never wait on a function cold start.
+//
+// Unknown locales 404 via notFound() rather than `dynamicParams = false`: with
+// that set, a page invalidated by revalidatePath (the gallery) counts as never
+// prerendered and 404s under `next start` until the next build.
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
@@ -29,6 +30,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
+  if (!hasLocale(locales, locale)) notFound();
   const t = await getTranslations({ locale, namespace: "metadata" });
   return {
     title: t("title"),
@@ -39,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LandingLayout({ children, params }: Props) {
   const { locale } = await params;
-  setRequestLocale(locale);
+  setStaticLocale(locale);
   const messages = await getMessages();
 
   return (

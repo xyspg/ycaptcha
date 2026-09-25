@@ -1,11 +1,12 @@
 import { and, desc, eq } from "drizzle-orm";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
+import { toGalleryCardItem } from "@/components/gallery/card-item";
+import { GalleryItemCardContent } from "@/components/gallery/gallery-item-card";
 import { Button } from "@/components/ui/button";
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { galleryItem } from "@/lib/db/app-schema";
-import { GalleryItemCardContent } from "../gallery-item-card";
 import { MineActions } from "./mine-actions";
 
 export const dynamic = "force-dynamic";
@@ -71,7 +72,7 @@ function MineCard({ item }: { item: Item }) {
         href={`/gallery/${item.slug}`}
         className="flex flex-1 flex-col gap-3 p-3"
       >
-        <GalleryItemCardContent item={item} />
+        <GalleryItemCardContent item={toGalleryCardItem(item)} />
       </Link>
       <MineActions slug={item.slug} />
     </div>
