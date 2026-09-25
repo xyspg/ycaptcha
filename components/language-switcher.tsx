@@ -2,29 +2,34 @@
 
 import { Languages } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { setLocale } from "@/i18n/actions";
 import { type Locale, locales } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 
 export function LanguageSwitcher() {
   const locale = useLocale();
   const t = useTranslations("languageSwitcher");
-  const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
 
-  const handleChange = (newLocale: string) => {
+  // Written client-side rather than via a server action: the landing page is
+  // static, and next.config.ts rewrites `/` on this cookie at the edge.
+  const handleChange = (newLocale: Locale) => {
     setOpen(false);
-    startTransition(async () => {
-      await setLocale(newLocale);
+    // biome-ignore lint/suspicious/noDocumentCookie: a one-off write; Cookie Store API lacks older Safari support
+    document.cookie = `locale=${newLocale}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    // Direct /landing/{locale} URLs pin the locale from params, so the
+    // cookie alone can't change them.
+    if (window.location.pathname.startsWith("/landing/")) {
+      window.location.assign(`/landing/${newLocale}`);
+    } else {
       window.location.reload();
-    });
+    }
   };
 
   return (
@@ -33,7 +38,6 @@ export function LanguageSwitcher() {
         <Button
           variant="ghost"
           size="sm"
-          disabled={isPending}
           aria-label={t("label")}
           className="gap-1.5"
         >
