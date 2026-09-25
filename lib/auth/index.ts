@@ -3,14 +3,16 @@ import { APIError, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { magicLink } from "better-auth/plugins";
+import { after } from "next/server";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
-import { sendExistingAccountEmail } from "@/lib/email/send-existing-account-email";
-import { sendResetPasswordEmail } from "@/lib/email/send-reset-password-email";
-import { sendVerificationEmail } from "@/lib/email/send-verification-email";
 import { env } from "@/lib/env";
 import { redis } from "@/lib/redis";
-import { cleanupUserOnDelete } from "./cleanup";
+
+// Email templates (react-email) and account cleanup (R2, sharp, Sentry) are
+// imported inside their callbacks: every route that reads the session loads
+// this module, and those deps would otherwise dominate its cold start.
+const loadEmail = () => import("@/lib/email/senders");
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -47,8 +49,15 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }, request) => {
-      void sendResetPasswordEmail({ user, url, request }).catch((error) => {
-        console.error("[auth] failed to send password reset email", error);
+      // Sent after the response so its timing doesn't reveal whether the
+      // account exists; after() keeps the function alive until it finishes.
+      after(async () => {
+        try {
+          const { sendResetPasswordEmail } = await loadEmail();
+          await sendResetPasswordEmail({ user, url, request });
+        } catch (error) {
+          console.error("[auth] failed to send password reset email", error);
+        }
       });
     },
     onExistingUserSignUp: async ({ user }, request) => {
@@ -64,6 +73,7 @@ export const auth = betterAuth({
     autoSignInAfterVerification: true,
     expiresIn: 60 * 60 * 24,
     sendVerificationEmail: async ({ user, url }, request) => {
+      const { sendVerificationEmail } = await loadEmail();
       await sendVerificationEmail({ user, url, request });
     },
   },
@@ -86,6 +96,7 @@ export const auth = betterAuth({
           });
         }
 
+        const { cleanupUserOnDelete } = await import("./cleanup");
         await cleanupUserOnDelete(user.id);
       },
     },
@@ -97,6 +108,7 @@ export const auth = betterAuth({
       expiresIn: 60 * 15,
       disableSignUp: true,
       sendMagicLink: async ({ email, url }, ctx) => {
+        const { sendExistingAccountEmail } = await loadEmail();
         await sendExistingAccountEmail({
           user: { email },
           loginUrl: url,

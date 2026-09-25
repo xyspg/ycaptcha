@@ -1,20 +1,22 @@
-import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
-import { getSession } from "@/lib/auth/session";
-import { db } from "@/lib/db";
-import { site } from "@/lib/db/app-schema";
+import { PATHNAME_HEADER, SESSION_COOKIES } from "@/lib/auth/constants";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Optimistic check (cookie presence only): importing lib/auth here would
+  // load the whole auth stack on every cold start. This is not an auth
+  // boundary: every page and route handler under /dashboard must validate
+  // the session itself via requireSession().
   if (pathname.startsWith("/dashboard")) {
-    const session = await getSession();
-    if (!session) {
+    if (!SESSION_COOKIES.some((name) => request.cookies.get(name)?.value)) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);
     }
-    return NextResponse.next();
+    const headers = new Headers(request.headers);
+    headers.set(PATHNAME_HEADER, pathname);
+    return NextResponse.next({ request: { headers } });
   }
 
   // Widget CSP: frame-ancestors based on site's configured domain
@@ -22,20 +24,22 @@ export async function proxy(request: NextRequest) {
   if (widgetMatch) {
     const siteKey = widgetMatch[1];
 
+    // Loaded lazily so /dashboard requests don't pay for the DB client. Kept
+    // outside the try: a module init failure (bad env) should fail loudly
+    // rather than silently fall back to 'self' for every embed.
+    const { getSiteDomain } = await import("@/lib/site-domain");
+
     let frameAncestors = "'self'";
     try {
-      const [siteData] = await db
-        .select({ domain: site.domain })
-        .from(site)
-        .where(eq(site.siteKey, siteKey));
+      const domain = await getSiteDomain(siteKey);
 
-      if (siteData?.domain) {
+      if (domain) {
         const localhost = "http://localhost:* http://127.0.0.1:*";
         const isDev = process.env.NODE_ENV !== "production";
-        if (siteData.domain === "localhost") {
+        if (domain === "localhost") {
           frameAncestors = `'self' ${localhost}`;
         } else {
-          frameAncestors = `'self' https://*.${siteData.domain} https://${siteData.domain}${isDev ? ` ${localhost}` : ""}`;
+          frameAncestors = `'self' https://*.${domain} https://${domain}${isDev ? ` ${localhost}` : ""}`;
         }
       }
     } catch (e) {
