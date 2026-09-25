@@ -12,8 +12,10 @@ import "./lib/env";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 // Rewrites `source` to the static page prerendered per locale at
-// /landing/{locale}{page}. Mirrors i18n/request.ts: locale cookie first, then
-// the primary Accept-Language tag (`has` values are matched as ^...$ regexes).
+// /landing/{locale}{page}. Approximates i18n/request.ts: locale cookie first,
+// then only the primary Accept-Language tag, where request.ts also weighs
+// later tags (`fr, ja;q=0.9` negotiates ja there, en here). `has` values are
+// matched as ^...$ regexes.
 function localeRewrites(source: string, page = "") {
   return [
     {

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { GALLERY_PAGE_SIZE, type GalleryCardItem } from "./card-item";
 import { GalleryPublishButton } from "./gallery-auth";
 import { GalleryItemCard } from "./gallery-item-card";
+import { SearchLink } from "./search-link";
 
 type Sort = "recent" | "popular";
 
@@ -73,7 +74,7 @@ export function GalleryListing({
           <span className="text-muted-foreground">{t("filterLabel")}</span>
           <span className="font-medium">#{tag}</span>
           <SearchLink
-            href={`/gallery${sort === "popular" ? "?sort=popular" : ""}`}
+            search={sort === "popular" ? "?sort=popular" : ""}
             className="text-muted-foreground hover:text-foreground"
             aria-label={t("clearFilter")}
           >
@@ -108,44 +109,22 @@ function SortTabs({
   tag: string | null;
   labels: { recent: string; popular: string };
 }) {
-  const tagParam = tag ? `&tag=${encodeURIComponent(tag)}` : "";
+  const tagParam = tag ? `tag=${encodeURIComponent(tag)}` : "";
   return (
     <div className="inline-flex items-center rounded-full border border-border bg-background/70 p-0.5 text-sm">
       <SearchLink
-        href={`/gallery${tag ? `?tag=${encodeURIComponent(tag)}` : ""}`}
+        search={tagParam ? `?${tagParam}` : ""}
         className={`rounded-full px-3 py-1 transition-colors ${sort === "recent" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
       >
         {labels.recent}
       </SearchLink>
       <SearchLink
-        href={`/gallery?sort=popular${tagParam}`}
+        search={`?sort=popular${tagParam ? `&${tagParam}` : ""}`}
         className={`rounded-full px-3 py-1 transition-colors ${sort === "popular" ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"}`}
       >
         {labels.popular}
       </SearchLink>
     </div>
-  );
-}
-
-// Sort and filter are client state over a static page, so plain clicks update
-// the URL with the History API, which Next syncs into useSearchParams. A
-// router navigation would fetch nothing new, and one back to the bare
-// /gallery rewrite gets dropped (the router restores the previous search).
-function SearchLink({
-  href,
-  ...props
-}: React.ComponentProps<"a"> & { href: string }) {
-  return (
-    <a
-      href={href}
-      onClick={(e) => {
-        if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
-          return;
-        e.preventDefault();
-        window.history.pushState(null, "", href);
-      }}
-      {...props}
-    />
   );
 }
 

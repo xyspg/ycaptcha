@@ -1,6 +1,5 @@
 import { desc, eq, type SQL } from "drizzle-orm";
 import type { Metadata } from "next";
-import { setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 import {
   GALLERY_PAGE_SIZE,
@@ -10,6 +9,7 @@ import {
   GalleryBrowser,
   GalleryListing,
 } from "@/components/gallery/gallery-browser";
+import { setStaticLocale } from "@/i18n/static-locale";
 import { db } from "@/lib/db";
 import { galleryItem } from "@/lib/db/app-schema";
 
@@ -48,7 +48,7 @@ export default async function GalleryBrowsePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  setRequestLocale(locale);
+  setStaticLocale(locale);
 
   // Sorting and tag filtering run client-side, so ship the union of the
   // first page for each sort order; either sort then yields exactly what a

@@ -1,5 +1,5 @@
-import { setRequestLocale } from "next-intl/server";
 import { GalleryShell } from "@/components/gallery/gallery-shell";
+import { setStaticLocale } from "@/i18n/static-locale";
 
 export default async function GalleryLayout({
   children,
@@ -9,7 +9,7 @@ export default async function GalleryLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  setRequestLocale(locale);
+  setStaticLocale(locale);
 
   return <GalleryShell>{children}</GalleryShell>;
 }

@@ -1,13 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
-import {
-  getMessages,
-  getTranslations,
-  setRequestLocale,
-} from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { RootDocument } from "@/components/root-document";
 import { locales } from "@/i18n/config";
+import { setStaticLocale } from "@/i18n/static-locale";
 
 // Prerendered per locale and served from the CDN. `/`, `/home` and `/gallery`
 // are rewritten here in next.config.ts based on the locale cookie or
@@ -44,10 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function LandingLayout({ children, params }: Props) {
   const { locale } = await params;
-  // before anything reads the locale: an unknown one would fall back to
-  // cookies and turn this into a dynamic render
-  if (!hasLocale(locales, locale)) notFound();
-  setRequestLocale(locale);
+  setStaticLocale(locale);
   const messages = await getMessages();
 
   return (

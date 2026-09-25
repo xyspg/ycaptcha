@@ -6,15 +6,24 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button } from "@/components/ui/button";
 import { env } from "@/lib/env";
-import { GalleryAccountButton, GalleryMineLink } from "./gallery-auth";
+import {
+  AccountButton,
+  GalleryAccountButton,
+  GalleryMineLink,
+  MineLink,
+} from "./gallery-auth";
+import { GalleryBrowseLink } from "./search-link";
 
 // Header and footer shared by the static browse page (under the landing root
 // layout) and the dynamic item and "mine" pages (under the main one). Both
-// parents supply the grid background.
+// parents supply the grid background. Dynamic pages pass `signedIn` from the
+// server session; the static page omits it and resolves it on the client.
 export async function GalleryShell({
   children,
+  signedIn,
 }: {
   children: React.ReactNode;
+  signedIn?: boolean;
 }) {
   const t = await getTranslations("gallery");
 
@@ -23,12 +32,7 @@ export async function GalleryShell({
       <header className="sticky top-0 z-40 border-b border-border bg-[oklch(0.98_0.006_95)]/80 backdrop-blur-md dark:bg-[oklch(0.17_0.004_270)]/80">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-3 lg:px-8">
           <div className="flex items-center gap-6">
-            {/* Plain <a> for /gallery: a router navigation from /gallery?... back to
-                the bare rewrite gets dropped (see gallery-browser.tsx) */}
-            <a
-              href="/gallery"
-              className="inline-flex items-center gap-2 font-semibold tracking-tight"
-            >
+            <GalleryBrowseLink className="inline-flex items-center gap-2 font-semibold tracking-tight">
               <Image
                 src="/favicon.ico"
                 alt="yCAPTCHA"
@@ -43,12 +47,16 @@ export async function GalleryShell({
                   {t("galleryLabel")}
                 </span>
               </span>
-            </a>
+            </GalleryBrowseLink>
             <nav className="hidden items-center gap-1 text-sm text-muted-foreground sm:flex">
               <Button asChild variant="ghost" size="sm">
-                <a href="/gallery">{t("navBrowse")}</a>
+                <GalleryBrowseLink>{t("navBrowse")}</GalleryBrowseLink>
               </Button>
-              <GalleryMineLink />
+              {signedIn === undefined ? (
+                <GalleryMineLink />
+              ) : (
+                signedIn && <MineLink />
+              )}
             </nav>
           </div>
 
@@ -65,7 +73,11 @@ export async function GalleryShell({
               <LanguageSwitcher />
             </div>
             <ThemeSwitcher />
-            <GalleryAccountButton />
+            {signedIn === undefined ? (
+              <GalleryAccountButton />
+            ) : (
+              <AccountButton signedIn={signedIn} />
+            )}
           </div>
         </div>
       </header>

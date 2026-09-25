@@ -9,6 +9,7 @@ import {
   puzzle,
   site,
 } from "@/lib/db/app-schema";
+import { revalidateGalleryBrowse } from "@/lib/gallery-revalidate";
 import { deleteFromR2, r2KeyFromUrl } from "@/lib/r2";
 import { galleryItemHashRefs } from "@/lib/storage-refcount";
 
@@ -51,6 +52,9 @@ export async function cleanupUserOnDelete(userId: string): Promise<void> {
   ]);
 
   await db.delete(galleryItem).where(eq(galleryItem.authorId, userId));
+  // the static browse page would otherwise list them (with deleted images)
+  // until its hourly refresh
+  if (galleryRows.length > 0) revalidateGalleryBrowse();
 
   const imageHashes = imageRows
     .map((r) => r.contentHash)
