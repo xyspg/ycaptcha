@@ -6,15 +6,10 @@ import { createMDX } from "fumadocs-mdx/next";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { defaultLocale, locales } from "./i18n/config";
+import { SESSION_COOKIES } from "./lib/auth/cookies";
 import "./lib/env";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
-
-// better-auth uses the __Secure- prefix when BETTER_AUTH_URL is https
-const SESSION_COOKIES = [
-  "better-auth.session_token",
-  "__Secure-better-auth.session_token",
-];
 
 // Mirrors i18n/request.ts: locale cookie first, then the primary
 // Accept-Language tag (`has` values are matched as ^...$ regexes).

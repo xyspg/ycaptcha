@@ -1,21 +1,20 @@
 import { cookies } from "next/headers";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { getSession } from "@/lib/auth/session";
+import { requireSession } from "@/lib/auth/session";
 import {
   getOnboardingProgress,
   ONBOARDING_DISMISSED_COOKIE,
   type OnboardingProgress,
 } from "./onboarding-progress";
 
-async function loadOnboarding(): Promise<OnboardingProgress | null> {
+async function loadOnboarding(
+  userId: string,
+): Promise<OnboardingProgress | null> {
   const store = await cookies();
   if (store.get(ONBOARDING_DISMISSED_COOKIE)?.value === "1") return null;
 
-  const session = await getSession();
-  if (!session) return null;
-
-  return getOnboardingProgress(session.user.id);
+  return getOnboardingProgress(userId);
 }
 
 export default async function Layout({
@@ -23,7 +22,11 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const onboarding = await loadOnboarding();
+  // The proxy only checks that a session cookie exists. Validating here,
+  // outside the loading.tsx boundary, turns a stale cookie into a real 307
+  // before streaming starts.
+  const session = await requireSession();
+  const onboarding = await loadOnboarding(session.user.id);
 
   return (
     <SidebarProvider>
