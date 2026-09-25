@@ -33,17 +33,22 @@ export function parseAcceptLanguage(header: string | null): Locale {
   return defaultLocale;
 }
 
-export default getRequestConfig(async () => {
+async function negotiateLocale(): Promise<Locale> {
   const store = await cookies();
   const raw = store.get("locale")?.value;
+  if (locales.includes(raw as Locale)) return raw as Locale;
 
-  let locale: Locale;
-  if (locales.includes(raw as Locale)) {
-    locale = raw as Locale;
-  } else {
-    const hdrs = await headers();
-    locale = parseAcceptLanguage(hdrs.get("accept-language"));
-  }
+  const hdrs = await headers();
+  return parseAcceptLanguage(hdrs.get("accept-language"));
+}
+
+export default getRequestConfig(async ({ requestLocale }) => {
+  // Statically rendered routes (the landing page) pin the locale via
+  // setRequestLocale; reading cookies there would opt them into dynamic rendering.
+  const requested = await requestLocale;
+  const locale = locales.includes(requested as Locale)
+    ? (requested as Locale)
+    : await negotiateLocale();
 
   return {
     locale,
